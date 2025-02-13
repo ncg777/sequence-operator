@@ -1,2 +1,1 @@
-# seq-operator
-A PWA to combine integer sequences with operators.
+[https://ncg777.github.io/hadamard-transformer/](https://ncg777.github.io/hadamard-transformer/)
