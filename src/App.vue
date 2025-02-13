@@ -5,25 +5,37 @@
         <h1 class="banner">
           Sequence-Operator
         </h1>
+        
+        <v-row >
+            <v-col cols="12" md="12" :style="'position:absolute;text-align:right;'">
+            <v-btn @click="swapXY" icon :style="'z-index:9999'">
+              <v-icon>mdi-swap-horizontal</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
         <v-row>
           <v-col cols="12" md="6">
             <v-text-field
               v-model="textX"
-              label="Sequence x:"
+              :label="`x (${xSize})`"
               outlined
               dense
+              placeholder="1 2 3..."
+              @keypress="validateKeypress"
             ></v-text-field>
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field
               v-model="textY"
-              label="Sequence y:"
+              :label="`y (${ySize})`"
               outlined
               dense
+              placeholder="1 2 3..."
+              @keypress="validateKeypress"
             ></v-text-field>
           </v-col>
         </v-row>
-
+        
         <v-row>
           <v-col cols="12" md="6">
             <v-select
@@ -56,7 +68,7 @@
           <v-col cols="12" md="12">
             <v-text-field
               v-model="textResult"
-              label="Result:"
+              :label="`Result (${resultSize})`"
               outlined
               dense
               readonly
@@ -65,16 +77,16 @@
         </v-row>
         
         <v-row>
-          <v-col cols="4" md="2">
+          <v-col cols="4" md="4">
             <v-btn color="secondary" @click="copyResultToClipboard" block>
               <v-icon left>mdi-clipboard</v-icon>
               Copy
             </v-btn>
           </v-col>
-          <v-col cols="4" md="2">
+          <v-col cols="4" md="4">
             <v-btn color="secondary" @click="setXFromResult" block>Set X</v-btn>
           </v-col>
-          <v-col cols="4" md="2">
+          <v-col cols="4" md="4">
             <v-btn color="secondary" @click="setYFromResult" block>Set Y</v-btn>
           </v-col>
         </v-row>
@@ -84,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed  } from 'vue';
 import { Sequence } from './Sequence';
 import { Numbers } from './Numbers';
 
@@ -234,7 +246,44 @@ const setXFromResult = () => {
 const setYFromResult = () => {
   textY.value = textResult.value;
 };
+const validateKeypress = (event: { key: string; preventDefault: () => void; }) => {
+  if (!/[0-9\s]/.test(event.key)) {
+    event.preventDefault();
+  }
+};
+const swapXY = () => {
+      [textX.value, textY.value] = [textY.value, textX.value];
+    }
+// Computed properties to get the sizes of sequences
+const xSize = computed(() => {
+  try {
+    const sequence = Sequence.parse(textX.value);
+    return sequence.size();
+  } catch {
+    return 0;
+  }
+});
+
+const ySize = computed(() => {
+  try {
+    const sequence = Sequence.parse(textY.value);
+    return sequence.size();
+  } catch {
+    return 0;
+  }
+});
+
+const resultSize = computed(() => {
+  try {
+    const sequence = Sequence.parse(textResult.value);
+    return sequence.size();
+  } catch {
+    return 0;
+  }
+});
 </script>
+
+
 
 <style scoped>
 .banner {
@@ -242,5 +291,9 @@ const setYFromResult = () => {
   color: white;
   text-align: center;
   padding:0.5em;
+}
+body, * {
+  color: #00aa00;
+  background-color: #000000;
 }
 </style>
