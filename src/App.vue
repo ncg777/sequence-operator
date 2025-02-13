@@ -4,7 +4,7 @@
     <v-main>
       <v-container fluid class="pa-4">
         <h1 class="banner">
-          Seq-Operator
+          Sequence-Operator
         </h1>
         <v-row>
           <v-col cols="12" md="6">
