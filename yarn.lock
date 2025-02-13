@@ -2875,9 +2875,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"seq-operator@file:, seq-operator@workspace:.":
+"sequence-operator@file:, sequence-operator@workspace:.":
   version: 0.0.0-use.local
-  resolution: "seq-operator@workspace:."
+  resolution: "sequence-operator@workspace:."
   dependencies:
     "@mdi/font": "npm:7.4.47"
     "@tsconfig/node22": "npm:^22.0.0"
@@ -2891,7 +2891,7 @@ __metadata:
     roboto-fontface: "npm:*"
     sass: "npm:1.77.8"
     sass-embedded: "npm:^1.77.8"
-    seq-operator: "file:"
+    sequence-operator: "file:"
     typescript: "npm:~5.6.3"
     unplugin-fonts: "npm:^1.1.1"
     unplugin-vue-components: "npm:^0.27.2"

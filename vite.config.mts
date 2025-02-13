@@ -26,7 +26,7 @@ export default defineConfig({
       },
     }),
   ],
-  base:'/seq-operator/',
+  base:'/sequence-operator/',
   define: { 'process.env': {} },
   resolve: {
     alias: {
