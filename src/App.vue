@@ -1,4 +1,3 @@
-<!-- src/App.vue -->
 <template>
   <v-app>
     <v-main>
