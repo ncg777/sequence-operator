@@ -247,7 +247,7 @@ const setYFromResult = () => {
   textY.value = textResult.value;
 };
 const validateKeypress = (event: { key: string; preventDefault: () => void; }) => {
-  if (!/[0-9\s]/.test(event.key)) {
+  if (!/[0-9\s-]/.test(event.key)) {
     event.preventDefault();
   }
 };
