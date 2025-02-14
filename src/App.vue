@@ -286,14 +286,13 @@ const resultSize = computed(() => {
 
 
 <style scoped>
-.banner {
-  background-color: black;
-  color: white;
-  text-align: center;
-  padding:0.5em;
-}
 body, * {
   color: #00aa00;
   background-color: #000000;
 }
+.banner {
+  text-align: center;
+  padding:0.5em;
+}
+
 </style>
