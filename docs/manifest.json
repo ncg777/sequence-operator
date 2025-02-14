@@ -1,6 +1,6 @@
 {
-  "short_name": "SeqOp",
-  "name": "Sequence-Operator",
+  "short_name": "HadamardTransformer",
+  "name": "Hadamard Transformer",
   "icons": [
     {
       "src": "logo32.png",

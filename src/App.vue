@@ -132,6 +132,7 @@ enum Operation {
   LessThanOrEqual = 'LessThanOrEqual',
   GreaterThan = 'GreaterThan',
   GreaterThanOrEqual = 'GreaterThanOrEqual',
+  Binomial = 'Binomial',
 }
 
 // Define Combiner Enum
@@ -188,6 +189,7 @@ const ops = new Map<Operation, (x: number, y: number) => number>([
   [Operation.LessThanOrEqual, (x, y) => (x <= y ? 1 : 0)],
   [Operation.GreaterThan, (x, y) => (x > y ? 1 : 0)],
   [Operation.GreaterThanOrEqual, (x, y) => (x >= y ? 1 : 0)],
+  [Operation.Binomial, (x, y) => Numbers.binomial(x,y)],
 ]);
 
 // Utility function to get length based on scale
