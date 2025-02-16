@@ -3,7 +3,7 @@
     <v-main>
       <v-container fluid class="pa-4">
         <h1 class="banner">
-          Sequence-Operator
+          Sequence Operator
         </h1>
         
         <v-row >
