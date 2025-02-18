@@ -8,9 +8,9 @@
         
         <v-row >
             <v-col cols="12" md="12" :style="'position:absolute;text-align:right;'">
-            <v-btn @click="swapXY" icon :style="'z-index:9999'">
-              <v-icon>mdi-swap-horizontal</v-icon>
-            </v-btn>
+              <v-btn @click="swapXY" icon :style="'z-index:9999'">
+                <v-icon>mdi-swap-horizontal</v-icon>
+              </v-btn>
           </v-col>
         </v-row>
         <v-row>
@@ -20,7 +20,7 @@
               :label="`x (${xSize})`"
               outlined
               dense
-              placeholder="1 2 3..."
+              placeholder="0 1 2..."
               @keypress="validateKeypress"
             ></v-text-field>
           </v-col>
@@ -30,7 +30,7 @@
               :label="`y (${ySize})`"
               outlined
               dense
-              placeholder="1 2 3..."
+              placeholder="0 1 2..."
               @keypress="validateKeypress"
             ></v-text-field>
           </v-col>
@@ -64,7 +64,15 @@
             </v-btn>
           </v-col>
         </v-row>
+        <v-row >
+            <v-col cols="12" md="12" :style="'position:absolute;text-align:right;'">
+              <v-btn icon @click="copyResultToClipboard" style="z-index: 9999;">
+              <v-icon left>mdi-clipboard</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
         <v-row>
+          
           <v-col cols="12" md="12">
             <v-text-field
               v-model="textResult"
@@ -77,17 +85,19 @@
         </v-row>
         
         <v-row>
-          <v-col cols="4" md="4">
-            <v-btn color="secondary" @click="copyResultToClipboard" block>
-              <v-icon left>mdi-clipboard</v-icon>
-              Copy
-            </v-btn>
-          </v-col>
-          <v-col cols="4" md="4">
+          <v-col cols="6" md="6">
             <v-btn color="secondary" @click="setXFromResult" block>Set X</v-btn>
           </v-col>
-          <v-col cols="4" md="4">
+          <v-col cols="6" md="6">
             <v-btn color="secondary" @click="setYFromResult" block>Set Y</v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="6" md="6">
+            <v-btn color="secondary" @click="pasteToX" block>Paste to X</v-btn>
+          </v-col>
+          <v-col cols="6" md="6">
+            <v-btn color="secondary" @click="pasteToY" block>Paste to Y</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -251,6 +261,14 @@ const setXFromResult = () => {
 
 const setYFromResult = () => {
   textY.value = textResult.value;
+};
+
+const pasteToX = () => {
+  textX.value = textX.value.split(' ').concat(textResult.value.split(' ')).join(' ');
+};
+
+const pasteToY = () => {
+  textY.value = textY.value.split(' ').concat(textResult.value.split(' ')).join(' ');
 };
 const validateKeypress = (event: { key: string; preventDefault: () => void; }) => {
   if (!/[0-9\s-]/.test(event.key)) {
