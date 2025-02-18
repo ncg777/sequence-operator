@@ -150,6 +150,7 @@ enum Operation {
 // Define Combiner Enum
 enum Combiner {
   Product = 'Product',
+  Triangular = 'Triangular',
   LCM = 'LCM',
   Apply = 'Apply',
 }
@@ -206,38 +207,46 @@ const ops = new Map<Operation, (x: number, y: number) => number>([
   [Operation.ExpandBitsFill, (x, y) => Numbers.expandBits(x,y,'bit')],
 ]);
 
-// Utility function to get length based on scale
-const getLength = (x: Sequence, y: Sequence): number => {
-  switch (scale.value) {
-    case Combiner.Apply:
-      return y.size();
-    case Combiner.LCM:
-      return Numbers.lcm(x.size(), y.size());
-    case Combiner.Product:
-    default:
-      return x.size() * y.size();
-  }
-};
-
 // Function to get the result sequence based on selected operation and scale
 const getResult = (x: Sequence, y: Sequence): Sequence => {
-  const n = getLength(x, y);
   const o = new Sequence();
-  for (let i = 0; i < n; i++) {
-    const xVal = scale.value === Combiner.Apply
-      ? x.get(y.get(i)! % x.size())!
-      : scale.value === Combiner.LCM
-        ? x.get(i % x.size())!
-        : x.get(Math.floor(i / y.size()))!;
-
-    const yVal = y.get(i % y.size())!;
-
-    const operationFn = ops.get(operation.value);
-    if (operationFn) {
-      o.add(operationFn(xVal, yVal));
-    }
+  const operationFn = ops.get(operation.value);
+  switch (scale.value) {
+    case Combiner.Apply:
+      for (let i = 0; i < y.size(); i++) {    
+        if (operationFn) {
+          o.add(operationFn(x.get(y.get(i)! % x.size())!, y.get(i % y.size())!));
+        }
+      }
+      break;
+    case Combiner.LCM:
+      for (let i = 0; i < Numbers.lcm(x.size(),y.size()); i++) {    
+        if (operationFn) {
+          o.add(operationFn(x.get(i % x.size())!, y.get(i % y.size())!));
+        }
+      }
+      break;
+    case Combiner.Product:
+      for (let i = 0; i < x.size(); i++) {
+        for (let j = 0; j < y.size(); j++) {   
+          if (operationFn) {
+            o.add(operationFn(x.get(i)!, y.get(j)!));
+          }
+      }
+      }
+      break;
+    case Combiner.Triangular:
+      for (let i = 0; i < x.size(); i++) {
+        for (let j = 0; j < y.size(); j++) {
+          if (j<=i && operationFn) {
+            o.add(operationFn(x.get(i)!, y.get(j)!));
+          }
+        }
+      }
+      break;
   }
   return o;
+  
 };
 
 // Handler for Apply button
