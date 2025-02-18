@@ -153,6 +153,7 @@ enum Combiner {
   Triangular = 'Triangular',
   LCM = 'LCM',
   Apply = 'Apply',
+  Reduce = 'Reduce',
 }
 
 // Initialize reactive variables
@@ -241,6 +242,13 @@ const getResult = (x: Sequence, y: Sequence): Sequence => {
           if (j<=i && operationFn) {
             o.add(operationFn(x.get(i)!, y.get(j)!));
           }
+        }
+      }
+      break;
+    case Combiner.Reduce:
+      for (let i = 0; i < x.size(); i++) {
+        if (operationFn) {
+            o.add(y.toArray().reduce((a,b) => operationFn(a,b),x.get(i)!));
         }
       }
       break;

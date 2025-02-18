@@ -133,14 +133,6 @@ export class Sequence{
         return Math.max(...this.items);
     }
 
-    multiply(k: number): Sequence {
-        const seq = new Sequence();
-        for (const item of this.items) {
-            seq.add(item * k);
-        }
-        return seq;
-    }
-
     rotate(n: number): Sequence {
         const rotatedItems = [...this.items.slice(-n), ...this.items.slice(0, -n)];
         const resultSeq = new Sequence();
@@ -149,8 +141,6 @@ export class Sequence{
         }
         return resultSeq;
     }
-
-    // Additional helper methods
 
     static fromArray(arr: number[]): Sequence {
         const seq = new Sequence();
