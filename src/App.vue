@@ -1,13 +1,13 @@
 <template>
   <v-app>
     <v-main>
-      <v-container fluid class="pa-4">
+      <v-responsive class="align-center mx-auto" max-width="900">>
         <h1 class="banner">
           Sequence Operator
         </h1>
         
         <v-row >
-            <v-col cols="12" md="12" :style="'position:absolute;text-align:right;'">
+            <v-col cols="12" md="12" :style="'position:absolute;text-align:right; padding-right:0; margin-right:0;'">
               <v-btn @click="swapXY" icon :style="'z-index:9999'">
                 <v-icon>mdi-swap-horizontal</v-icon>
               </v-btn>
@@ -65,7 +65,7 @@
           </v-col>
         </v-row>
         <v-row >
-            <v-col cols="12" md="12" :style="'position:absolute;text-align:right;'">
+            <v-col cols="12" md="12" :style="'position:absolute;text-align:right;padding-right:0;'">
               <v-btn icon @click="copyResultToClipboard" style="z-index: 9999;">
               <v-icon left>mdi-clipboard</v-icon>
             </v-btn>
@@ -100,7 +100,7 @@
             <v-btn color="secondary" @click="pasteToY" block>Paste to Y</v-btn>
           </v-col>
         </v-row>
-      </v-container>
+      </v-responsive>
     </v-main>
   </v-app>
 </template>
