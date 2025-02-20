@@ -262,19 +262,17 @@ const getResult = (x: Sequence, y: Sequence): Sequence => {
       const current: number[] = new Array(x.size()).fill(0);
       
       while (true) {
-        // Save a copy of the current state
         result.push([...current]);
         
-        // Check if current is the last possible combination (i.e., every digit is at its maximum)
-        if (current.every((value, i) => value === x.get(i)! - 1)) {
+        if (current.every((value, i) => Math.abs(value) === Math.abs(x.get(i)!) - 1)) {
           break;
         }
         
-        // Increment the mixed radix number.
-        // Loop through each digit until you can increment one; if it reaches the base, reset it to zero.
         for (let i = 0; i < x.size(); i++) {
-          if (current[i] < x.get(i)! - 1) {
-            current[i]++;
+          if(x.get(i) === 0) break;
+          if (Math.abs(current[i]) < Math.abs(x.get(i)!) - 1) {
+            if(x.get(i)! < 0) current[i]--;
+            if(x.get(i)! > 0) current[i]++;
             break;
           } else {
             current[i] = 0;
