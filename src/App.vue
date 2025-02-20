@@ -221,9 +221,10 @@ const getResult = (x: Sequence, y: Sequence): Sequence => {
       }
       break;
     case Combiner.LCM:
-      for (let i = 0; i < Numbers.lcm(x.size(),y.size()); i++) {    
+      const l = Numbers.lcm(x.size(),y.size());
+      for (let i = 0; i < l; i++) {    
         if (operationFn) {
-          o.add(operationFn(x.get(i % x.size())!, y.get(i % y.size())!));
+          o.add(operationFn(x.get(i/(l/x.size())>>0)!, y.get(i/(l/y.size())>>0)!));
         }
       }
       break;
