@@ -107,8 +107,8 @@
 
 <script setup lang="ts">
 import { ref, computed  } from 'vue';
-import { Sequence } from './Sequence';
-import { Numbers } from './Numbers';
+import { Sequence } from 'ultra-mega-enumerator';
+import { Numbers } from 'ultra-mega-enumerator';
 
 // Define Operation Enum
 enum Operation {

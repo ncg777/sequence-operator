@@ -595,7 +595,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.9.0":
+"@types/node@npm:^22.5.1, @types/node@npm:^22.9.0":
   version: 22.13.4
   resolution: "@types/node@npm:22.13.4"
   dependencies:
@@ -2944,6 +2944,7 @@ __metadata:
     sass-embedded: "npm:^1.77.8"
     sequence-operator: "file:"
     typescript: "npm:~5.6.3"
+    ultra-mega-enumerator: "npm:^2025.2.23"
     unplugin-fonts: "npm:^1.1.1"
     unplugin-vue-components: "npm:^0.27.2"
     vite: "npm:^5.4.10"
@@ -3209,6 +3210,16 @@ __metadata:
   version: 1.5.4
   resolution: "ufo@npm:1.5.4"
   checksum: 10c0/b5dc4dc435c49c9ef8890f1b280a19ee4d0954d1d6f9ab66ce62ce64dd04c7be476781531f952a07c678d51638d02ad4b98e16237be29149295b0f7c09cda765
+  languageName: node
+  linkType: hard
+
+"ultra-mega-enumerator@npm:^2025.2.23":
+  version: 2025.2.23
+  resolution: "ultra-mega-enumerator@npm:2025.2.23"
+  dependencies:
+    "@types/node": "npm:^22.5.1"
+    yarn: "npm:^1.22.22"
+  checksum: 10c0/54dd5faa5ebbf3a9d99c46b09238125dcb3fb626a79fac97a545c506d686e324f01750fe00d2f0c9f5d46a032976df5da7e74b09617b727d7888edcc2f003e27
   languageName: node
   linkType: hard
 
@@ -3539,6 +3550,16 @@ __metadata:
   version: 5.0.0
   resolution: "yallist@npm:5.0.0"
   checksum: 10c0/a499c81ce6d4a1d260d4ea0f6d49ab4da09681e32c3f0472dee16667ed69d01dae63a3b81745a24bd78476ec4fcf856114cb4896ace738e01da34b2c42235416
+  languageName: node
+  linkType: hard
+
+"yarn@npm:^1.22.22":
+  version: 1.22.22
+  resolution: "yarn@npm:1.22.22"
+  bin:
+    yarn: bin/yarn.js
+    yarnpkg: bin/yarn.js
+  checksum: 10c0/8c77198c93d7542e7f4e131c63b66de357b7076ecfbcfe709ec0d674115c2dd9edaa45196e5510e6e9366d368707a802579e3402071002e1c9d9a99d491478de
   languageName: node
   linkType: hard
 
