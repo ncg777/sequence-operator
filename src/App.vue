@@ -151,6 +151,7 @@ enum Operation {
 enum Combiner {
   Product = 'Product',
   Triangular = 'Triangular',
+  Recycle = 'Recycle',
   LCM = 'LCM',
   Apply = 'Apply',
   Reduce = 'Reduce',
@@ -213,6 +214,7 @@ const ops = new Map<Operation, (x: number, y: number) => number>([
 const getResult = (x: Sequence, y: Sequence): Sequence => {
   const o = new Sequence();
   const operationFn = ops.get(operation.value);
+  const lcm = Numbers.lcm(x.size(),y.size());
   switch (scale.value) {
     case Combiner.Apply:
       for (let i = 0; i < y.size(); i++) {    
@@ -222,10 +224,16 @@ const getResult = (x: Sequence, y: Sequence): Sequence => {
       }
       break;
     case Combiner.LCM:
-      const l = Numbers.lcm(x.size(),y.size());
-      for (let i = 0; i < l; i++) {    
+      for (let i = 0; i < lcm; i++) {    
         if (operationFn) {
-          o.add(operationFn(x.get(i/(l/x.size())>>0)!, y.get(i/(l/y.size())>>0)!));
+          o.add(operationFn(x.get(i/(lcm/x.size())>>0)!, y.get(i/(lcm/y.size())>>0)!));
+        }
+      }
+      break;
+    case Combiner.Recycle:
+      for (let i = 0; i < lcm; i++) {    
+        if (operationFn) {
+          o.add(operationFn(x.get(i%x.size())!, y.get(i%y.size())!));
         }
       }
       break;
