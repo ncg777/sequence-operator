@@ -154,6 +154,7 @@ enum Combiner {
   LCM = 'LCM',
   Apply = 'Apply',
   Reduce = 'Reduce',
+  MixedRadix = 'Mixed Radix'
 }
 
 // Initialize reactive variables
@@ -251,6 +252,41 @@ const getResult = (x: Sequence, y: Sequence): Sequence => {
         if (operationFn) {
             o.add(y.toArray().reduce((a,b) => operationFn(a,b),x.get(i)!));
         }
+      }
+      break;
+    case Combiner.MixedRadix:
+      // This array will collect each combination (each row is an array of digits)
+      const result: number[][] = [];
+      
+      // Initialize the current combination with zeros
+      const current: number[] = new Array(x.size()).fill(0);
+      
+      while (true) {
+        // Save a copy of the current state
+        result.push([...current]);
+        
+        // Check if current is the last possible combination (i.e., every digit is at its maximum)
+        if (current.every((value, i) => value === x.get(i)! - 1)) {
+          break;
+        }
+        
+        // Increment the mixed radix number.
+        // Loop through each digit until you can increment one; if it reaches the base, reset it to zero.
+        for (let i = 0; i < x.size(); i++) {
+          if (current[i] < x.get(i)! - 1) {
+            current[i]++;
+            break;
+          } else {
+            current[i] = 0;
+          }
+        }
+      }
+      
+      if(operationFn) {
+        const combined = result.map(row => 
+          row.map((value, index) => operationFn(value, y.get(index%y.size())!)).reduce((a,b) => a+b,0)
+        );
+        for(let z of combined) o.add(z);
       }
       break;
   }
