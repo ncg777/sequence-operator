@@ -2926,7 +2926,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sequence-operator@file:, sequence-operator@workspace:.":
+"sequence-operator@workspace:.":
   version: 0.0.0-use.local
   resolution: "sequence-operator@workspace:."
   dependencies:
@@ -2942,9 +2942,8 @@ __metadata:
     roboto-fontface: "npm:*"
     sass: "npm:1.77.8"
     sass-embedded: "npm:^1.77.8"
-    sequence-operator: "file:"
     typescript: "npm:~5.6.3"
-    ultra-mega-enumerator: "npm:^2025.2.23"
+    ultra-mega-enumerator: "npm:^2025.2.24"
     unplugin-fonts: "npm:^1.1.1"
     unplugin-vue-components: "npm:^0.27.2"
     vite: "npm:^5.4.10"
@@ -3213,13 +3212,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ultra-mega-enumerator@npm:^2025.2.23":
-  version: 2025.2.23
-  resolution: "ultra-mega-enumerator@npm:2025.2.23"
+"ultra-mega-enumerator@npm:^2025.2.24":
+  version: 2025.2.24
+  resolution: "ultra-mega-enumerator@npm:2025.2.24"
   dependencies:
     "@types/node": "npm:^22.5.1"
     yarn: "npm:^1.22.22"
-  checksum: 10c0/54dd5faa5ebbf3a9d99c46b09238125dcb3fb626a79fac97a545c506d686e324f01750fe00d2f0c9f5d46a032976df5da7e74b09617b727d7888edcc2f003e27
+  checksum: 10c0/833c27a114dccf93b4676aa8cb2e7e82ee1a73857824c2bb4bd84861bf10e7cedcaa58aa4741d97374abad56f78a1b5504d6ca63230cb441c643bbde2ee1fc30
   languageName: node
   linkType: hard
 

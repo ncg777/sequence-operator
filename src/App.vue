@@ -39,8 +39,8 @@
         <v-row>
           <v-col cols="12" md="6">
             <v-select
-              v-model="scale"
-              :items="scaleOptions"
+              v-model="combiner"
+              :items="combinerOptions"
               label="Combiner"
               outlined
               dense
@@ -107,205 +107,24 @@
 
 <script setup lang="ts">
 import { ref, computed  } from 'vue';
-import { Sequence } from 'ultra-mega-enumerator';
-import { Numbers } from 'ultra-mega-enumerator';
-
-// Define Operation Enum
-enum Operation {
-  Add = 'Add',
-  Subtract = 'Subtract',
-  Multiply = 'Multiply',
-  Divide = 'Divide',
-  X = 'X',
-  Y = 'Y',
-  Power = 'Power',
-  Log = 'Log',
-  Min = 'Min',
-  Max = 'Max',
-  Modulo = 'Modulo',
-  Bounce = 'Bounce',
-  And = 'And',
-  Nand = 'Nand',
-  Or = 'Or',
-  Nor = 'Nor',
-  Implication = 'Implication',
-  ReverseImplication = 'ReverseImplication',
-  Xor = 'Xor',
-  Xnor = 'Xnor',
-  ShiftLeft = 'ShiftLeft',
-  ShiftRight = 'ShiftRight',
-  LCM = 'LCM',
-  GCD = 'GCD',
-  Equal = 'Equal',
-  NotEqual = 'NotEqual',
-  LessThan = 'LessThan',
-  LessThanOrEqual = 'LessThanOrEqual',
-  GreaterThan = 'GreaterThan',
-  GreaterThanOrEqual = 'GreaterThanOrEqual',
-  Binomial = 'Binomial',
-  ExpandBits = 'ExpandBits',
-  ExpandBitsFill = 'ExpandBitsFill'
-}
-
-// Define Combiner Enum
-enum Combiner {
-  Product = 'Product',
-  Triangular = 'Triangular',
-  Recycle = 'Recycle',
-  LCM = 'LCM',
-  Apply = 'Apply',
-  Reduce = 'Reduce',
-  MixedRadix = 'Mixed Radix'
-}
+import { Combiner, Operation, Sequence } from 'ultra-mega-enumerator';
 
 // Initialize reactive variables
 const textX = ref<string>('');
 const textY = ref<string>('');
 const textResult = ref<string>('');
-const scale = ref<Combiner>(Combiner.Product);
+const combiner = ref<Combiner>(Combiner.Product);
 const operation = ref<Operation>(Operation.Add);
 
 // Define options for selects
-const scaleOptions = Object.values(Combiner);
+const combinerOptions = Object.values(Combiner);
 const operationOptions = Object.values(Operation);
 
-// Define operations map similar to the Java version
-const ops = new Map<Operation, (x: number, y: number) => number>([
-  [Operation.Add, (x, y) => x + y],
-  [Operation.Subtract, (x, y) => x - y],
-  [Operation.Multiply, (x, y) => x * y],
-  [Operation.Divide, (x, y) => y !== 0 ? Math.floor(x / y) : 0],
-  [Operation.X, (x, y) => x],
-  [Operation.Y, (x, y) => y],
-  [Operation.Power, (x, y) => Math.round(Math.pow(x, y))],
-  [Operation.Log, (x, y) => y > 1 && x > 0 ? Math.floor(Math.log(x) / Math.log(y)) : 0],
-  [Operation.Min, (x, y) => Math.min(x, y)],
-  [Operation.Max, (x, y) => Math.max(x, y)],
-  [Operation.Modulo, (x, y) => y !== 0 ? x % y : 0],
-  [Operation.Bounce, (x, y) => {
-    if (y === 0) return 0;
-    const mod = x % (2 * y);
-    return mod <= y ? mod : 2 * y - mod;
-  }],
-  [Operation.And, (x, y) => x & y],
-  [Operation.Nand, (x, y) => ~(x & y)],
-  [Operation.Or, (x, y) => x | y],
-  [Operation.Nor, (x, y) => ~(x | y)],
-  [Operation.Implication, (x, y) => (~x) | y],
-  [Operation.ReverseImplication, (x, y) => (~y) | x],
-  [Operation.Xor, (x, y) => x ^ y],
-  [Operation.Xnor, (x, y) => ~(x ^ y)],
-  [Operation.ShiftLeft, (x, y) => x << y],
-  [Operation.ShiftRight, (x, y) => x >> y],
-  [Operation.LCM, (x, y) => Numbers.lcm(x, y)],
-  [Operation.GCD, (x, y) => Numbers.gcd(x, y)],
-  [Operation.Equal, (x, y) => (x === y ? 1 : 0)],
-  [Operation.NotEqual, (x, y) => (x !== y ? 1 : 0)],
-  [Operation.LessThan, (x, y) => (x < y ? 1 : 0)],
-  [Operation.LessThanOrEqual, (x, y) => (x <= y ? 1 : 0)],
-  [Operation.GreaterThan, (x, y) => (x > y ? 1 : 0)],
-  [Operation.GreaterThanOrEqual, (x, y) => (x >= y ? 1 : 0)],
-  [Operation.Binomial, (x, y) => Numbers.binomial(x,y)],
-  [Operation.ExpandBits, (x, y) => Numbers.expandBits(x,y,'0')],
-  [Operation.ExpandBitsFill, (x, y) => Numbers.expandBits(x,y,'bit')],
-]);
-
-// Function to get the result sequence based on selected operation and scale
-const getResult = (x: Sequence, y: Sequence): Sequence => {
-  const o = new Sequence();
-  const operationFn = ops.get(operation.value);
-  const lcm = Numbers.lcm(x.size(),y.size());
-  switch (scale.value) {
-    case Combiner.Apply:
-      for (let i = 0; i < y.size(); i++) {    
-        if (operationFn) {
-          o.add(operationFn(x.get(y.get(i)! % x.size())!, y.get(i % y.size())!));
-        }
-      }
-      break;
-    case Combiner.LCM:
-      for (let i = 0; i < lcm; i++) {    
-        if (operationFn) {
-          o.add(operationFn(x.get(i/(lcm/x.size())>>0)!, y.get(i/(lcm/y.size())>>0)!));
-        }
-      }
-      break;
-    case Combiner.Recycle:
-      for (let i = 0; i < lcm; i++) {    
-        if (operationFn) {
-          o.add(operationFn(x.get(i%x.size())!, y.get(i%y.size())!));
-        }
-      }
-      break;
-    case Combiner.Product:
-      for (let i = 0; i < x.size(); i++) {
-        for (let j = 0; j < y.size(); j++) {   
-          if (operationFn) {
-            o.add(operationFn(x.get(i)!, y.get(j)!));
-          }
-      }
-      }
-      break;
-    case Combiner.Triangular:
-      for (let i = 0; i < x.size(); i++) {
-        for (let j = 0; j < y.size(); j++) {
-          if (j<=i && operationFn) {
-            o.add(operationFn(x.get(i)!, y.get(j)!));
-          }
-        }
-      }
-      break;
-    case Combiner.Reduce:
-      for (let i = 0; i < x.size(); i++) {
-        if (operationFn) {
-            o.add(y.toArray().reduce((a,b) => operationFn(a,b),x.get(i)!));
-        }
-      }
-      break;
-    case Combiner.MixedRadix:
-      // This array will collect each combination (each row is an array of digits)
-      const result: number[][] = [];
-      
-      // Initialize the current combination with zeros
-      const current: number[] = new Array(x.size()).fill(0);
-      
-      while (true) {
-        result.push([...current]);
-        
-        if (current.every((value, i) => Math.abs(value) === Math.abs(x.get(i)!) - 1)) {
-          break;
-        }
-        
-        for (let i = 0; i < x.size(); i++) {
-          if(x.get(i) === 0) break;
-          if (Math.abs(current[i]) < Math.abs(x.get(i)!) - 1) {
-            if(x.get(i)! < 0) current[i]--;
-            if(x.get(i)! > 0) current[i]++;
-            break;
-          } else {
-            current[i] = 0;
-          }
-        }
-      }
-      
-      if(operationFn) {
-        const combined = result.map(row => 
-          row.map((value, index) => operationFn(value, y.get(index%y.size())!)).reduce((a,b) => a+b,0)
-        );
-        for(let z of combined) o.add(z);
-      }
-      break;
-  }
-  return o;
-  
-};
 
 // Handler for Apply button
 const applyOperation = () => {
   try {
-    const xSequence = Sequence.parse(textX.value);
-    const ySequence = Sequence.parse(textY.value);
-    const resultSequence = getResult(xSequence, ySequence);
+    const resultSequence = Sequence.combine(combiner.value, operation.value, Sequence.parse(textX.value), Sequence.parse(textY.value));
     textResult.value = resultSequence.toString();
   } catch (error) {
     textResult.value = `Error: ${(error as Error).message}`;
@@ -366,8 +185,6 @@ const resultSize = computed(() => {
   }
 });
 </script>
-
-
 
 <style scoped>
 body, * {
