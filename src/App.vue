@@ -138,28 +138,16 @@ const wordSize = ref<number>(8);
 const combinerOptions = Object.values(Combiner);
 const operationOptions = Object.values(Operation);
 
-// Helper functions for HEX mode
-function parseHexToSigned(hex: string, wordSize: number): number {
-  const maxUnsigned = BigInt(1) << BigInt(wordSize);
-  const half = BigInt(1) << (BigInt(wordSize) - 1n);
-  let num = BigInt(`0x${hex}`);
-  num &= (maxUnsigned - 1n); // Take least significant bits
-  if (num >= half) {
-    num -= maxUnsigned; // Convert to signed
-  }
-  return Number(num);
-}
-
 function parseHexSequence(text: string, wordSize: number): number[] {
   const hexStrings = text.split(/\s+/).filter(s => s !== '');
-  return hexStrings.map(hex => parseHexToSigned(hex, wordSize));
+  return hexStrings.map(hex => parseInt(hex, 16));
 }
 
 function formatNumberAsHex(num: number, wordSize: number): string {
   const digits = wordSize / 4;
-  const maxUnsigned = BigInt(1) << BigInt(wordSize);
+  const maxUnsigned = 1 << wordSize;
   // Wrap around using modulo and ensure positive range
-  let unsignedNum = (BigInt(num) % maxUnsigned + maxUnsigned) % maxUnsigned;
+  let unsignedNum = num % maxUnsigned;
   let hex = unsignedNum.toString(16).toUpperCase();
   return hex.padStart(digits, '0');
 }
@@ -212,14 +200,8 @@ const pasteToY = () => {
 };
 
 const validateKeypress = (event: { key: string; preventDefault: () => void; }) => {
-  if (hexMode.value) {
-    if (!/[0-9a-fA-F\s]/.test(event.key)) {
-      event.preventDefault();
-    }
-  } else {
-    if (!/[0-9\s-]/.test(event.key)) {
-      event.preventDefault();
-    }
+  if (!/[0-9\s-]/.test(event.key)) {
+    event.preventDefault();
   }
 };
 
