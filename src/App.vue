@@ -1,17 +1,17 @@
 <template>
   <v-app>
     <v-main>
-      <v-responsive class="align-center mx-auto pa-4" max-width="900">
+      <v-responsive class="align-center mx-auto pa-5" max-width="900">
         <h1 class="banner">
           Sequence Operator
         </h1>
         
         <!-- HEX Mode and Word Size Controls -->
         <v-row>
-          <v-col cols="6">
+          <v-col cols="6" class="pa-1">
             <v-switch v-model="hexMode" label="HEX Mode"></v-switch>
           </v-col>
-          <v-col cols="6">
+          <v-col cols="6" class="pa-1">
             <v-select
               v-model="wordSize"
               :items="[4,8,12,16,20,24,28,32]"
@@ -24,14 +24,14 @@
         </v-row>
         
         <v-row>
-          <v-col cols="12" md="12" :style="'position:absolute;text-align:right; padding-right:0; margin-right:0;'">
+          <v-col cols="12" md="12" class="px-4" :style="'position:absolute;text-align:right; padding-right:0; margin-right:0;'">
             <v-btn @click="swapXY" icon :style="'z-index:9999'">
               <v-icon>mdi-swap-horizontal</v-icon>
             </v-btn>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" md="6">
+          <v-col cols="12" md="6" class="pa-1">
             <v-text-field
               v-model="textX"
               :label="`x (${xSize})`"
@@ -41,7 +41,7 @@
               @keypress="validateKeypress"
             ></v-text-field>
           </v-col>
-          <v-col cols="12" md="6">
+          <v-col cols="12" md="6" class="pa-1">
             <v-text-field
               v-model="textY"
               :label="`y (${ySize})`"
@@ -54,7 +54,7 @@
         </v-row>
         
         <v-row>
-          <v-col cols="12" md="6">
+          <v-col cols="12" md="6" class="pa-1">
             <v-select
               v-model="combiner"
               :items="combinerOptions"
@@ -63,7 +63,7 @@
               dense
             ></v-select>
           </v-col>
-          <v-col cols="12" md="6">
+          <v-col cols="12" md="6" class="pa-1">
             <v-select
               v-model="operation"
               :items="operationOptions"
@@ -75,21 +75,21 @@
         </v-row>
 
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" class="pa-1">
             <v-btn color="primary" @click="applyOperation" block>
               Apply
             </v-btn>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" md="12" :style="'position:absolute;text-align:right;padding-right:0;'">
+          <v-col cols="12" md="12" class="px-4" :style="'position:absolute;text-align:right;padding-right:0;'">
             <v-btn icon @click="copyResultToClipboard" style="z-index: 9999;">
               <v-icon left>mdi-clipboard</v-icon>
             </v-btn>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" md="12">
+          <v-col cols="12" md="12" class="pa-1">
             <v-text-field
               v-model="textResult"
               :label="`Result (${resultSize})`"
@@ -101,18 +101,18 @@
         </v-row>
         
         <v-row>
-          <v-col cols="6" md="6">
+          <v-col cols="6" md="6" class="pa-1">
             <v-btn color="secondary" @click="setXFromResult" block>Set X</v-btn>
           </v-col>
-          <v-col cols="6" md="6">
+          <v-col cols="6" md="6" class="pa-1">
             <v-btn color="secondary" @click="setYFromResult" block>Set Y</v-btn>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="6" md="6">
+          <v-col cols="6" md="6" class="pa-1">
             <v-btn color="secondary" @click="pasteToX" block>Paste to X</v-btn>
           </v-col>
-          <v-col cols="6" md="6">
+          <v-col cols="6" md="6" class="pa-1">
             <v-btn color="secondary" @click="pasteToY" block>Paste to Y</v-btn>
           </v-col>
         </v-row>
@@ -248,9 +248,11 @@ const resultSize = computed(() => {
 body, * {
   color: #00aa00;
   background-color: #000000;
+  padding:0;
 }
 .banner {
   text-align: center;
-  padding: 0.5em;
+  padding-bottom: 0.5em;
+  padding-top:0;
 }
 </style>
