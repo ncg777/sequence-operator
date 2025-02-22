@@ -25,7 +25,7 @@
         
         <v-row>
           <v-col cols="12" md="12" class="px-4" :style="'position:absolute;text-align:right; padding-right:0; margin-right:0;'">
-            <v-btn @click="swapXY" icon :style="'z-index:999'" :size="isMobile ? 'x-small' : 'small'">
+            <v-btn @click="swapXY" icon :style="'z-index:999'" :size="isMobile ? 'small' : 'medium'" class="pa-1">
               <v-icon>mdi-swap-horizontal</v-icon>
             </v-btn>
           </v-col>
@@ -98,11 +98,11 @@
         </v-row>
         <v-row>
           <v-col cols="12" md="12" class="px-4" :style="'position:absolute;text-align:right;padding-right:0;'">
-            <v-btn icon @click="copyResultToClipboard" style="z-index: 999;" :size="isMobile ? 'x-small' : 'small'">
+            <v-btn icon @click="copyResultToClipboard" style="z-index: 999;" :size="isMobile ? 'small' : 'medium'" class="pa-1">
               <v-icon left>mdi-clipboard</v-icon>
             </v-btn>
-            <v-btn icon @click="showMemoryDialog = true" left style="z-index: 999;" :size="isMobile ? 'x-small' : 'small'">M</v-btn>
-            <v-btn icon @click="memorizeResult" left style="z-index: 999;" :size="isMobile ? 'x-small' : 'small'">M+</v-btn>
+            <v-btn icon @click="showMemoryDialog = true" left style="z-index: 999;" :size="isMobile ? 'small' : 'medium'" class="pa-1"><v-icon left>mdi-memory</v-icon></v-btn>
+            <v-btn icon @click="memorizeResult" left style="z-index: 999;" :size="isMobile ? 'small' : 'medium'" class="pa-1"><v-icon left>mdi-content-save</v-icon></v-btn>
           </v-col>
         </v-row>
         <v-row>
@@ -119,56 +119,55 @@
         <!-- Memory Dialog -->
         <v-dialog v-model="showMemoryDialog" max-width="800" class="pa-1" scrollable>
           <v-card>
-            <v-card-title>Memory</v-card-title>
-            <v-card-actions>
-              <v-btn @click="promptSequence">+ Add Sequence</v-btn>
-              <v-spacer></v-spacer>
-              <v-btn @click="showMemoryDialog = false">Close</v-btn>
-            </v-card-actions>
-            <v-card-text>
-            <v-list class="pa-0">
-              <v-list-item
-                v-for="(seq, index) in memoryList"
-                :key="index"
-                :class="{'pa-0': true}"
-              >
+            <v-card-title><span><v-icon left>mdi-memory</v-icon>Memory</span>
+              <v-btn @click="showMemoryDialog = false" icon :style="'float:right;text-align:right;'"><v-icon>mdi-window-close</v-icon></v-btn>
+            </v-card-title>
+            <v-card-text>              
+              <v-list class="pa-0">
+                <v-list-item
+                  v-for="(seq, index) in memoryList"
+                  :key="index"
+                  :class="{'pa-0': true}"
+                >
 
-              <v-row>
-                <v-col cols="12" md="12" class="px-0" :style="'position:absolute;text-align:right; padding-right:0; margin-right:0;'">
-                  <v-btn
-                      icon
-                      :size="isMobile ? 'x-small' : 'small'"
-                      :style="'z-index:999'"
-                      @click="recall(index)"
-                    >
-                      <v-icon>mdi-arrow-down</v-icon>
-                    </v-btn>
-                    
-                    <v-btn
-                      icon
-                      :size="isMobile ? 'x-small' : 'small'"
-                      :style="'z-index:999'"
-                      @click="deleteSequence(index)"
-                    >
-                      <v-icon>mdi-delete</v-icon>
-                    </v-btn>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" md="12" class="pa-1">
-                  <v-text-field
-                      v-model="memoryList[index]"
-                      outlined
-                      dense
-                      :label="`M[${index}] (${memSize(index)})`"
-                      :placeholder="hexMode ? '0A 1B 2C...' : '0 1 2...'"
-                    ></v-text-field>
-                </v-col>
-              </v-row>
-              </v-list-item>
-            </v-list>
+                  <v-row>
+                    <v-col cols="12" md="12" class="px-0" :style="'position:absolute;text-align:right; padding-right:0; margin-right:0;'">
+                      <v-btn
+                          icon
+                          :size="isMobile ? 'small' : 'medium'"
+                          :style="'z-index:999'"
+                          @click="recall(index)"
+                        >
+                          <v-icon>mdi-arrow-down</v-icon>
+                        </v-btn>
+                        
+                        <v-btn
+                          icon
+                          :size="isMobile ? 'small' : 'medium'"
+                          :style="'z-index:999'"
+                          @click="deleteSequence(index)"
+                        >
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" md="12" class="pa-1">
+                      <v-text-field
+                          v-model="memoryList[index]"
+                          outlined
+                          dense
+                          :label="`M[${index}] (${memSize(index)})`"
+                          :placeholder="hexMode ? '0A 1B 2C...' : '0 1 2...'"
+                        ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-list-item>
+              </v-list>
           </v-card-text>
-          
+          <v-card-actions>
+            <v-btn @click="promptSequence" icon><v-icon>mdi-plus</v-icon></v-btn>
+          </v-card-actions>
           </v-card>
         </v-dialog>
       </v-responsive>
