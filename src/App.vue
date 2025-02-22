@@ -188,7 +188,7 @@ const textResult = ref<string>('');
 const combiner = ref<Combiner>(Combiner.Product);
 const operation = ref<Operation>(Operation.Add);
 const hexMode = ref<boolean>(false);
-const wordSize = ref<number>(8);
+const wordSize = ref<number>(16);
 
 // Initialize reactive variables
 const showMemoryDialog = ref(false);
@@ -200,20 +200,27 @@ const operationOptions = Object.values(Operation);
 
 const { mobile } = useDisplay();
 const isMobile = computed(() => mobile.value);
-
-watch(hexMode, (newHexMode) => {
+const updateSequences = (hexMode:boolean) => {
   const convert = (text: string, toHex: boolean) => {
     if (!text.trim()) return text;
     const numbers = text.split(/\s+/).map(num => (toHex ? formatNumberAsHex(parseInt(num, 10), wordSize.value) : parseInt(num, 16).toString()));
     return numbers.join(' ');
   };
 
-  textX.value = convert(textX.value, newHexMode);
-  textY.value = convert(textY.value, newHexMode);
-  textResult.value = convert(textResult.value, newHexMode);
-  for(let i=0;i<memoryList.value.length;i++) memoryList.value[i]=convert(memoryList.value[i], newHexMode)
-  localStorage.setItem('SEQOP_hexMode', JSON.stringify(newHexMode));
+  textX.value = convert(textX.value, hexMode);
+  textY.value = convert(textY.value, hexMode);
+  textResult.value = convert(textResult.value, hexMode);
+  for(let i=0;i<memoryList.value.length;i++) memoryList.value[i]=convert(memoryList.value[i], hexMode)
+  localStorage.setItem('SEQOP_hexMode', JSON.stringify(hexMode));
+}
+watch(hexMode, (newHexMode) => {
+  updateSequences(newHexMode);
 });
+
+watch(wordSize, (newWordSize) => {
+  updateSequences(hexMode.value);
+});
+
 function parseHexSequence(text: string, wordSize: number): number[] {
   const hexStrings = text.split(/\s+/).filter(s => s !== '');
   return hexStrings.map(hex => parseInt(hex, 16));
