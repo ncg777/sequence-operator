@@ -122,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Combiner, Operation, Sequence } from 'ultra-mega-enumerator';
 
 // Initialize reactive variables
@@ -137,7 +137,17 @@ const wordSize = ref<number>(8);
 // Define options for selects
 const combinerOptions = Object.values(Combiner);
 const operationOptions = Object.values(Operation);
+watch(hexMode, (newHexMode) => {
+  const convert = (text: string, toHex: boolean) => {
+    if (!text.trim()) return text;
+    const numbers = text.split(/\s+/).map(num => (toHex ? formatNumberAsHex(parseInt(num, 10), wordSize.value) : parseInt(num, 16).toString()));
+    return numbers.join(' ');
+  };
 
+  textX.value = convert(textX.value, newHexMode);
+  textY.value = convert(textY.value, newHexMode);
+  textResult.value = convert(textResult.value, newHexMode);
+});
 function parseHexSequence(text: string, wordSize: number): number[] {
   const hexStrings = text.split(/\s+/).filter(s => s !== '');
   return hexStrings.map(hex => parseInt(hex, 16));
@@ -200,7 +210,10 @@ const pasteToY = () => {
 };
 
 const validateKeypress = (event: { key: string; preventDefault: () => void; }) => {
-  if (!/[0-9\s-]/.test(event.key)) {
+  if (!hexMode.value && !/[0-9\s-]/.test(event.key)) {
+    event.preventDefault();
+  }
+  if (hexMode.value && !/[A-Fa-f0-9\s-]/.test(event.key)) {
     event.preventDefault();
   }
 };
