@@ -125,6 +125,11 @@
         <v-dialog v-model="showMemoryDialog" max-width="800" scrollable>
           <v-card>
             <v-card-title>Memory</v-card-title>
+            <v-card-actions>
+            <v-btn @click="addSequence">+ Add Sequence</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn @click="showMemoryDialog = false">Close</v-btn>
+          </v-card-actions>
             <v-card-text>
             <v-list class="pa-0">
               <v-list-item
@@ -187,11 +192,7 @@
               </v-list-item>
             </v-list>
           </v-card-text>
-          <v-card-actions>
-            <v-btn @click="addSequence">+ Add Sequence</v-btn>
-            <v-spacer></v-spacer>
-            <v-btn @click="showMemoryDialog = false">Close</v-btn>
-          </v-card-actions>
+          
           </v-card>
         </v-dialog>
       </v-responsive>
