@@ -84,16 +84,16 @@
 
         <v-row>
           <v-col cols="3" md="3" class="pa-1">
-            <v-btn color="secondary" @click="assignToXNow" block>X:=</v-btn>
+            <v-btn color="secondary" @click="assignToX" block>X:=</v-btn>
           </v-col>
           <v-col cols="3" md="3" class="pa-1">
-            <v-btn color="secondary" @click="pasteToXNow" block>X+=</v-btn>
+            <v-btn color="secondary" @click="pasteToX" block>X+=</v-btn>
           </v-col>
           <v-col cols="3" md="3" class="pa-1">
-            <v-btn color="secondary" @click="assignToYNow" block>Y:=</v-btn>
+            <v-btn color="secondary" @click="assignToY" block>Y:=</v-btn>
           </v-col>
           <v-col cols="3" md="3" class="pa-1">
-            <v-btn color="secondary" @click="pasteToYNow" block>Y+=</v-btn>
+            <v-btn color="secondary" @click="pasteToY" block>Y+=</v-btn>
           </v-col>
         </v-row>
         <v-row>
@@ -101,6 +101,8 @@
             <v-btn icon @click="copyResultToClipboard" style="z-index: 999;" :size="isMobile ? 'x-small' : 'small'">
               <v-icon left>mdi-clipboard</v-icon>
             </v-btn>
+            <v-btn icon @click="showMemoryDialog = true" left style="z-index: 999;" :size="isMobile ? 'x-small' : 'small'">M</v-btn>
+            <v-btn icon @click="memorizeResult" left style="z-index: 999;" :size="isMobile ? 'x-small' : 'small'">M+</v-btn>
           </v-col>
         </v-row>
         <v-row>
@@ -114,22 +116,15 @@
             ></v-text-field>
           </v-col>
         </v-row>
-        <!-- Memory Button -->
-        <v-row>
-          <v-col cols="12" class="pa-1">
-            <v-btn @click="showMemoryDialog = true" block>Memory</v-btn>
-          </v-col>
-        </v-row>
-
         <!-- Memory Dialog -->
-        <v-dialog v-model="showMemoryDialog" max-width="800" scrollable>
+        <v-dialog v-model="showMemoryDialog" max-width="800" class="pa-1" scrollable>
           <v-card>
             <v-card-title>Memory</v-card-title>
             <v-card-actions>
-            <v-btn @click="addSequence">+ Add Sequence</v-btn>
-            <v-spacer></v-spacer>
-            <v-btn @click="showMemoryDialog = false">Close</v-btn>
-          </v-card-actions>
+              <v-btn @click="promptSequence">+ Add Sequence</v-btn>
+              <v-spacer></v-spacer>
+              <v-btn @click="showMemoryDialog = false">Close</v-btn>
+            </v-card-actions>
             <v-card-text>
             <v-list class="pa-0">
               <v-list-item
@@ -137,58 +132,39 @@
                 :key="index"
                 :class="{'pa-0': true}"
               >
-                <v-row
-                  :class="{'flex-column': isMobile, 'align-center': true, 'pa-0': true}"
-                  :no-gutters="isMobile"
-                >
-                  <!-- Sequence Textbox -->
-                  <v-col :cols="isMobile ? 12 : 8">
-                    <v-text-field
-                      v-model="memoryList[index]"
-                      outlined
-                      dense
-                      :placeholder="hexMode ? '0A 1B 2C...' : '0 1 2...'"
-                    ></v-text-field>
-                  </v-col>
-                  <!-- Buttons -->
-                  <v-col
-                    :cols="isMobile ? 12 : 4"
-                    class="d-flex flex-wrap justify-end"
-                  >
-                    <v-btn
+
+              <v-row>
+                <v-col cols="12" md="12" class="px-0" :style="'position:absolute;text-align:right; padding-right:0; margin-right:0;'">
+                  <v-btn
+                      icon
                       :size="isMobile ? 'x-small' : 'small'"
-                      @click="assignToX(index)"
+                      :style="'z-index:999'"
+                      @click="recall(index)"
                     >
-                      X:=
+                      <v-icon>mdi-arrow-down</v-icon>
                     </v-btn>
-                    <v-btn
-                      :size="isMobile ? 'x-small' : 'small'"
-                      @click="pasteToX(index)"
-                    >
-                      X+=
-                    </v-btn>
-                    <v-btn
-                      :size="isMobile ? 'x-small' : 'small'"
-                      @click="assignToY(index)"
-                    >
-                      Y:=
-                    </v-btn>
-                    <v-btn
-                      :size="isMobile ? 'x-small' : 'small'"
-                      @click="pasteToY(index)"
-                    >
-                      Y+=
-                    </v-btn>
+                    
                     <v-btn
                       icon
-                      :size="isMobile ? 'xx-small' : 'x-small'"
-                      :style="'display:inline;'"
+                      :size="isMobile ? 'x-small' : 'small'"
+                      :style="'z-index:999'"
                       @click="deleteSequence(index)"
                     >
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
-                  </v-col>
-                </v-row>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" md="12" class="pa-1">
+                  <v-text-field
+                      v-model="memoryList[index]"
+                      outlined
+                      dense
+                      :label="`M[${index}] (${memSize(index)})`"
+                      :placeholder="hexMode ? '0A 1B 2C...' : '0 1 2...'"
+                    ></v-text-field>
+                </v-col>
+              </v-row>
               </v-list-item>
             </v-list>
           </v-card-text>
@@ -221,11 +197,8 @@ const memoryList = ref<string[]>([]);
 const combinerOptions = Object.values(Combiner);
 const operationOptions = Object.values(Operation);
 
-
 const { mobile } = useDisplay();
 const isMobile = computed(() => mobile.value);
-
-
 
 watch(hexMode, (newHexMode) => {
   const convert = (text: string, toHex: boolean) => {
@@ -237,6 +210,8 @@ watch(hexMode, (newHexMode) => {
   textX.value = convert(textX.value, newHexMode);
   textY.value = convert(textY.value, newHexMode);
   textResult.value = convert(textResult.value, newHexMode);
+  for(let i=0;i<memoryList.value.length;i++) memoryList.value[i]=convert(memoryList.value[i], newHexMode)
+  localStorage.setItem('SEQOP_hexMode', JSON.stringify(newHexMode));
 });
 function parseHexSequence(text: string, wordSize: number): number[] {
   const hexStrings = text.split(/\s+/).filter(s => s !== '');
@@ -300,22 +275,24 @@ const applyOperation = () => {
 const copyResultToClipboard = () => {
   navigator.clipboard.writeText(textResult.value);
 };
-
+const memorizeResult = () => {
+  addSequence(textResult.value);
+};
 // Handlers for Set X and Set Y buttons
-const assignToXNow = () => {
+const assignToX = () => {
   textX.value = textResult.value;
 };
 
-const assignToYNow = () => {
+const assignToY = () => {
   textY.value = textResult.value;
 };
 
-const pasteToXNow = () => {
-  textX.value = textX.value.split(' ').concat(textResult.value.split(' ')).join(' ');
+const pasteToX = () => {
+  textX.value = formatSequence(getAsNumbers(textX.value).concat(getAsNumbers(textResult.value)));
 };
 
-const pasteToYNow = () => {
-  textY.value = textY.value.split(' ').concat(textResult.value.split(' ')).join(' ');
+const pasteToY = () => {
+  textY.value = formatSequence(getAsNumbers(textY.value).concat(getAsNumbers(textResult.value)));
 };
 const validateKeypress = (event: { key: string; preventDefault: () => void; }) => {
   if (!hexMode.value && !/[0-9\s-]/.test(event.key)) {
@@ -335,7 +312,9 @@ const xSize = computed(() => {
   const parts = textX.value.split(/\s+/).filter(s => s !== '');
   return parts.length;
 });
-
+const memSize = (i:number) => {
+  return getAsNumbers(memoryList.value[i]).length;
+};
 const ySize = computed(() => {
   const parts = textY.value.split(/\s+/).filter(s => s !== '');
   return parts.length;
@@ -347,49 +326,53 @@ const resultSize = computed(() => {
 });
 
 // Load memory from local storage
-const loadMemory = () => {
+const loadFromStorage = () => {
   try {
-    const stored = localStorage.getItem('memoryList');
-    if (stored) {
-      memoryList.value = JSON.parse(stored);
+    const storedMEM = localStorage.getItem('SEQOP_memoryList');
+    if (storedMEM) {
+      memoryList.value = JSON.parse(storedMEM);
     }
   } catch (error) {
     console.error('Failed to load memory from local storage:', error);
     memoryList.value = [];
   }
+  try {
+    const storedHEX = localStorage.getItem('SEQOP_hexMode');
+    if (storedHEX) {
+      hexMode.value = JSON.parse(storedHEX);
+    }
+  } catch (error) {
+    console.error('Failed to load memory from local storage:', error);
+    hexMode.value = false;
+  }
 };
-loadMemory();
+loadFromStorage();
 
 // Watch memoryList and save to local storage
 watch(memoryList, (newList) => {
-  localStorage.setItem('memoryList', JSON.stringify(newList));
+  localStorage.setItem('SEQOP_memoryList', JSON.stringify(newList));
 }, { deep: true });
 
 // Memory operations
-const assignToX = (index: number) => {
-  textX.value = memoryList.value[index];
+const recall = (index: number) => {
+  textResult.value = memoryList.value[index];
+  showMemoryDialog.value = false;
 };
 
-const assignToY = (index: number) => {
-  textY.value = memoryList.value[index];
-};
-
-const pasteToX = (index: number) => {
-  textX.value = formatSequence(getAsNumbers(textX.value).concat(getAsNumbers(memoryList.value[index])));
-};
-
-const pasteToY = (index: number) => {
-  textY.value = formatSequence(getAsNumbers(textY.value).concat(getAsNumbers(memoryList.value[index])));
-};
 
 const deleteSequence = (index: number) => {
   memoryList.value.splice(index, 1);
 };
 
-const addSequence = () => {
+const promptSequence = () => {
   const newSeq = prompt('Enter new sequence:');
   if (newSeq) {
-    memoryList.value.push(newSeq);
+    memoryList.value.push(formatSequence(getAsNumbers(newSeq)));
+  }
+};
+const addSequence = (seq:string) => {
+  if (seq) {
+    memoryList.value.push(formatSequence(getAsNumbers(seq)));
   }
 };
 </script>
