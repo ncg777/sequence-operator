@@ -137,6 +137,7 @@
                           :size="isMobile ? 'small' : 'medium'"
                           :style="'z-index:999'"
                           @click="recall(index)"
+                          class="pa-1"
                         >
                           <v-icon>mdi-arrow-down</v-icon>
                         </v-btn>
@@ -145,6 +146,7 @@
                           icon
                           :size="isMobile ? 'small' : 'medium'"
                           :style="'z-index:999'"
+                          class="pa-1"
                           @click="deleteSequence(index)"
                         >
                           <v-icon>mdi-delete</v-icon>
