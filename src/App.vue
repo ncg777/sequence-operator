@@ -202,7 +202,7 @@ const memoryList = ref<string[]>([]);
 // Define options for selects
 const combinerOptions = Object.values(Combiner);
 const operationOptions = Object.values(Operation);
-
+const firstLoad = ref(true);
 const { mobile } = useDisplay();
 const isMobile = computed(() => mobile.value);
 const updateSequences = (newSys:number, oldSys:number, wordSize:number) => {
@@ -218,15 +218,20 @@ const updateSequences = (newSys:number, oldSys:number, wordSize:number) => {
   textY.value = convert(textY.value, newSys,oldSys,wordSize);
   textResult.value = convert(textResult.value, newSys,oldSys,wordSize);
   for(let i=0;i<memoryList.value.length;i++) memoryList.value[i]=convert(memoryList.value[i], newSys,oldSys,wordSize)
-  localStorage.setItem('SEQOP_sys', JSON.stringify(newSys));
-  localStorage.setItem('SEQOP_wordSize', JSON.stringify(wordSize));
 }
 watch(selectedNumberSystem, (newSys, oldSys) => {
+  if (firstLoad.value) {
+    firstLoad.value = false;
+    return;
+  }
   updateSequences(newSys,oldSys,wordSize.value);
+  localStorage.setItem('SEQOP_sys', JSON.stringify(newSys));
   wordSize.value = newSys == 8? 12 : newSys == 16 ? 16 : -1;
 });
 
 watch(wordSize, (newWordSize) => {
+  
+  localStorage.setItem('SEQOP_wordsize', JSON.stringify(newWordSize));
   updateSequences(selectedNumberSystem.value, selectedNumberSystem.value, newWordSize);
 });
 
@@ -352,29 +357,43 @@ const loadFromStorage = () => {
   } catch (error) {
     memoryList.value = [];
   }
+
+  // Load wordSize first
+  let storedWS = null;
   try {
-    const storedSys = localStorage.getItem('SEQOP_sys');
-    if (storedSys) {
-      selectedNumberSystem.value = JSON.parse(storedSys);
+    const storedWSRaw = localStorage.getItem('SEQOP_wordsize');
+    if (storedWSRaw) {
+      storedWS = JSON.parse(storedWSRaw);
+      wordSize.value = storedWS;
+    }
+  } catch (error) {
+    storedWS = null;
+  }
+
+  // Now load selectedNumberSystem
+  try {
+    const storedSysRaw = localStorage.getItem('SEQOP_sys');
+    if (storedSysRaw) {
+      selectedNumberSystem.value = JSON.parse(storedSysRaw);
+    } else {
+      selectedNumberSystem.value = 10;
     }
   } catch (error) {
     selectedNumberSystem.value = 10;
   }
-  try {
-    const storedWS = localStorage.getItem('SEQOP_wordSize');
-    if (storedWS) {
-      wordSize.value = JSON.parse(storedWS);
-    }
-  } catch (error) {
+
+  // If wordSize wasn't loaded, set default based on selectedNumberSystem
+  if (storedWS === null) {
     switch(selectedNumberSystem.value) {
       case 16:
-        wordSize.value=16;
+        wordSize.value = 16;
         break;
       case 8:
-        wordSize.value=8
+        wordSize.value = 12;
         break;
       case 10:
-        wordSize.value=-1;
+        wordSize.value = -1;
+        break;
     }
   }
 };
