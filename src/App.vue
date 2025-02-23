@@ -200,10 +200,10 @@ const operationOptions = Object.values(Operation);
 
 const { mobile } = useDisplay();
 const isMobile = computed(() => mobile.value);
-const updateSequences = (hexMode:boolean) => {
+const updateSequences = (hexMode:boolean, wordSize:number) => {
   const convert = (text: string, toHex: boolean) => {
     if (!text.trim()) return text;
-    const numbers = text.split(/\s+/).map(num => (toHex ? formatNumberAsHex(parseInt(num, 10), wordSize.value) : parseInt(num, 16).toString()));
+    const numbers = text.split(/\s+/).map(num => (toHex ? formatNumberAsHex(parseInt(num, 10), wordSize) : parseInt(num, 16).toString()));
     return numbers.join(' ');
   };
 
@@ -212,13 +212,14 @@ const updateSequences = (hexMode:boolean) => {
   textResult.value = convert(textResult.value, hexMode);
   for(let i=0;i<memoryList.value.length;i++) memoryList.value[i]=convert(memoryList.value[i], hexMode)
   localStorage.setItem('SEQOP_hexMode', JSON.stringify(hexMode));
+  localStorage.setItem('SEQOP_wordSize', JSON.stringify(wordSize));
 }
 watch(hexMode, (newHexMode) => {
-  updateSequences(newHexMode);
+  updateSequences(newHexMode,wordSize.value);
 });
 
 watch(wordSize, (newWordSize) => {
-  updateSequences(hexMode.value);
+  updateSequences(hexMode.value, newWordSize);
 });
 
 function parseHexSequence(text: string, wordSize: number): number[] {
@@ -341,7 +342,6 @@ const loadFromStorage = () => {
       memoryList.value = JSON.parse(storedMEM);
     }
   } catch (error) {
-    console.error('Failed to load memory from local storage:', error);
     memoryList.value = [];
   }
   try {
@@ -350,7 +350,14 @@ const loadFromStorage = () => {
       hexMode.value = JSON.parse(storedHEX);
     }
   } catch (error) {
-    console.error('Failed to load memory from local storage:', error);
+    hexMode.value = false;
+  }
+  try {
+    const storedWS = localStorage.getItem('SEQOP_wordSize');
+    if (storedWS) {
+      wordSize.value = JSON.parse(storedWS);
+    }
+  } catch (error) {
     hexMode.value = false;
   }
 };
