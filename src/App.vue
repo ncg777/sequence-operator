@@ -6,19 +6,23 @@
           Sequence Operator
         </h1>
         
-        <!-- HEX Mode and Word Size Controls -->
         <v-row>
           <v-col cols="6" class="pa-1">
-            <v-switch v-model="hexMode" label="HEX Mode"></v-switch>
+            <v-select
+            v-model="selectedNumberSystem"
+            :items="[8,10,16]"
+            label="Base"
+          ></v-select>
           </v-col>
           <v-col cols="6" class="pa-1">
             <v-select
+              v-if="selectedNumberSystem!=10"
               v-model="wordSize"
-              :items="[4,8,12,16,20,24,28,32]"
+              :items="getWordSizes(selectedNumberSystem)"
               label="Word Size (bits)"
               outlined
               dense
-              :disabled="!hexMode"
+              :disabled="!selectedNumberSystem"
             ></v-select>
           </v-col>
         </v-row>
@@ -160,7 +164,7 @@
                           outlined
                           dense
                           :label="`M[${index}] (${memSize(index)})`"
-                          :placeholder="hexMode ? '0A 1B 2C...' : '0 1 2...'"
+                          :placeholder="selectedNumberSystem ? '0A 1B 2C...' : '0 1 2...'"
                         ></v-text-field>
                     </v-col>
                   </v-row>
@@ -181,13 +185,14 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { Combiner, Operation, Sequence } from 'ultra-mega-enumerator';
 import { useDisplay } from 'vuetify'
+import { sys } from 'typescript';
 // Initialize reactive variables
 const textX = ref<string>('');
 const textY = ref<string>('');
 const textResult = ref<string>('');
 const combiner = ref<Combiner>(Combiner.Product);
 const operation = ref<Operation>(Operation.Add);
-const hexMode = ref<boolean>(false);
+const selectedNumberSystem = ref<number>(10);
 const wordSize = ref<number>(16);
 
 // Initialize reactive variables
@@ -200,56 +205,59 @@ const operationOptions = Object.values(Operation);
 
 const { mobile } = useDisplay();
 const isMobile = computed(() => mobile.value);
-const updateSequences = (hexMode:boolean, wordSize:number) => {
-  const convert = (text: string, toHex: boolean) => {
+const updateSequences = (newSys:number, oldSys:number, wordSize:number) => {
+  const convert = (text: string, newSys:number, oldSys:number, wordSize:number) => {
     if (!text.trim()) return text;
-    const numbers = text.split(/\s+/).map(num => (toHex ? formatNumberAsHex(parseInt(num, 10), wordSize) : parseInt(num, 16).toString()));
+    const numbers = text.split(/\s+/).map(num => 
+      (newSys==16 ? formatNumber(parseInt(num, oldSys),newSys, wordSize) : 
+        (newSys==8 ? formatNumber(parseInt(num, oldSys),newSys, wordSize) : parseInt(num, oldSys).toString())));
     return numbers.join(' ');
   };
 
-  textX.value = convert(textX.value, hexMode);
-  textY.value = convert(textY.value, hexMode);
-  textResult.value = convert(textResult.value, hexMode);
-  for(let i=0;i<memoryList.value.length;i++) memoryList.value[i]=convert(memoryList.value[i], hexMode)
-  localStorage.setItem('SEQOP_hexMode', JSON.stringify(hexMode));
+  textX.value = convert(textX.value, newSys,oldSys,wordSize);
+  textY.value = convert(textY.value, newSys,oldSys,wordSize);
+  textResult.value = convert(textResult.value, newSys,oldSys,wordSize);
+  for(let i=0;i<memoryList.value.length;i++) memoryList.value[i]=convert(memoryList.value[i], newSys,oldSys,wordSize)
+  localStorage.setItem('SEQOP_sys', JSON.stringify(newSys));
   localStorage.setItem('SEQOP_wordSize', JSON.stringify(wordSize));
 }
-watch(hexMode, (newHexMode) => {
-  updateSequences(newHexMode,wordSize.value);
+watch(selectedNumberSystem, (newSys, oldSys) => {
+  updateSequences(newSys,oldSys,wordSize.value);
+  wordSize.value = newSys == 8? 12 : newSys == 16 ? 16 : -1;
 });
 
 watch(wordSize, (newWordSize) => {
-  updateSequences(hexMode.value, newWordSize);
+  updateSequences(selectedNumberSystem.value, selectedNumberSystem.value, newWordSize);
 });
 
-function parseHexSequence(text: string, wordSize: number): number[] {
-  const hexStrings = text.split(/\s+/).filter(s => s !== '');
-  return hexStrings.map(hex => parseInt(hex, 16));
+const getWordSizes = (sys:number) => ((sys == 16 ? [4,8,12,16,20,24,28] : (sys == 8 ? [3,6,9,12,15,18,21,24,27,30] : [])));
+function parseSequence(text: string, sys:number,wordSize: number): number[] {
+  const strings = text.split(/\s+/).filter(s => s !== '');
+  return strings.map(str => parseInt(str, sys));
 }
 
-function formatNumberAsHex(num: number, wordSize: number): string {
-  const digits = wordSize / 4;
+function formatNumber(num: number, sys:number, wordSize: number): string {
+  if(sys==10) return num.toString();
+  const digits = wordSize / (sys == 16 ? 4 : 3);
   const maxUnsigned = 1 << wordSize;
   // Wrap around using modulo and ensure positive range
   let unsignedNum = num % maxUnsigned;
-  let hex = unsignedNum.toString(16).toUpperCase();
-  return hex.padStart(digits, '0');
+  let str = unsignedNum.toString(sys).toUpperCase();
+  return str.padStart(digits, '0');
 }
+
+
 const getAsNumbers = (str:string) => {
-  if (hexMode.value) {
-    return parseHexSequence(str, wordSize.value);
+  if (selectedNumberSystem.value) {
+    return parseSequence(str, selectedNumberSystem.value, wordSize.value);
   } else {
     return str.split(/\s+/).map(Number).filter(num => !isNaN(num));
   }
 };
 
-const getResultAsNumbers = () => {
-  return getAsNumbers(textResult.value);
-};
-
 const formatSequence = (numbers: number[]) => {
-  if (hexMode.value) {
-    return numbers.map(num => formatNumberAsHex(num, wordSize.value)).join(' ');
+  if (selectedNumberSystem.value) {
+    return numbers.map(num => formatNumber(num, selectedNumberSystem.value, wordSize.value)).join(' ');
   } else {
     return numbers.map(String).join(' ');
   }
@@ -259,20 +267,20 @@ const formatSequence = (numbers: number[]) => {
 const applyOperation = () => {
   try {
     let sequenceX, sequenceY;
-    if (hexMode.value) {
-      const numbersX = parseHexSequence(textX.value, wordSize.value);
+    if (selectedNumberSystem.value) {
+      const numbersX = parseSequence(textX.value,selectedNumberSystem.value, wordSize.value);
       sequenceX = Sequence.parse(numbersX.map(String).join(' '));
-      const numbersY = parseHexSequence(textY.value, wordSize.value);
+      const numbersY = parseSequence(textY.value,selectedNumberSystem.value, wordSize.value);
       sequenceY = Sequence.parse(numbersY.map(String).join(' '));
     } else {
       sequenceX = Sequence.parse(textX.value);
       sequenceY = Sequence.parse(textY.value);
     }
     const resultSequence = Sequence.combine(combiner.value, operation.value, sequenceX, sequenceY);
-    if (hexMode.value) {
+    if (selectedNumberSystem.value) {
       const decimalStr = resultSequence.toString();
       const numbers = decimalStr.split(/\s+/).map(Number);
-      textResult.value = numbers.map(num => formatNumberAsHex(num, wordSize.value)).join(' ');
+      textResult.value = numbers.map(num => formatNumber(num, selectedNumberSystem.value, wordSize.value)).join(' ');
     } else {
       textResult.value = resultSequence.toString();
     }
@@ -304,10 +312,10 @@ const pasteToY = () => {
   textY.value = formatSequence(getAsNumbers(textY.value).concat(getAsNumbers(textResult.value)));
 };
 const validateKeypress = (event: { key: string; preventDefault: () => void; }) => {
-  if (!hexMode.value && !/[0-9\s-]/.test(event.key)) {
+  if (!selectedNumberSystem.value && !/[0-9\s-]/.test(event.key)) {
     event.preventDefault();
   }
-  if (hexMode.value && !/[A-Fa-f0-9\s-]/.test(event.key)) {
+  if (selectedNumberSystem.value && !/[A-Fa-f0-9\s-]/.test(event.key)) {
     event.preventDefault();
   }
 };
@@ -345,12 +353,12 @@ const loadFromStorage = () => {
     memoryList.value = [];
   }
   try {
-    const storedHEX = localStorage.getItem('SEQOP_hexMode');
-    if (storedHEX) {
-      hexMode.value = JSON.parse(storedHEX);
+    const storedSys = localStorage.getItem('SEQOP_sys');
+    if (storedSys) {
+      selectedNumberSystem.value = JSON.parse(storedSys);
     }
   } catch (error) {
-    hexMode.value = false;
+    selectedNumberSystem.value = 10;
   }
   try {
     const storedWS = localStorage.getItem('SEQOP_wordSize');
@@ -358,7 +366,16 @@ const loadFromStorage = () => {
       wordSize.value = JSON.parse(storedWS);
     }
   } catch (error) {
-    hexMode.value = false;
+    switch(selectedNumberSystem.value) {
+      case 16:
+        wordSize.value=16;
+        break;
+      case 8:
+        wordSize.value=8
+        break;
+      case 10:
+        wordSize.value=-1;
+    }
   }
 };
 loadFromStorage();
