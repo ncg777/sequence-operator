@@ -75,25 +75,25 @@
         </v-row>
 
         <v-row>
-          <v-col cols="12" class="pa-1">
-            <v-btn color="primary" @click="applyOperation" block>
-              Apply
+          <v-col cols="12" class="pa-1 d-flex justify-center">
+            <v-btn color="darkgray" @click="applyOperation" block>
+              <v-icon left>mdi-calculator</v-icon>
             </v-btn>
           </v-col>
         </v-row>
 
         <v-row>
-          <v-col cols="3" md="3" class="pa-1">
-            <v-btn color="secondary" @click="assignToX" block>X:=</v-btn>
+          <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
+            <v-btn color="darkgray" @click="assignToX" block>x:=</v-btn>
           </v-col>
-          <v-col cols="3" md="3" class="pa-1">
-            <v-btn color="secondary" @click="pasteToX" block>X+=</v-btn>
+          <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
+            <v-btn color="darkgray" @click="pasteToX" block>x+=</v-btn>
           </v-col>
-          <v-col cols="3" md="3" class="pa-1">
-            <v-btn color="secondary" @click="assignToY" block>Y:=</v-btn>
+          <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
+            <v-btn color="darkgray" @click="assignToY" block>y:=</v-btn>
           </v-col>
-          <v-col cols="3" md="3" class="pa-1">
-            <v-btn color="secondary" @click="pasteToY" block>Y+=</v-btn>
+          <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
+            <v-btn color="darkgray" @click="pasteToY" block>y+=</v-btn>
           </v-col>
         </v-row>
         <v-row>
