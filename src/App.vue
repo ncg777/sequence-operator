@@ -226,11 +226,11 @@ watch(selectedNumberSystem, (newSys, oldSys) => {
   }
   updateSequences(newSys,oldSys,wordSize.value);
   localStorage.setItem('SEQOP_sys', JSON.stringify(newSys));
-  wordSize.value = newSys == 8? 12 : newSys == 16 ? 16 : -1;
+  
+  wordSize.value = (newSys == 8 ? 12 : (newSys == 16 ? 16 : -1));
 });
 
 watch(wordSize, (newWordSize) => {
-  
   localStorage.setItem('SEQOP_wordsize', JSON.stringify(newWordSize));
   updateSequences(selectedNumberSystem.value, selectedNumberSystem.value, newWordSize);
 });
@@ -426,6 +426,9 @@ const addSequence = (seq:string) => {
     memoryList.value.push(formatSequence(getAsNumbers(seq)));
   }
 };
+onMounted(() => {
+  firstLoad.value=false;
+});
 </script>
 
 <style scoped>
