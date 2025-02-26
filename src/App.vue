@@ -120,6 +120,16 @@
             ></v-text-field>
           </v-col>
         </v-row>
+
+        <v-row>
+          <v-col cols="6" md="6" class="pa-1 d-flex justify-center">
+            <v-btn color="darkgray" @click="reverseSeq()" block><v-icon left>mdi-rewind</v-icon></v-btn>
+          </v-col>
+          <v-col cols="6" md="6" class="pa-1 d-flex justify-center">
+            <v-btn color="darkgray" @click="rotateSeq()" block><v-icon left>mdi-refresh</v-icon></v-btn>
+          </v-col>
+        </v-row>
+
         <!-- Memory Dialog -->
         <v-dialog v-model="showMemoryDialog" max-width="800" class="pa-1" scrollable>
           <v-card>
@@ -266,6 +276,24 @@ const formatSequence = (numbers: number[]) => {
   } else {
     return numbers.map(String).join(' ');
   }
+};
+
+const rotateSeq = () => {
+  const steps = window.prompt(`Enter the number of steps to rotate:`)?.trim();
+  const stepsNumber = parseInt(steps || '0', 10); // Get rotation steps from user
+  if (!isNaN(stepsNumber)) {
+    const currentSequence = Sequence.parse(textResult.value);
+    const rotatedSequence = currentSequence.rotate(stepsNumber);
+    textResult.value = rotatedSequence.toString();
+  } else {
+    alert("Invalid input for rotation steps. Please enter a valid number.");
+  }
+};
+
+const reverseSeq = () => {
+  const currentSequence = Sequence.parse(textResult.value);
+  const reversedSequence = new Sequence(...currentSequence.toArray().reverse());
+  textResult.value = reversedSequence.toString();
 };
 
 // Handler for Apply button

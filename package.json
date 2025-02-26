@@ -15,7 +15,7 @@
     "eslint": "^9.18.0",
     "eslint-plugin-vue": "^9.32.0",
     "roboto-fontface": "*",
-    "ultra-mega-enumerator": "^2025.2.26",
+    "ultra-mega-enumerator": "^2025.2.27",
     "vue": "^3.4.31",
     "vuetify": "^3.6.14"
   },
