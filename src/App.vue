@@ -105,8 +105,10 @@
             <v-btn icon @click="copyResultToClipboard" style="z-index: 999;" :size="isMobile ? 'small' : 'medium'" class="pa-1">
               <v-icon left>mdi-clipboard</v-icon>
             </v-btn>
+            <!--
             <v-btn icon @click="showMemoryDialog = true" left style="z-index: 999;" :size="isMobile ? 'small' : 'medium'" class="pa-1"><v-icon left>mdi-memory</v-icon></v-btn>
             <v-btn icon @click="memorizeResult" left style="z-index: 999;" :size="isMobile ? 'small' : 'medium'" class="pa-1"><v-icon left>mdi-content-save</v-icon></v-btn>
+            -->
           </v-col>
         </v-row>
         <v-row>
@@ -194,8 +196,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import { Combiner, Operation, Sequence } from 'ultra-mega-enumerator';
-import { useDisplay } from 'vuetify'
-import { sys } from 'typescript';
+import { useDisplay } from 'vuetify';
 // Initialize reactive variables
 const textX = ref<string>('');
 const textY = ref<string>('');
