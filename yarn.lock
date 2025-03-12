@@ -595,7 +595,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.5.1, @types/node@npm:^22.9.0":
+"@types/node@npm:^22.5.1":
+  version: 22.13.10
+  resolution: "@types/node@npm:22.13.10"
+  dependencies:
+    undici-types: "npm:~6.20.0"
+  checksum: 10c0/a3865f9503d6f718002374f7b87efaadfae62faa499c1a33b12c527cfb9fd86f733e1a1b026b80c5a0e4a965701174bc3305595a7d36078aa1abcf09daa5dee9
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^22.9.0":
   version: 22.13.4
   resolution: "@types/node@npm:22.13.4"
   dependencies:
@@ -2943,7 +2952,7 @@ __metadata:
     sass: "npm:1.77.8"
     sass-embedded: "npm:^1.77.8"
     typescript: "npm:~5.6.3"
-    ultra-mega-enumerator: "npm:^2025.3.5"
+    ultra-mega-enumerator: "npm:2025.3.12-2"
     unplugin-fonts: "npm:^1.1.1"
     unplugin-vue-components: "npm:^0.27.2"
     vite: "npm:^5.4.10"
@@ -3212,13 +3221,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ultra-mega-enumerator@npm:^2025.3.5":
-  version: 2025.3.5
-  resolution: "ultra-mega-enumerator@npm:2025.3.5"
+"ultra-mega-enumerator@npm:2025.3.12-2":
+  version: 2025.3.12-2
+  resolution: "ultra-mega-enumerator@npm:2025.3.12-2"
   dependencies:
     "@types/node": "npm:^22.5.1"
     yarn: "npm:^1.22.22"
-  checksum: 10c0/7f85594d7135cb58485e024d3fcb35b006959f6636ffc2bd525a3c44ea6f5418c1b680ca6fe2546cbac059f9f09c71e62178fcd481a78f1907c9ee8f6241037e
+  checksum: 10c0/c12eb1556e645eabb37c2c7cbbf57b28f4e258e57d036080fbdcd6976c440207ae0bc8aa7928cbd4d08c8ff1ef35926e363b38d8b3ed2c034b63e882ec238891
   languageName: node
   linkType: hard
 
