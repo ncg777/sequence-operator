@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/sequence-operator/sw.js', { scope: '/sequence-operator/' })})}
