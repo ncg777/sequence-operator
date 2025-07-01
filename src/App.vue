@@ -234,7 +234,7 @@
                 <p>Combiners determine how two sequences are paired:</p>
                 <ul>
                   <li><strong>Product</strong> - Cartesian product of sequences (all X,Y pairs)</li>
-                  <li><strong>NegativeProduct</strong> - Creates 2×X.size()×Y.size() outputs, first half zeros, second half places results at negative positions</li>
+                  <li><strong>NegativeProduct</strong> - The outputs' size is X.size()*Y.size(). The difference with Product is that the Y sequence is kind of repeated so as to end whereas it starts with Product</li>
                   <li><strong>Convolution</strong> - Convolutional combination summing products at each position</li>
                   <li><strong>Triangular</strong> - Only combines when Y index ≤ X index (lower triangular)</li>
                   <li><strong>Recycle</strong> - Recycles shorter sequence to match LCM of lengths</li>
@@ -277,9 +277,10 @@
                   <li><strong>Equal/NotEqual</strong> - Equality comparisons</li>
                   <li><strong>LessThan/GreaterThan</strong> - Ordering comparisons</li>
                   <li><strong>Binomial</strong> - Binomial coefficient</li>
-                  <li><strong>ExpandBits/ExpandBitsFill</strong> - Non-standard bit expansion operations: ExpandBits pads with zeros, ExpandBitsFill repeats the bit pattern</li>
-                  <li><strong>PermuteBits</strong> - Bit permutation operation that rearranges the bits of X according to the permutation pattern in Y</li>
+                  <li><strong>ExpandBits/ExpandBitsFill</strong> - Non-standard bit expansion operations: ExpandBits pads with zeros, ExpandBitsFill repeats the bit</li>
+                  <li><strong>PermuteBits</strong> - Y values used to generate a permutation through Lehmer codes</li>
                   <li><strong>HardThreshold</strong> - Threshold operation that returns 0 if |X| > |Y|, otherwise returns X unchanged</li>
+                  <li><strong>CantorIntervalBinaryNumber</strong> - Experimental operation that uses numbers in X and Y to generate binary patterns where the bits are equidistant and with a certain number of 1 bits determined by Cantor encodings (name may eventually change)</li>
                   <li><strong>RandInt</strong> - Random integer between X and Y</li>
                 </ul>
 
