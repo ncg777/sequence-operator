@@ -275,7 +275,7 @@
                 <p>Each element is the difference to the next element (last wraps to first).</p>
                 
                 <p><strong>Cyclical Antidifference (∫):</strong></p>
-                <p>Input: <code>2 -1 3 -4</code> → Output: <code>0 2 1 4</code></p>
+                <p>Input: <code>2 -1 3 -4</code> → Output: <code>-4 -2 -3 0</code></p>
                 <p>Computes running sum starting from 0, which is the inverse operation of cyclical difference.</p>
               </div>
             </v-card-text>
