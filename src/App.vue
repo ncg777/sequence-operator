@@ -234,9 +234,16 @@
                 <p>Combiners determine how two sequences are paired:</p>
                 <ul>
                   <li><strong>Product</strong> - Cartesian product of sequences</li>
-                  <li><strong>Zip</strong> - Pairs elements at same positions</li>
-                  <li><strong>ZipLongest</strong> - Like Zip but continues until both sequences are exhausted</li>
-                  <li><strong>Chain</strong> - Concatenates sequences</li>
+                  <li><strong>NegativeProduct</strong> - Negative Cartesian product</li>
+                  <li><strong>Convolution</strong> - Convolution of sequences</li>
+                  <li><strong>Triangular</strong> - Triangular combination</li>
+                  <li><strong>Recycle</strong> - Recycles shorter sequence to match longer</li>
+                  <li><strong>LCM</strong> - Uses least common multiple of sequence lengths</li>
+                  <li><strong>Apply</strong> - Applies Y sequence as indices to X sequence</li>
+                  <li><strong>Reduce</strong> - Reduces Y sequence using X as initial values</li>
+                  <li><strong>MixedRadix</strong> - Mixed radix enumeration</li>
+                  <li><strong>Bits</strong> - Binary representation operations</li>
+                  <li><strong>Trits</strong> - Ternary representation operations</li>
                 </ul>
 
                 <h4>Operations</h4>
@@ -246,10 +253,34 @@
                   <li><strong>Subtract</strong> - Subtraction (-)</li>
                   <li><strong>Multiply</strong> - Multiplication (×)</li>
                   <li><strong>Divide</strong> - Division (÷)</li>
+                  <li><strong>X</strong> - Returns X value</li>
+                  <li><strong>Y</strong> - Returns Y value</li>
+                  <li><strong>Power</strong> - X raised to power Y</li>
+                  <li><strong>Log</strong> - Logarithm of X base Y</li>
+                  <li><strong>Min</strong> - Minimum of X and Y</li>
+                  <li><strong>Max</strong> - Maximum of X and Y</li>
+                  <li><strong>MaxZeroX/Y</strong> - Maximum of 0 and X/Y</li>
+                  <li><strong>MinZeroX/Y</strong> - Minimum of 0 and X/Y</li>
                   <li><strong>Modulo</strong> - Remainder (%)</li>
+                  <li><strong>Bounce</strong> - Bouncing modulo operation</li>
                   <li><strong>And</strong> - Bitwise AND (&)</li>
+                  <li><strong>Nand</strong> - Bitwise NAND</li>
                   <li><strong>Or</strong> - Bitwise OR (|)</li>
+                  <li><strong>Nor</strong> - Bitwise NOR</li>
+                  <li><strong>Implication</strong> - Logical implication</li>
+                  <li><strong>ReverseImplication</strong> - Reverse logical implication</li>
                   <li><strong>Xor</strong> - Bitwise XOR (⊕)</li>
+                  <li><strong>Xnor</strong> - Bitwise XNOR</li>
+                  <li><strong>ShiftBits</strong> - Bit shifting operation</li>
+                  <li><strong>LCM</strong> - Least common multiple</li>
+                  <li><strong>GCD</strong> - Greatest common divisor</li>
+                  <li><strong>Equal/NotEqual</strong> - Equality comparisons</li>
+                  <li><strong>LessThan/GreaterThan</strong> - Ordering comparisons</li>
+                  <li><strong>Binomial</strong> - Binomial coefficient</li>
+                  <li><strong>ExpandBits/ExpandBitsFill</strong> - Bit expansion operations</li>
+                  <li><strong>PermuteBits</strong> - Bit permutation</li>
+                  <li><strong>HardThreshold</strong> - Threshold operation</li>
+                  <li><strong>RandInt</strong> - Random integer between X and Y</li>
                 </ul>
 
                 <h4>Control Buttons</h4>
