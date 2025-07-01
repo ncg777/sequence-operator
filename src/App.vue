@@ -2,9 +2,21 @@
   <v-app>
     <v-main>
       <v-responsive class="align-center mx-auto pa-5" max-width="900">
-        <h1 class="banner">
-          Sequence Operator
-        </h1>
+        <v-row>
+          <v-col cols="12" class="pa-1">
+            <h1 class="banner">
+              Sequence Operator
+              <v-btn 
+                icon 
+                @click="showHelpDialog = true" 
+                class="help-button"
+                :size="isMobile ? 'small' : 'medium'"
+              >
+                <v-icon>mdi-help-circle</v-icon>
+              </v-btn>
+            </h1>
+          </v-col>
+        </v-row>
         
         <v-row>
           <v-col cols="6" class="pa-1">
@@ -124,11 +136,17 @@
         </v-row>
 
         <v-row>
-          <v-col cols="6" md="6" class="pa-1 d-flex justify-center">
+          <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
             <v-btn color="darkgray" @click="reverseSeq()" block><v-icon left>mdi-rewind</v-icon></v-btn>
           </v-col>
-          <v-col cols="6" md="6" class="pa-1 d-flex justify-center">
+          <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
             <v-btn color="darkgray" @click="rotateSeq()" block><v-icon left>mdi-refresh</v-icon></v-btn>
+          </v-col>
+          <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
+            <v-btn color="darkgray" @click="cyclicalDifferenceSeq()" block>Δ</v-btn>
+          </v-col>
+          <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
+            <v-btn color="darkgray" @click="cyclicalAntidifferenceSeq()" block>∫</v-btn>
           </v-col>
         </v-row>
 
@@ -188,6 +206,113 @@
           </v-card-actions>
           </v-card>
         </v-dialog>
+
+        <!-- Help Dialog -->
+        <v-dialog v-model="showHelpDialog" max-width="900" class="pa-1" scrollable>
+          <v-card>
+            <v-card-title>
+              <span><v-icon left>mdi-help-circle</v-icon>Help</span>
+              <v-btn @click="showHelpDialog = false" icon :style="'float:right;text-align:right;'">
+                <v-icon>mdi-window-close</v-icon>
+              </v-btn>
+            </v-card-title>
+            <v-card-text>
+              <div class="help-content">
+                <h3>Sequence Operator</h3>
+                <p>This application allows you to perform various operations on numeric sequences.</p>
+                
+                <h4>Changing Numeric Base</h4>
+                <p>Use the <strong>Base</strong> dropdown to select between:</p>
+                <ul>
+                  <li><strong>Base 8 (Octal)</strong> - Uses digits 0-7</li>
+                  <li><strong>Base 10 (Decimal)</strong> - Standard decimal numbers</li>
+                  <li><strong>Base 16 (Hexadecimal)</strong> - Uses digits 0-9 and letters A-F</li>
+                </ul>
+                <p>When using bases other than 10, you can also select the <strong>Word Size</strong> to control the bit width of numbers.</p>
+
+                <h4>Combiners</h4>
+                <p>Combiners determine how two sequences are paired:</p>
+                <ul>
+                  <li><strong>Product</strong> - Cartesian product of sequences (all X,Y pairs)</li>
+                  <li><strong>NegativeProduct</strong> - The outputs' size is X.size()*Y.size(). The difference with Product is that the Y sequence is kind of repeated so as to end whereas it starts with Product</li>
+                  <li><strong>Convolution</strong> - Convolutional combination summing products at each position</li>
+                  <li><strong>Triangular</strong> - Only combines when Y index ≤ X index (lower triangular)</li>
+                  <li><strong>Recycle</strong> - Recycles shorter sequence to match LCM of lengths</li>
+                  <li><strong>LCM</strong> - Stretches each sequence by LCM(lengths)/own_length, taking every nth element</li>
+                  <li><strong>Apply</strong> - Uses Y sequence values as indices into X sequence</li>
+                  <li><strong>Reduce</strong> - For each X element, reduces Y sequence using that X as initial value</li>
+                  <li><strong>MixedRadix</strong> - Enumerates all combinations treating X as digit limits, applies operation with Y</li>
+                  <li><strong>Bits</strong> - Converts X elements to binary with Y digits (big endian), applies operation with powers of 2</li>
+                  <li><strong>Trits</strong> - Converts X elements to balanced ternary with Y digits (big endian), applies operation with powers of 3</li>
+                </ul>
+
+                <h4>Operations</h4>
+                <p>Operations define what to do with paired elements:</p>
+                <ul>
+                  <li><strong>Add</strong> - Addition (+)</li>
+                  <li><strong>Subtract</strong> - Subtraction (-)</li>
+                  <li><strong>Multiply</strong> - Multiplication (×)</li>
+                  <li><strong>Divide</strong> - Division (÷)</li>
+                  <li><strong>X</strong> - Returns the X value used by the combiner, which may not be exactly the value from the sequence in all cases</li>
+                  <li><strong>Y</strong> - Returns the Y value used by the combiner, which may not be exactly the value from the sequence in all cases</li>
+                  <li><strong>Power</strong> - X raised to power Y</li>
+                  <li><strong>Log</strong> - Logarithm of X base Y</li>
+                  <li><strong>Min</strong> - Minimum of X and Y</li>
+                  <li><strong>Max</strong> - Maximum of X and Y</li>
+                  <li><strong>MaxZeroX/Y</strong> - Maximum of 0 and X/Y</li>
+                  <li><strong>MinZeroX/Y</strong> - Minimum of 0 and X/Y</li>
+                  <li><strong>Modulo</strong> - Remainder (%)</li>
+                  <li><strong>Bounce</strong> - Bouncing modulo operation</li>
+                  <li><strong>And</strong> - Bitwise AND (&amp;)</li>
+                  <li><strong>Nand</strong> - Bitwise NAND</li>
+                  <li><strong>Or</strong> - Bitwise OR (|)</li>
+                  <li><strong>Nor</strong> - Bitwise NOR</li>
+                  <li><strong>Implication</strong> - Logical implication (→)</li>
+                  <li><strong>ReverseImplication</strong> - Reverse logical implication (←)</li>
+                  <li><strong>Xor</strong> - Bitwise XOR (⊕)</li>
+                  <li><strong>Xnor</strong> - Bitwise XNOR</li>
+                  <li><strong>ShiftBits</strong> - Bit shifting operation where Y is the number of positions to shift, using big endian, positive Y is left shift, negative Y is right shift</li>
+                  <li><strong>LCM</strong> - Least common multiple</li>
+                  <li><strong>GCD</strong> - Greatest common divisor</li>
+                  <li><strong>Equal/NotEqual</strong> - Equality comparisons</li>
+                  <li><strong>LessThan/GreaterThan</strong> - Ordering comparisons</li>
+                  <li><strong>Binomial</strong> - Binomial coefficient</li>
+                  <li><strong>ExpandBits/ExpandBitsFill</strong> - Non-standard bit expansion operations: ExpandBits pads with zeros, ExpandBitsFill repeats the bit</li>
+                  <li><strong>PermuteBits</strong> - Y values used to generate a permutation through Lehmer codes</li>
+                  <li><strong>HardThreshold</strong> - Threshold operation that returns 0 if |X| > |Y|, otherwise returns X unchanged</li>
+                  <li><strong>CantorIntervalBinaryNumber</strong> - Experimental operation that uses numbers in X and Y to generate binary patterns where the bits are equidistant and with a certain number of 1 bits determined by Cantor encodings (name may eventually change)</li>
+                  <li><strong>RandInt</strong> - Random integer between X and Y</li>
+                </ul>
+
+                <h4>Control Buttons</h4>
+                <ul>
+                  <li><strong><v-icon size="small">mdi-swap-horizontal</v-icon> Swap</strong> - Swaps X and Y sequences</li>
+                  <li><strong><v-icon size="small">mdi-clipboard</v-icon> Copy</strong> - Copies result to clipboard</li>
+                  <li><strong>x:=, y:=</strong> - Assigns result to X or Y sequence</li>
+                  <li><strong>x+=, y+=</strong> - Appends result to X or Y sequence</li>
+                </ul>
+
+                <h4>Result Operations</h4>
+                <p>These operations modify the result sequence:</p>
+                <ul>
+                  <li><strong><v-icon size="small">mdi-rewind</v-icon> Reverse</strong> - Reverses the sequence</li>
+                  <li><strong><v-icon size="small">mdi-refresh</v-icon> Rotate</strong> - Rotates sequence by specified steps</li>
+                  <li><strong>Δ Cyclical Difference</strong> - Computes differences between consecutive elements (wrapping around)</li>
+                  <li><strong>∫ Cyclical Antidifference</strong> - Computes cumulative sum starting from user-specified k value (inverse of cyclical difference)</li>
+                </ul>
+
+                <h4>Examples</h4>
+                <p><strong>Cyclical Difference (Δ):</strong></p>
+                <p>Input: <code>1 3 2 5</code> → Output: <code>2 -1 3 -4</code></p>
+                <p>Each element is the difference to the next element (last wraps to first).</p>
+                
+                <p><strong>Cyclical Antidifference (∫):</strong></p>
+                <p>Input: <code>2 -1 3 -4</code> with k=5 → Output: <code>1 3 2 5</code></p>
+                <p>Computes running sum starting from user-specified k value, which is the inverse operation of cyclical difference.</p>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
       </v-responsive>
     </v-main>
   </v-app>
@@ -208,6 +333,7 @@ const wordSize = ref<number>(16);
 
 // Initialize reactive variables
 const showMemoryDialog = ref(false);
+const showHelpDialog = ref(false);
 const memoryList = ref<string[]>([]);
 
 // Define options for selects
@@ -295,6 +421,27 @@ const reverseSeq = () => {
   const currentSequence = Sequence.parse(textResult.value);
   const reversedSequence = new Sequence(...currentSequence.toArray().reverse());
   textResult.value = reversedSequence.toString();
+};
+
+const cyclicalDifferenceSeq = () => {
+  const currentSequence = Sequence.parse(textResult.value);
+  const resultSequence = currentSequence.cyclicalDifference();
+  textResult.value = resultSequence.toString();
+};
+
+const cyclicalAntidifferenceSeq = () => {
+  const kInput = prompt("Enter the value of k (starting value):", "0");
+  if (kInput === null) return; // User cancelled
+  
+  const k = parseInt(kInput.trim());
+  if (isNaN(k)) {
+    alert("Invalid input. Please enter a valid number.");
+    return;
+  }
+  
+  const currentSequence = Sequence.parse(textResult.value);
+  const resultSequence = currentSequence.cyclicalAntidifference(k);
+  textResult.value = resultSequence.toString();
 };
 
 // Handler for Apply button
@@ -470,6 +617,38 @@ body, * {
   text-align: center;
   padding-bottom: 0.5em;
   padding-top:0;
+  position: relative;
+}
+.help-button {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.help-content {
+  line-height: 1.6;
+}
+.help-content h3 {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+.help-content h4 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  color: #00aa00;
+}
+.help-content ul {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+.help-content li {
+  margin-bottom: 0.3em;
+}
+.help-content code {
+  background-color: #2a2a2a;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: monospace;
 }
 @media (max-width: 600px) {
   .v-btn {
