@@ -233,17 +233,17 @@
                 <h4>Combiners</h4>
                 <p>Combiners determine how two sequences are paired:</p>
                 <ul>
-                  <li><strong>Product</strong> - Cartesian product of sequences</li>
-                  <li><strong>NegativeProduct</strong> - Negative Cartesian product</li>
-                  <li><strong>Convolution</strong> - Convolution of sequences</li>
-                  <li><strong>Triangular</strong> - Triangular combination</li>
-                  <li><strong>Recycle</strong> - Recycles shorter sequence to match longer</li>
-                  <li><strong>LCM</strong> - Uses least common multiple of sequence lengths</li>
-                  <li><strong>Apply</strong> - Applies Y sequence as indices to X sequence</li>
-                  <li><strong>Reduce</strong> - Reduces Y sequence using X as initial values</li>
-                  <li><strong>MixedRadix</strong> - Mixed radix enumeration</li>
-                  <li><strong>Bits</strong> - Binary representation operations</li>
-                  <li><strong>Trits</strong> - Ternary representation operations</li>
+                  <li><strong>Product</strong> - Cartesian product of sequences (all X,Y pairs)</li>
+                  <li><strong>NegativeProduct</strong> - Creates 2×X.size()×Y.size() outputs, first half zeros, second half places results at negative positions</li>
+                  <li><strong>Convolution</strong> - Convolutional combination summing products at each position</li>
+                  <li><strong>Triangular</strong> - Only combines when Y index ≤ X index (lower triangular)</li>
+                  <li><strong>Recycle</strong> - Recycles shorter sequence to match LCM of lengths</li>
+                  <li><strong>LCM</strong> - Stretches each sequence by LCM(lengths)/own_length, taking every nth element</li>
+                  <li><strong>Apply</strong> - Uses Y sequence values as indices into X sequence</li>
+                  <li><strong>Reduce</strong> - For each X element, reduces Y sequence using that X as initial value</li>
+                  <li><strong>MixedRadix</strong> - Enumerates all combinations treating X as digit limits, applies operation with Y</li>
+                  <li><strong>Bits</strong> - Converts X elements to binary with Y digits (big endian), applies operation with powers of 2</li>
+                  <li><strong>Trits</strong> - Converts X elements to balanced ternary with Y digits (big endian), applies operation with powers of 3</li>
                 </ul>
 
                 <h4>Operations</h4>
@@ -253,8 +253,8 @@
                   <li><strong>Subtract</strong> - Subtraction (-)</li>
                   <li><strong>Multiply</strong> - Multiplication (×)</li>
                   <li><strong>Divide</strong> - Division (÷)</li>
-                  <li><strong>X</strong> - Returns X value</li>
-                  <li><strong>Y</strong> - Returns Y value</li>
+                  <li><strong>X</strong> - Returns the X value used by the combiner, which may not be exactly the value from the sequence in all cases</li>
+                  <li><strong>Y</strong> - Returns the Y value used by the combiner, which may not be exactly the value from the sequence in all cases</li>
                   <li><strong>Power</strong> - X raised to power Y</li>
                   <li><strong>Log</strong> - Logarithm of X base Y</li>
                   <li><strong>Min</strong> - Minimum of X and Y</li>
@@ -263,23 +263,23 @@
                   <li><strong>MinZeroX/Y</strong> - Minimum of 0 and X/Y</li>
                   <li><strong>Modulo</strong> - Remainder (%)</li>
                   <li><strong>Bounce</strong> - Bouncing modulo operation</li>
-                  <li><strong>And</strong> - Bitwise AND (&)</li>
+                  <li><strong>And</strong> - Bitwise AND (&amp;)</li>
                   <li><strong>Nand</strong> - Bitwise NAND</li>
                   <li><strong>Or</strong> - Bitwise OR (|)</li>
                   <li><strong>Nor</strong> - Bitwise NOR</li>
-                  <li><strong>Implication</strong> - Logical implication</li>
-                  <li><strong>ReverseImplication</strong> - Reverse logical implication</li>
+                  <li><strong>Implication</strong> - Logical implication (→)</li>
+                  <li><strong>ReverseImplication</strong> - Reverse logical implication (←)</li>
                   <li><strong>Xor</strong> - Bitwise XOR (⊕)</li>
                   <li><strong>Xnor</strong> - Bitwise XNOR</li>
-                  <li><strong>ShiftBits</strong> - Bit shifting operation</li>
+                  <li><strong>ShiftBits</strong> - Bit shifting operation where Y is the number of positions to shift, using big endian, positive Y is left shift, negative Y is right shift</li>
                   <li><strong>LCM</strong> - Least common multiple</li>
                   <li><strong>GCD</strong> - Greatest common divisor</li>
                   <li><strong>Equal/NotEqual</strong> - Equality comparisons</li>
                   <li><strong>LessThan/GreaterThan</strong> - Ordering comparisons</li>
                   <li><strong>Binomial</strong> - Binomial coefficient</li>
-                  <li><strong>ExpandBits/ExpandBitsFill</strong> - Bit expansion operations</li>
-                  <li><strong>PermuteBits</strong> - Bit permutation</li>
-                  <li><strong>HardThreshold</strong> - Threshold operation</li>
+                  <li><strong>ExpandBits/ExpandBitsFill</strong> - Non-standard bit expansion operations: ExpandBits pads with zeros, ExpandBitsFill repeats the bit pattern</li>
+                  <li><strong>PermuteBits</strong> - Bit permutation operation that rearranges the bits of X according to the permutation pattern in Y</li>
+                  <li><strong>HardThreshold</strong> - Threshold operation that returns 0 if |X| > |Y|, otherwise returns X unchanged</li>
                   <li><strong>RandInt</strong> - Random integer between X and Y</li>
                 </ul>
 
@@ -297,7 +297,7 @@
                   <li><strong><v-icon size="small">mdi-rewind</v-icon> Reverse</strong> - Reverses the sequence</li>
                   <li><strong><v-icon size="small">mdi-refresh</v-icon> Rotate</strong> - Rotates sequence by specified steps</li>
                   <li><strong>Δ Cyclical Difference</strong> - Computes differences between consecutive elements (wrapping around)</li>
-                  <li><strong>∫ Cyclical Antidifference</strong> - Computes cumulative sum starting from 0 (inverse of cyclical difference)</li>
+                  <li><strong>∫ Cyclical Antidifference</strong> - Computes cumulative sum starting from user-specified k value (inverse of cyclical difference)</li>
                 </ul>
 
                 <h4>Examples</h4>
@@ -306,8 +306,8 @@
                 <p>Each element is the difference to the next element (last wraps to first).</p>
                 
                 <p><strong>Cyclical Antidifference (∫):</strong></p>
-                <p>Input: <code>2 -1 3 -4</code> → Output: <code>-4 -2 -3 0</code></p>
-                <p>Computes running sum starting from 0, which is the inverse operation of cyclical difference.</p>
+                <p>Input: <code>2 -1 3 -4</code> with k=5 → Output: <code>1 3 2 5</code></p>
+                <p>Computes running sum starting from user-specified k value, which is the inverse operation of cyclical difference.</p>
               </div>
             </v-card-text>
           </v-card>
@@ -429,8 +429,17 @@ const cyclicalDifferenceSeq = () => {
 };
 
 const cyclicalAntidifferenceSeq = () => {
+  const kInput = prompt("Enter the value of k (starting value):", "0");
+  if (kInput === null) return; // User cancelled
+  
+  const k = parseInt(kInput.trim());
+  if (isNaN(k)) {
+    alert("Invalid input. Please enter a valid number.");
+    return;
+  }
+  
   const currentSequence = Sequence.parse(textResult.value);
-  const resultSequence = currentSequence.cyclicalAntidifference(0);
+  const resultSequence = currentSequence.cyclicalAntidifference(k);
   textResult.value = resultSequence.toString();
 };
 
