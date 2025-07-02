@@ -146,7 +146,7 @@
             <v-btn color="darkgray" @click="cyclicalDifferenceSeq()" block>Δ</v-btn>
           </v-col>
           <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
-            <v-btn color="darkgray" @click="cyclicalAntidifferenceSeq()" block>∫</v-btn>
+            <v-btn color="darkgray" @click="cyclicalAntidifferenceSeq()" block>∑</v-btn>
           </v-col>
         </v-row>
 
@@ -241,7 +241,7 @@
                   <li><strong>LCM</strong> - Stretches each sequence by LCM(lengths)/own_length, taking every nth element</li>
                   <li><strong>Apply</strong> - Uses Y sequence values as indices into X sequence</li>
                   <li><strong>Reduce</strong> - For each X element, reduces Y sequence using that X as initial value</li>
-                  <li><strong>MixedRadix</strong> - Enumerates all combinations treating X as digit limits, applies operation with Y</li>
+                  <li><strong>MixedRadix</strong> - Makes a cartesian product of the values of X (i.e. X=2 2 2 -> result of length 2^3), enumerates all vectors and combine them each with Y using the operation only to take the sum (try X=2 2 2 and Y=1 2 4 with op Multiply to get 0 1 2 3 4 5 6 7)</li>
                   <li><strong>Bits</strong> - Converts X elements to binary with Y digits (big endian), applies operation with powers of 2</li>
                   <li><strong>Trits</strong> - Converts X elements to balanced ternary with Y digits (big endian), applies operation with powers of 3</li>
                 </ul>
@@ -280,8 +280,8 @@
                   <li><strong>ExpandBits/ExpandBitsFill</strong> - Non-standard bit expansion operations: ExpandBits pads with zeros, ExpandBitsFill repeats the bit</li>
                   <li><strong>PermuteBits</strong> - Y values used to generate a permutation through Lehmer codes</li>
                   <li><strong>HardThreshold</strong> - Threshold operation that returns 0 if |X| > |Y|, otherwise returns X unchanged</li>
-                  <li><strong>CantorIntervalBinaryNumber</strong> - Experimental operation that uses numbers in X and Y to generate binary patterns where the bits are equidistant and with a certain number of 1 bits determined by Cantor encodings (name may eventually change)</li>
-                  <li><strong>RandInt</strong> - Random integer between X and Y</li>
+                  <li><strong>CantorIntervalBinaryNumber</strong> - Experimental operation that uses numbers in X and Y to generate binary patterns where the bits are equidistant and with a certain number of 1 bits determined by Cantor encodings (name may eventually change name)</li>
+                  <li><strong>RandInt</strong> - Random integer between min(X,Y) and max(X,Y)</li>
                 </ul>
 
                 <h4>Control Buttons</h4>
@@ -298,7 +298,7 @@
                   <li><strong><v-icon size="small">mdi-rewind</v-icon> Reverse</strong> - Reverses the sequence</li>
                   <li><strong><v-icon size="small">mdi-refresh</v-icon> Rotate</strong> - Rotates sequence by specified steps</li>
                   <li><strong>Δ Cyclical Difference</strong> - Computes differences between consecutive elements (wrapping around)</li>
-                  <li><strong>∫ Cyclical Antidifference</strong> - Computes cumulative sum starting from user-specified k value (inverse of cyclical difference)</li>
+                  <li><strong>∑ Cyclical Antidifference</strong> - Computes cumulative sum starting from user-specified k value (inverse of cyclical difference)</li>
                 </ul>
 
                 <h4>Examples</h4>
