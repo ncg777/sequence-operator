@@ -228,13 +228,13 @@
                   <li><strong>Base 10 (Decimal)</strong> - Standard decimal numbers</li>
                   <li><strong>Base 16 (Hexadecimal)</strong> - Uses digits 0-9 and letters A-F</li>
                 </ul>
-                <p>When using bases other than 10, you can also select the <strong>Word Size</strong> to control the bit width of numbers.</p>
+                <p>When using bases other than 10, you can also select the <strong>Word Size</strong> to control the amount of digits for each number.</p>
 
                 <h4>Combiners</h4>
                 <p>Combiners determine how two sequences are paired:</p>
                 <ul>
                   <li><strong>Product</strong> - Cartesian product of sequences (all X,Y pairs)</li>
-                  <li><strong>NegativeProduct</strong> - The outputs' size is X.size()*Y.size(). The difference with Product is that the Y sequence is kind of repeated so as to end whereas it starts with Product</li>
+                  <li><strong>NegativeProduct</strong> - The outputs' size is X.size()*Y.size(), just like product. The difference with Product is that the Y sequence repeated so as to end whereas it starts with Product</li>
                   <li><strong>Convolution</strong> - Convolutional combination summing products at each position</li>
                   <li><strong>Triangular</strong> - Only combines when Y index ≤ X index (lower triangular)</li>
                   <li><strong>Recycle</strong> - Recycles shorter sequence to match LCM of lengths</li>
@@ -277,8 +277,8 @@
                   <li><strong>Equal/NotEqual</strong> - Equality comparisons</li>
                   <li><strong>LessThan/GreaterThan</strong> - Ordering comparisons</li>
                   <li><strong>Binomial</strong> - Binomial coefficient</li>
-                  <li><strong>ExpandBits/ExpandBitsFill</strong> - Non-standard bit expansion operations: ExpandBits pads with zeros, ExpandBitsFill repeats the bit</li>
-                  <li><strong>PermuteBits</strong> - Y values used to generate a permutation through Lehmer codes</li>
+                  <li><strong>ExpandBits/ExpandBitsFill</strong> - Bit expansion operations; each bit of X becomes Y bits: ExpandBits pads with zeros, ExpandBitsFill repeats the bit</li>
+                  <li><strong>PermuteBits</strong> - Y values used to generate a permutation of the bits of X through Lehmer codes</li>
                   <li><strong>HardThreshold</strong> - Threshold operation that returns 0 if |X| > |Y|, otherwise returns X unchanged</li>
                   <li><strong>CantorIntervalBinaryNumber</strong> - Experimental operation that uses numbers in X and Y to generate binary patterns where the bits are equidistant and with a certain number of 1 bits determined by Cantor encodings (name may eventually change name)</li>
                   <li><strong>RandInt</strong> - Random integer between min(X,Y) and max(X,Y)</li>
@@ -293,7 +293,7 @@
                 </ul>
 
                 <h4>Result Operations</h4>
-                <p>These operations modify the result sequence:</p>
+                <p>These operations modify the result sequence in place:</p>
                 <ul>
                   <li><strong><v-icon size="small">mdi-rewind</v-icon> Reverse</strong> - Reverses the sequence</li>
                   <li><strong><v-icon size="small">mdi-refresh</v-icon> Rotate</strong> - Rotates sequence by specified steps</li>
@@ -308,7 +308,7 @@
                 
                 <p><strong>Cyclical Antidifference (∑):</strong></p>
                 <p>Input: <code>2 -1 3 -4</code> with k=5 → Output: <code>1 3 2 5</code></p>
-                <p>Computes running sum starting from user-specified k value, which is the inverse operation of cyclical difference.</p>
+                <p>Computes cumulative sum starting from user-specified k value, which is the inverse operation of cyclical difference.</p>
               </div>
             </v-card-text>
           </v-card>
