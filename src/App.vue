@@ -306,7 +306,7 @@
                 <p>Input: <code>1 3 2 5</code> → Output: <code>2 -1 3 -4</code></p>
                 <p>Each element is the difference to the next element (last wraps to first).</p>
                 
-                <p><strong>Cyclical Antidifference (∫):</strong></p>
+                <p><strong>Cyclical Antidifference (∑):</strong></p>
                 <p>Input: <code>2 -1 3 -4</code> with k=5 → Output: <code>1 3 2 5</code></p>
                 <p>Computes running sum starting from user-specified k value, which is the inverse operation of cyclical difference.</p>
               </div>
