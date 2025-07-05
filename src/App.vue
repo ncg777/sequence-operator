@@ -117,10 +117,8 @@
             <v-btn icon @click="copyResultToClipboard" style="z-index: 999;" :size="isMobile ? 'small' : 'medium'" class="pa-1">
               <v-icon left>mdi-clipboard</v-icon>
             </v-btn>
-            <!--
             <v-btn icon @click="showMemoryDialog = true" left style="z-index: 999;" :size="isMobile ? 'small' : 'medium'" class="pa-1"><v-icon left>mdi-memory</v-icon></v-btn>
             <v-btn icon @click="memorizeResult" left style="z-index: 999;" :size="isMobile ? 'small' : 'medium'" class="pa-1"><v-icon left>mdi-content-save</v-icon></v-btn>
-            -->
           </v-col>
         </v-row>
         <v-row>
@@ -194,7 +192,7 @@
                           outlined
                           dense
                           :label="`M[${index}] (${memSize(index)})`"
-                          :placeholder="selectedNumberSystem ? '0A 1B 2C...' : '0 1 2...'"
+                          :placeholder="'0 1 2...'"
                         ></v-text-field>
                     </v-col>
                   </v-row>
@@ -354,7 +352,7 @@ const updateSequences = (newSys:number, oldSys:number, wordSize:number) => {
   textX.value = convert(textX.value, newSys,oldSys,wordSize);
   textY.value = convert(textY.value, newSys,oldSys,wordSize);
   textResult.value = convert(textResult.value, newSys,oldSys,wordSize);
-  for(let i=0;i<memoryList.value.length;i++) memoryList.value[i]=convert(memoryList.value[i], newSys,oldSys,wordSize)
+  //for(let i=0;i<memoryList.value.length;i++) memoryList.value[i]=convert(memoryList.value[i], newSys,oldSys,wordSize)
 }
 watch(selectedNumberSystem, (newSys, oldSys) => {
   if (firstLoad.value) {
@@ -474,7 +472,7 @@ const copyResultToClipboard = () => {
   navigator.clipboard.writeText(textResult.value);
 };
 const memorizeResult = () => {
-  addSequence(textResult.value);
+  addSequence(getAsNumbers(textResult.value).map(String).join(' '));
 };
 // Handlers for Set X and Set Y buttons
 const assignToX = () => {
@@ -582,7 +580,7 @@ watch(memoryList, (newList) => {
 
 // Memory operations
 const recall = (index: number) => {
-  textResult.value = memoryList.value[index];
+  textResult.value = formatSequence(getAsNumbers(memoryList.value[index]));
   showMemoryDialog.value = false;
 };
 
@@ -594,12 +592,12 @@ const deleteSequence = (index: number) => {
 const promptSequence = () => {
   const newSeq = prompt('Enter new sequence:');
   if (newSeq) {
-    memoryList.value.push(formatSequence(getAsNumbers(newSeq)));
+    memoryList.value.push(getAsNumbers(newSeq).join(' '));
   }
 };
 const addSequence = (seq:string) => {
   if (seq) {
-    memoryList.value.push(formatSequence(getAsNumbers(seq)));
+    memoryList.value.push(getAsNumbers(seq).join(' '));
   }
 };
 onMounted(() => {
