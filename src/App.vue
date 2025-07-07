@@ -236,12 +236,13 @@
                   <li><strong>Convolution</strong> - Convolutional combination summing products at each position</li>
                   <li><strong>Triangular</strong> - Only combines when Y index ≤ X index (lower triangular)</li>
                   <li><strong>Recycle</strong> - Recycles shorter sequence to match LCM of lengths</li>
-                  <li><strong>LCM</strong> - Stretches each sequence by LCM(lengths)/own_length, taking every nth element</li>
+                  <li><strong>Divisive</strong> - Stretches each sequence by LCM(lengths)/own_length, taking every nth element</li>
                   <li><strong>Apply</strong> - Uses Y sequence values as indices into X sequence</li>
                   <li><strong>Reduce</strong> - For each X element, reduces Y sequence using that X as initial value</li>
                   <li><strong>MixedRadix</strong> - Makes a cartesian product of the values of X (i.e. X=2 2 2 -> result of length 2^3), enumerates all vectors and combine them each with Y using the operation only to take the sum (try X=2 2 2 and Y=1 2 4 with op Multiply to get 0 1 2 3 4 5 6 7)</li>
                   <li><strong>Bits</strong> - Converts X elements to binary with Y digits (big endian), applies operation with powers of 2</li>
                   <li><strong>Trits</strong> - Converts X elements to balanced ternary with Y digits (big endian), applies operation with powers of 3</li>
+				          <li><strong>IterateBetween</strong> - Iterates between the value of X to Y (exclusively), matching pairs like recycle</li>
                 </ul>
 
                 <h4>Operations</h4>
