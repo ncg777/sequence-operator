@@ -216,7 +216,7 @@
             </v-card-title>
             <v-card-text>
               <div class="help-content">
-                <h3>Sequence Operator</h3>
+                <h3>Sequence Operator<small style="font-size:0.6em; color:#888; margin-left:1em;">v{{ appVersion }}</small></h3>
                 <p>This application allows you to perform various operations on numeric sequences.</p>
                 
                 <h4>Changing Numeric Base</h4>
@@ -232,16 +232,19 @@
                 <p>Combiners determine how two sequences are paired:</p>
                 <ul>
                   <li><strong>Product</strong> - Cartesian product of sequences (all X,Y pairs)</li>
+                  <li><strong>SwappedProduct</strong> - Just like Product but with order swapped</li>
                   <li><strong>NegativeProduct</strong> - The outputs' size is X.size()*Y.size(), just like product. The difference with Product is that the Y sequence repeated so as to end whereas it starts with Product</li>
+                  <li><strong>SwappedNegativeProduct</strong> - Just like NegativeProduct but with order swapped</li>
                   <li><strong>Convolution</strong> - Convolutional combination summing products at each position</li>
                   <li><strong>Triangular</strong> - Only combines when Y index ≤ X index (lower triangular)</li>
+                  <li><strong>SwappedTriangular</strong> - Just like Triangular but with order swapped</li>
                   <li><strong>Recycle</strong> - Recycles shorter sequence to match LCM of lengths</li>
                   <li><strong>Divisive</strong> - Stretches each sequence by LCM(lengths)/own_length, taking every nth element</li>
                   <li><strong>Apply</strong> - Uses Y sequence values as indices into X sequence</li>
                   <li><strong>Reduce</strong> - For each X element, reduces Y sequence using that X as initial value</li>
                   <li><strong>MixedRadix</strong> - Makes a cartesian product of the values of X (i.e. X=2 2 2 -> result of length 2^3), enumerates all vectors and combine them each with Y using the operation only to take the sum (try X=2 2 2 and Y=1 2 4 with op Multiply to get 0 1 2 3 4 5 6 7)</li>
-                  <li><strong>Bits</strong> - Converts X elements to binary with Y digits (big endian), applies operation with powers of 2</li>
-                  <li><strong>Trits</strong> - Converts X elements to balanced ternary with Y digits (big endian), applies operation with powers of 3</li>
+                  <li><strong>Bits</strong> - Converts X elements to binary with Y digits (big endian), applies operation with powers of 2, matching pairs like recycle</li>
+                  <li><strong>Trits</strong> - Converts X elements to balanced ternary with Y digits (big endian), applies operation with powers of 3, matching pairs like recycle</li>
 				          <li><strong>IterateBetween</strong> - Iterates between the value of X to Y (exclusively), matching pairs like recycle</li>
                 </ul>
 
@@ -262,6 +265,7 @@
                   <li><strong>MinZeroX/Y</strong> - Minimum of 0 and X/Y</li>
                   <li><strong>Modulo</strong> - Remainder (%)</li>
                   <li><strong>Bounce</strong> - Bouncing modulo operation</li>
+                  <li><strong>Distance</strong> - |Y-X|</li>
                   <li><strong>And</strong> - Bitwise AND (&amp;)</li>
                   <li><strong>Nand</strong> - Bitwise NAND</li>
                   <li><strong>Or</strong> - Bitwise OR (|)</li>
@@ -321,6 +325,8 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { Combiner, Operation, Sequence } from 'ultra-mega-enumerator';
 import { useDisplay } from 'vuetify';
+import pkg from '../package.json';
+const appVersion = pkg.version;
 // Initialize reactive variables
 const textX = ref<string>('');
 const textY = ref<string>('');
