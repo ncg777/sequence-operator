@@ -292,6 +292,8 @@
                 <ul>
                   <li><strong><v-icon size="small">mdi-swap-horizontal</v-icon> Swap</strong> - Swaps X and Y sequences</li>
                   <li><strong><v-icon size="small">mdi-clipboard</v-icon> Copy</strong> - Copies result to clipboard</li>
+                   <li><strong><v-icon size="small">mdi-memory</v-icon> Memory</strong> - Opens the memory dialog to view and manage stored sequences</li>
+                  <li><strong><v-icon size="small">mdi-content-save</v-icon> Save</strong> - Saves the current result to memory</li>
                   <li><strong>x:=, y:=</strong> - Assigns result to X or Y sequence</li>
                   <li><strong>x+=, y+=</strong> - Appends result to X or Y sequence</li>
                 </ul>
@@ -313,6 +315,17 @@
                 <p><strong>Cyclical Antidifference (∑):</strong></p>
                 <p>Input: <code>2 -1 3 -4</code> with k=5 → Output: <code>1 3 2 5</code></p>
                 <p>Computes cumulative sum starting from user-specified k value, which is the inverse operation of cyclical difference.</p>
+
+                <h4>Memory</h4>
+                <p>The Memory feature allows you to store, recall, and manage sequences for later use. Sequences are saved to your browser's local storage and persist between sessions.</p>
+                <ul>
+                  <li><strong>Saving to Memory</strong> - Click the <v-icon size="small">mdi-content-save</v-icon> Save button to store the current result sequence in memory.</li>
+                  <li><strong>Viewing Memory</strong> - Click the <v-icon size="small">mdi-memory</v-icon> Memory button to open the memory dialog, which lists all stored sequences with their indices and sizes.</li>
+                  <li><strong>Recalling a Sequence</strong> - In the memory dialog, click the <v-icon size="small">mdi-arrow-down</v-icon> Recall button next to a sequence to load it into the result field.</li>
+                  <li><strong>Editing a Sequence</strong> - In the memory dialog, edit the text field labeled <code>M[index]</code> to modify a stored sequence.</li>
+                  <li><strong>Deleting a Sequence</strong> - In the memory dialog, click the <v-icon size="small">mdi-delete</v-icon> Delete button next to a sequence to remove it from memory.</li>
+                  <li><strong>Adding a New Sequence</strong> - In the memory dialog, click the <v-icon size="small">mdi-plus</v-icon> Add button to prompt for a new sequence to store.</li>
+                </ul>
               </div>
             </v-card-text>
           </v-card>
@@ -481,6 +494,7 @@ const copyResultToClipboard = () => {
 };
 const memorizeResult = () => {
   addSequence(getAsNumbers(textResult.value).map(String).join(' '));
+  alert("sequence saved");
 };
 // Handlers for Set X and Set Y buttons
 const assignToX = () => {
