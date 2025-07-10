@@ -284,7 +284,7 @@
                   <li><strong>ExpandBits/ExpandBitsFill</strong> - Bit expansion operations; each bit of X becomes Y bits: ExpandBits pads with zeros, ExpandBitsFill repeats the bit</li>
                   <li><strong>PermuteBits</strong> - Y values used to generate a permutation of the bits of X through Lehmer codes</li>
                   <li><strong>HardThreshold</strong> - Threshold operation that returns 0 if |X| > |Y|, otherwise returns X unchanged</li>
-                  <li><strong>CantorIntervalBinaryNumber</strong> - Experimental operation that uses numbers in X and Y to generate binary patterns where the bits are equidistant and with a certain number of 1 bits determined by Cantor encodings (name may eventually change name)</li>
+                  <li><strong>CantorIntervalBinaryNumber</strong> - Experimental operation that uses numbers in X and Y to generate binary patterns where the bits are equidistant and with a certain number of 1 bits determined by Cantor encodings (may eventually change)</li>
                   <li><strong>RandInt</strong> - Random integer between min(X,Y) and max(X,Y)</li>
                 </ul>
 
