@@ -275,6 +275,7 @@
                   <li><strong>Xor</strong> - Bitwise XOR (⊕)</li>
                   <li><strong>Xnor</strong> - Bitwise XNOR</li>
                   <li><strong>ShiftBits</strong> - Bit shifting operation where Y is the number of positions to shift, using big endian, positive Y is left shift, negative Y is right shift</li>
+                  <li><strong>ProjectBits</strong> - Projects the bits of X on the 1 bits of Y. For example X=1 and Y=5 results in 1 and X=2 and Y=5 results in 4.</li>
                   <li><strong>LCM</strong> - Least common multiple</li>
                   <li><strong>GCD</strong> - Greatest common divisor</li>
                   <li><strong>Equal/NotEqual</strong> - Equality comparisons</li>
