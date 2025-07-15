@@ -134,17 +134,20 @@
         </v-row>
 
         <v-row>
-          <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
+          <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
             <v-btn color="darkgray" @click="reverseSeq()" block><v-icon left>mdi-rewind</v-icon></v-btn>
           </v-col>
-          <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
+          <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
             <v-btn color="darkgray" @click="rotateSeq()" block><v-icon left>mdi-refresh</v-icon></v-btn>
           </v-col>
-          <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
+          <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
             <v-btn color="darkgray" @click="cyclicalDifferenceSeq()" block>Δ</v-btn>
           </v-col>
-          <v-col cols="3" md="3" class="pa-1 d-flex justify-center">
+          <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
             <v-btn color="darkgray" @click="cyclicalAntidifferenceSeq()" block>∑</v-btn>
+          </v-col>
+          <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
+            <v-btn color="darkgray" @click="timesNSeq()" block>×n</v-btn>
           </v-col>
         </v-row>
 
@@ -305,6 +308,7 @@
                   <li><strong><v-icon size="small">mdi-refresh</v-icon> Rotate</strong> - Rotates sequence by specified steps</li>
                   <li><strong>Δ Cyclical Difference</strong> - Computes differences between consecutive elements (wrapping around)</li>
                   <li><strong>∑ Cyclical Antidifference</strong> - Computes cumulative sum starting from user-specified k value (inverse of cyclical difference)</li>
+                  <li><strong>×n Times n</strong> - Rearranges the sequence so each element is replaced by the element at index <code>(i*n)%size</code></li>
                 </ul>
 
                 <h4>Examples</h4>
@@ -375,6 +379,24 @@ const updateSequences = (newSys:number, oldSys:number, wordSize:number) => {
   textResult.value = convert(textResult.value, newSys,oldSys,wordSize);
   //for(let i=0;i<memoryList.value.length;i++) memoryList.value[i]=convert(memoryList.value[i], newSys,oldSys,wordSize)
 }
+
+const timesNSeq = () => {
+  const scaleInput = prompt("Enter the scale (n):", "2");
+  if (scaleInput === null) return;
+  const scale = parseInt(scaleInput.trim());
+  if (isNaN(scale) || scale < 1) {
+    alert("Invalid scale. Please enter a positive integer.");
+    return;
+  }
+  const s = Sequence.parse(textResult.value);
+  const o = new Sequence(...Array(s.size()).fill(0));
+  for (let i = 0; i < o.size(); i++) {
+    const idx = (i * scale) % o.size();
+    o.set(i, s.get(idx)!);
+  }
+  textResult.value = o.toString();
+};
+
 watch(selectedNumberSystem, (newSys, oldSys) => {
   if (firstLoad.value) {
     firstLoad.value = false;
