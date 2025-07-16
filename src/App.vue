@@ -236,19 +236,13 @@
                 <ul>
                   <li><strong>Product</strong> - Cartesian product of sequences (all X,Y pairs)</li>
                   <li><strong>SwappedProduct</strong> - Just like Product but with order swapped</li>
-                  <li><strong>NegativeProduct</strong> - The outputs' size is X.size()*Y.size(), just like product. The difference with Product is that the Y sequence repeated so as to end whereas it starts with Product</li>
-                  <li><strong>SwappedNegativeProduct</strong> - Just like NegativeProduct but with order swapped</li>
                   <li><strong>Convolution</strong> - Convolutional combination summing products at each position</li>
                   <li><strong>Triangular</strong> - Only combines when Y index ≤ X index (lower triangular)</li>
                   <li><strong>SwappedTriangular</strong> - Just like Triangular but with order swapped</li>
                   <li><strong>Recycle</strong> - Recycles shorter sequence to match LCM of lengths</li>
                   <li><strong>Divisive</strong> - Stretches each sequence by LCM(lengths)/own_length, taking every nth element</li>
                   <li><strong>Apply</strong> - Uses Y sequence values as indices into X sequence</li>
-                  <li><strong>Reduce</strong> - For each X element, reduces Y sequence using that X as initial value</li>
                   <li><strong>MixedRadix</strong> - Makes a cartesian product of the values of X (i.e. X=2 2 2 -> result of length 2^3), enumerates all vectors and combine them each with Y using the operation only to take the sum (try X=2 2 2 and Y=1 2 4 with op Multiply to get 0 1 2 3 4 5 6 7)</li>
-                  <li><strong>Bits</strong> - Converts X elements to binary with Y digits (big endian), applies operation with powers of 2, matching pairs like recycle</li>
-                  <li><strong>Trits</strong> - Converts X elements to balanced ternary with Y digits (big endian), applies operation with powers of 3, matching pairs like recycle</li>
-				          <li><strong>IterateBetween</strong> - Iterates between the value of X to Y (exclusively), matching pairs like recycle</li>
                 </ul>
 
                 <h4>Operations</h4>
@@ -264,8 +258,6 @@
                   <li><strong>Log</strong> - Logarithm of X base Y</li>
                   <li><strong>Min</strong> - Minimum of X and Y</li>
                   <li><strong>Max</strong> - Maximum of X and Y</li>
-                  <li><strong>MaxZeroX/Y</strong> - Maximum of 0 and X/Y</li>
-                  <li><strong>MinZeroX/Y</strong> - Minimum of 0 and X/Y</li>
                   <li><strong>Modulo</strong> - Remainder (%)</li>
                   <li><strong>Bounce</strong> - Bouncing modulo operation</li>
                   <li><strong>Distance</strong> - |Y-X|</li>
@@ -289,6 +281,9 @@
                   <li><strong>HardThreshold</strong> - Threshold operation that returns 0 if |X| > |Y|, otherwise returns X unchanged</li>
                   <li><strong>CantorIntervalBinaryNumber</strong> - Experimental operation that uses numbers in X and Y to generate binary patterns where the bits are equidistant and with a certain number of 1 bits determined by Cantor encodings (may eventually change)</li>
                   <li><strong>RandInt</strong> - Random integer between min(X,Y) and max(X,Y)</li>
+                  <li><strong>Bits</strong> - Converts X elements to binary with Y digits (big endian)</li>
+                  <li><strong>Trits</strong> - Converts X elements to balanced ternary with Y digits (big endian)</li>
+				          <li><strong>IterateBetween</strong> - Iterates between the value of X to Y (exclusively)</li>
                 </ul>
 
                 <h4>Control Buttons</h4>
