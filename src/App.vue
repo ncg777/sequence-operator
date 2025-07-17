@@ -128,7 +128,6 @@
               :label="`Result (${resultSize})`"
               outlined
               dense
-              readonly
             ></v-text-field>
           </v-col>
         </v-row>
@@ -148,6 +147,10 @@
           </v-col>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
             <v-btn color="darkgray" @click="timesNSeq()" block>×n</v-btn>
+          </v-col>
+          <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
+            <!-- Permute Blocks Button (Symbol: π) -->
+            <v-btn color="darkgray" @click="permuteBlocksSeq()" block title="Permute Blocks"><span style="font-size: 1.4em;">π</span></v-btn>
           </v-col>
         </v-row>
 
@@ -304,8 +307,14 @@
                   <li><strong>Δ Cyclical Difference</strong> - Computes differences between consecutive elements (wrapping around)</li>
                   <li><strong>∑ Cyclical Antidifference</strong> - Computes cumulative sum starting from user-specified k value (inverse of cyclical difference)</li>
                   <li><strong>×n Times n</strong> - Rearranges the sequence so each element is replaced by the element at index <code>(i*n)%size</code></li>
+                  <li><strong>π Permute Blocks</strong> - Splits the sequence into blocks and reorders them according to a user-supplied permutation (see below).</li>
                 </ul>
-
+                <p><strong>π Permute Blocks:</strong></p>
+                <p>
+                  Prompts for a permutation (e.g. <code>1 0 2</code>). The highest number in your input plus one determines the number of blocks. The result sequence is split as evenly as possible into that many blocks, then the blocks are reordered according to the permutation. 
+                  <br>
+                  Example: Sequence <code>10 20 30 40 50 60 70</code>, permutation <code>1 0 2</code> creates 3 blocks: <code>10 20 30</code>, <code>40 50</code>, <code>60 70</code> → reordered as <code>40 50 10 20 30 60 70</code>.
+                </p>
                 <h4>Examples</h4>
                 <p><strong>Cyclical Difference (Δ):</strong></p>
                 <p>Input: <code>1 3 2 5</code> → Output: <code>2 -1 3 -4</code></p>
@@ -391,6 +400,56 @@ const timesNSeq = () => {
   }
   textResult.value = o.toString();
 };
+
+// --- Permute Blocks Operation ---
+function permuteBlocksSeq() {
+  const result = textResult.value.trim();
+  if (!result) {
+    alert("Result sequence is empty.");
+    return;
+  }
+  const permStr = prompt("Enter permutation (e.g. 1 0 2):");
+  if (!permStr) return;
+  const perm = permStr.trim().split(/\s+/).map(x => parseInt(x, 10)).filter(x => !isNaN(x));
+  if (perm.length === 0) {
+    alert("Invalid permutation.");
+    return;
+  }
+  const maxIdx = Math.max(...perm);
+  if (maxIdx < 0) {
+    alert("Permutation must use non-negative indices.");
+    return;
+  }
+  const numBlocks = maxIdx + 1;
+  const seqArr = result.split(/\s+/).filter(s => s !== '');
+  if (numBlocks > seqArr.length) {
+    alert("More blocks than elements in sequence.");
+    return;
+  }
+
+  // Compute block sizes as evenly as possible
+  const baseBlock = Math.floor(seqArr.length / numBlocks);
+  const rem = seqArr.length % numBlocks;
+  const blockSizes = Array(numBlocks).fill(baseBlock).map((sz, i) => sz + (i < rem ? 1 : 0));
+
+  // Build blocks
+  let idx = 0;
+  const blocks: string[][] = [];
+  for (let i = 0; i < numBlocks; i++) {
+    blocks.push(seqArr.slice(idx, idx + blockSizes[i]));
+    idx += blockSizes[i];
+  }
+  // Reorder blocks according to permutation
+  const permuted: string[] = [];
+  for (const pi of perm) {
+    if (pi < 0 || pi >= numBlocks) {
+      alert(`Permutation index ${pi} is out of range.`);
+      return;
+    }
+    permuted.push(...blocks[pi]);
+  }
+  textResult.value = permuted.join(' ');
+}
 
 watch(selectedNumberSystem, (newSys, oldSys) => {
   if (firstLoad.value) {
