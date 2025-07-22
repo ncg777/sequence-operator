@@ -119,6 +119,7 @@
             </v-btn>
             <v-btn icon @click="showMemoryDialog = true" left style="z-index: 999;" :size="isMobile ? 'small' : 'medium'" class="pa-1"><v-icon left>mdi-memory</v-icon></v-btn>
             <v-btn icon @click="memorizeResult" left style="z-index: 999;" :size="isMobile ? 'small' : 'medium'" class="pa-1"><v-icon left>mdi-content-save</v-icon></v-btn>
+            <v-btn icon @click="showHistoryDialog = true"left style="z-index: 999;" :size="isMobile ? 'small' : 'medium'" class="pa-1"><v-icon>mdi-history</v-icon></v-btn>
           </v-col>
         </v-row>
         <v-row>
@@ -338,6 +339,38 @@
             </v-card-text>
           </v-card>
         </v-dialog>
+        <!-- filepath: d:\repos\sequence-operator\src\App.vue -->
+        <v-dialog v-model="showHistoryDialog" max-width="800" class="pa-1" scrollable>
+          <v-card>
+            <v-card-title>
+              <span><v-icon left>mdi-history</v-icon>History</span>
+              <v-btn @click="showHistoryDialog = false" icon  :style="'float:right;text-align:right;'"><v-icon>mdi-window-close</v-icon></v-btn>
+            </v-card-title>
+            <v-card-text>
+              <v-list>
+                <v-list-item v-for="(entry, index) in historyList.slice().reverse()" :key="index">
+                  <v-row class="compact-row">
+                    <v-col cols="8">
+                      <p><strong>X:</strong> {{ entry.x }}</p>
+                      <p><strong>Y:</strong> {{ entry.y }}</p>
+                      <p><strong>Combiner:</strong> {{ entry.combiner }}</p>
+                      <p><strong>Operation:</strong> {{ entry.operation }}</p>
+                      <p><strong>Result:</strong>{{ entry.result }}</p>
+                      <p><strong>Timestamp:</strong> {{ entry.timestamp }}</p>
+                    </v-col>
+                    <v-col cols="4" class="text-right">
+                      <v-btn @click="recallHistory(historyList.length-index-1)" icon><v-icon>mdi-arrow-down</v-icon></v-btn>
+                      <v-btn @click="deleteHistoryEntry(historyList.length-index-1)" icon><v-icon>mdi-trash-can</v-icon></v-btn>
+                    </v-col>
+                  </v-row>
+                </v-list-item>
+              </v-list>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn @click="clearHistory" color="red">Clear History</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-responsive>
     </v-main>
   </v-app>
@@ -363,6 +396,51 @@ const showMemoryDialog = ref(false);
 const showHelpDialog = ref(false);
 const memoryList = ref<string[]>([]);
 
+const historyList = ref<{ x: string, y: string, combiner: string, operation: string, result:string, timestamp: string }[]>([]);
+const showHistoryDialog = ref(false);
+const addToHistory = () => {
+  historyList.value.push({
+    x: textX.value,
+    y: textY.value,
+    combiner: combiner.value,
+    operation: operation.value,
+    result:  textResult.value,
+    timestamp: new Date().toLocaleString(),
+  });
+  localStorage.setItem('SEQOP_historyList', JSON.stringify(historyList.value));
+};
+const deleteHistoryEntry = (index: number) => {
+  historyList.value.splice(index, 1);
+  localStorage.setItem('SEQOP_historyList', JSON.stringify(historyList.value));
+};
+const loadHistoryFromStorage = () => {
+  try {
+    const storedHistory = localStorage.getItem('SEQOP_historyList');
+    if (storedHistory) {
+      historyList.value = JSON.parse(storedHistory);
+    }
+  } catch (error) {
+    historyList.value = [];
+  }
+};
+loadHistoryFromStorage();
+
+const recallHistory = (index: number) => {
+  const entry = historyList.value[index];
+  textX.value = entry.x;
+  textY.value = entry.y;
+  textResult.value = entry.result;
+    // Convert string values to enums
+  combiner.value = Combiner[entry.combiner as keyof typeof Combiner];
+  operation.value = Operation[entry.operation as keyof typeof Operation];
+
+  showHistoryDialog.value = false;
+};
+
+const clearHistory = () => {
+  historyList.value = [];
+  localStorage.removeItem('SEQOP_historyList');
+};
 // Define options for selects
 const combinerOptions = Object.values(Combiner);
 const operationOptions = Object.values(Operation);
@@ -560,6 +638,7 @@ const applyOperation = () => {
     } else {
       textResult.value = resultSequence.toString();
     }
+    addToHistory();
   } catch (error) {
     textResult.value = `Error: ${(error as Error).message}`;
   }
