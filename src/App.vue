@@ -351,12 +351,12 @@
                 <v-list-item v-for="(entry, index) in historyList.slice().reverse()" :key="index">
                   <v-row>
                     <v-col cols="8">
-                      <p><strong>X:</strong> {{ entry.x }}</p>
-                      <p><strong>Y:</strong> {{ entry.y }}</p>
-                      <p><strong>Combiner:</strong> {{ entry.combiner }}</p>
-                      <p><strong>Operation:</strong> {{ entry.operation }}</p>
-                      <p><strong>Result:</strong>{{ entry.result }}</p>
-                      <p><strong>Timestamp:</strong> {{ entry.timestamp }}</p>
+                      <strong>X:</strong> {{ entry.x }}<br />
+                      <strong>Y:</strong> {{ entry.y }}<br />
+                      <strong>Combiner:</strong> {{ entry.combiner }}<br />
+                      <strong>Operation:</strong> {{ entry.operation }}<br />
+                      <strong>Result:</strong>{{ entry.result }}<br />
+                      <strong>Timestamp:</strong> {{ entry.timestamp }}
                     </v-col>
                     <v-col cols="4" class="text-right">
                       <v-btn @click="recallHistory(historyList.length-index-1)" icon><v-icon>mdi-arrow-down</v-icon></v-btn>
