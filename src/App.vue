@@ -351,12 +351,12 @@
                 <v-list-item v-for="(entry, index) in historyList.slice().reverse()" :key="index">
                   <v-row>
                     <v-col cols="8">
-                      <strong>X:</strong> {{ entry.x }}<br />
-                      <strong>Y:</strong> {{ entry.y }}<br />
-                      <strong>Combiner:</strong> {{ entry.combiner }}<br />
-                      <strong>Operation:</strong> {{ entry.operation }}<br />
-                      <strong>Result:</strong>{{ entry.result }}<br />
-                      <strong>Timestamp:</strong> {{ entry.timestamp }}
+                      <p><strong>X:</strong> {{ truncate(entry.x) }}</p>
+                      <p><strong>Y:</strong> {{ truncate(entry.y) }}</p>
+                      <p><strong>Combiner:</strong> {{ entry.combiner }}</p>
+                      <p><strong>Operation:</strong> {{ entry.operation }}</p>
+                      <p><strong>Result:</strong> {{ truncate(entry.result) }}</p>
+                      <p><strong>Timestamp:</strong> {{ entry.timestamp }}</p>
                     </v-col>
                     <v-col cols="4" class="text-right">
                       <v-btn @click="recallHistory(historyList.length-index-1)" icon><v-icon>mdi-arrow-down</v-icon></v-btn>
@@ -412,6 +412,9 @@ const addToHistory = () => {
 const deleteHistoryEntry = (index: number) => {
   historyList.value.splice(index, 1);
   localStorage.setItem('SEQOP_historyList', JSON.stringify(historyList.value));
+};
+const truncate = (text: string) => {
+  return text.length > 50 ? text.slice(0, 50) + '...' : text;
 };
 const loadHistoryFromStorage = () => {
   try {
@@ -823,6 +826,18 @@ body, * {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: monospace;
+}
+.v-card-text {
+  padding: 16px !important; /* Ensure consistent padding */
+}
+
+.v-list-item {
+  padding: 8px !important; /* Reduce padding to prevent text clipping */
+}
+
+p {
+  margin: 0; /* Remove extra margins */
+  word-wrap: break-word; /* Ensure long text wraps properly */
 }
 @media (max-width: 600px) {
   .v-btn {
