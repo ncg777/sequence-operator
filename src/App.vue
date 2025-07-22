@@ -787,8 +787,7 @@ onMounted(() => {
 
 <style scoped>
 body, * {
-  background-color: #000000;
-  padding:0;
+  background-color: #000000 !important;
 }
 .banner {
   text-align: center;
