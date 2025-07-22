@@ -349,7 +349,7 @@
             <v-card-text>
               <v-list>
                 <v-list-item v-for="(entry, index) in historyList.slice().reverse()" :key="index">
-                  <v-row class="compact-row">
+                  <v-row>
                     <v-col cols="8">
                       <p><strong>X:</strong> {{ entry.x }}</p>
                       <p><strong>Y:</strong> {{ entry.y }}</p>
