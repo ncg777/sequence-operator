@@ -351,11 +351,44 @@
                 <v-list-item v-for="(entry, index) in historyList.slice().reverse()" :key="index">
                   <v-row>
                     <v-col cols="8">
-                      <p><strong>X:</strong> {{ truncate(entry.x) }}</p>
-                      <p><strong>Y:</strong> {{ truncate(entry.y) }}</p>
+                      <p>
+                        <strong>X:</strong> {{ truncate(entry.x) }}
+                        <v-btn
+                          icon
+                          size="x-small"
+                          variant="text"
+                          :aria-label="`Copy X sequence from history item ${historyList.length-index-1}`"
+                          @click="copySequence(entry.x)"
+                        >
+                          <v-icon size="small">mdi-clipboard-outline</v-icon>
+                        </v-btn>
+                      </p>
+                      <p>
+                        <strong>Y:</strong> {{ truncate(entry.y) }}
+                        <v-btn
+                          icon
+                          size="x-small"
+                          variant="text"
+                          :aria-label="`Copy Y sequence from history item ${historyList.length-index-1}`"
+                          @click="copySequence(entry.y)"
+                        >
+                          <v-icon size="small">mdi-clipboard-outline</v-icon>
+                        </v-btn>
+                      </p>
                       <p><strong>Combiner:</strong> {{ entry.combiner }}</p>
                       <p><strong>Operation:</strong> {{ entry.operation }}</p>
-                      <p><strong>Result:</strong> {{ truncate(entry.result) }}</p>
+                      <p>
+                        <strong>Result:</strong> {{ truncate(entry.result) }}
+                        <v-btn
+                          icon
+                          size="x-small"
+                          variant="text"
+                          :aria-label="`Copy Result sequence from history item ${historyList.length-index-1}`"
+                          @click="copySequence(entry.result)"
+                        >
+                          <v-icon size="small">mdi-clipboard-outline</v-icon>
+                        </v-btn>
+                      </p>
                       <p><strong>Timestamp:</strong> {{ entry.timestamp }}</p>
                     </v-col>
                     <v-col cols="4" class="text-right">
@@ -649,6 +682,11 @@ const applyOperation = () => {
 
 const copyResultToClipboard = () => {
   navigator.clipboard.writeText(textResult.value);
+};
+// Generic copy helper for history sequences
+const copySequence = (seq: string) => {
+  if (!seq) return;
+  navigator.clipboard.writeText(seq);
 };
 const memorizeResult = () => {
   addSequence(getAsNumbers(textResult.value).map(String).join(' '));
