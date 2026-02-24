@@ -351,45 +351,73 @@
                 <v-list-item v-for="(entry, index) in historyList.slice().reverse()" :key="index">
                   <v-row>
                     <v-col cols="8">
-                      <p>
-                        <strong>X:</strong> {{ truncate(entry.x) }}
-                        <v-btn
-                          icon
-                          size="x-small"
-                          variant="text"
-                          :aria-label="`Copy X sequence from history item ${historyList.length-index-1}`"
-                          @click="copySequence(entry.x)"
-                        >
-                          <v-icon size="small">mdi-clipboard-outline</v-icon>
-                        </v-btn>
-                      </p>
-                      <p>
-                        <strong>Y:</strong> {{ truncate(entry.y) }}
-                        <v-btn
-                          icon
-                          size="x-small"
-                          variant="text"
-                          :aria-label="`Copy Y sequence from history item ${historyList.length-index-1}`"
-                          @click="copySequence(entry.y)"
-                        >
-                          <v-icon size="small">mdi-clipboard-outline</v-icon>
-                        </v-btn>
-                      </p>
-                      <p><strong>Combiner:</strong> {{ entry.combiner }}</p>
-                      <p><strong>Operation:</strong> {{ entry.operation }}</p>
-                      <p>
-                        <strong>Result:</strong> {{ truncate(entry.result) }}
-                        <v-btn
-                          icon
-                          size="x-small"
-                          variant="text"
-                          :aria-label="`Copy Result sequence from history item ${historyList.length-index-1}`"
-                          @click="copySequence(entry.result)"
-                        >
-                          <v-icon size="small">mdi-clipboard-outline</v-icon>
-                        </v-btn>
-                      </p>
-                      <p><strong>Timestamp:</strong> {{ entry.timestamp }}</p>
+                      <!-- Result operation entry -->
+                      <template v-if="entry.type === 'result-op'">
+                        <p><strong>Operation:</strong> {{ (entry as any).resultOp }}</p>
+                        <p>
+                          <strong>Input:</strong> {{ truncate((entry as any).input) }}
+                          <v-btn icon size="x-small" variant="text" @click="copySequence((entry as any).input)">
+                            <v-icon size="small">mdi-clipboard-outline</v-icon>
+                          </v-btn>
+                        </p>
+                        <template v-if="(entry as any).params">
+                          <p v-for="(val, key) in (entry as any).params" :key="key">
+                            <strong>{{ key }}:</strong> {{ val }}
+                            <v-btn icon size="x-small" variant="text" @click="copySequence(String(val))">
+                              <v-icon size="small">mdi-clipboard-outline</v-icon>
+                            </v-btn>
+                          </p>
+                        </template>
+                        <p>
+                          <strong>Result:</strong> {{ truncate(entry.result) }}
+                          <v-btn icon size="x-small" variant="text" @click="copySequence(entry.result)">
+                            <v-icon size="small">mdi-clipboard-outline</v-icon>
+                          </v-btn>
+                        </p>
+                        <p><strong>Timestamp:</strong> {{ entry.timestamp }}</p>
+                      </template>
+                      <!-- Combine operation entry -->
+                      <template v-else>
+                        <p>
+                          <strong>X:</strong> {{ truncate((entry as any).x) }}
+                          <v-btn
+                            icon
+                            size="x-small"
+                            variant="text"
+                            :aria-label="`Copy X sequence from history item ${historyList.length-index-1}`"
+                            @click="copySequence((entry as any).x)"
+                          >
+                            <v-icon size="small">mdi-clipboard-outline</v-icon>
+                          </v-btn>
+                        </p>
+                        <p>
+                          <strong>Y:</strong> {{ truncate((entry as any).y) }}
+                          <v-btn
+                            icon
+                            size="x-small"
+                            variant="text"
+                            :aria-label="`Copy Y sequence from history item ${historyList.length-index-1}`"
+                            @click="copySequence((entry as any).y)"
+                          >
+                            <v-icon size="small">mdi-clipboard-outline</v-icon>
+                          </v-btn>
+                        </p>
+                        <p><strong>Combiner:</strong> {{ (entry as any).combiner }}</p>
+                        <p><strong>Operation:</strong> {{ (entry as any).operation }}</p>
+                        <p>
+                          <strong>Result:</strong> {{ truncate(entry.result) }}
+                          <v-btn
+                            icon
+                            size="x-small"
+                            variant="text"
+                            :aria-label="`Copy Result sequence from history item ${historyList.length-index-1}`"
+                            @click="copySequence(entry.result)"
+                          >
+                            <v-icon size="small">mdi-clipboard-outline</v-icon>
+                          </v-btn>
+                        </p>
+                        <p><strong>Timestamp:</strong> {{ entry.timestamp }}</p>
+                      </template>
                     </v-col>
                     <v-col cols="4" class="text-right">
                       <v-btn @click="recallHistory(historyList.length-index-1)" icon><v-icon>mdi-arrow-down</v-icon></v-btn>
@@ -429,15 +457,30 @@ const showMemoryDialog = ref(false);
 const showHelpDialog = ref(false);
 const memoryList = ref<string[]>([]);
 
-const historyList = ref<{ x: string, y: string, combiner: string, operation: string, result:string, timestamp: string }[]>([]);
+type CombineEntry = { type?: 'combine'; x: string; y: string; combiner: string; operation: string; result: string; timestamp: string };
+type ResultOpEntry = { type: 'result-op'; resultOp: string; params?: Record<string, string | number>; input: string; result: string; timestamp: string };
+type HistoryEntry = CombineEntry | ResultOpEntry;
+const historyList = ref<HistoryEntry[]>([]);
 const showHistoryDialog = ref(false);
 const addToHistory = () => {
   historyList.value.push({
+    type: 'combine',
     x: textX.value,
     y: textY.value,
     combiner: combiner.value,
     operation: operation.value,
-    result:  textResult.value,
+    result: textResult.value,
+    timestamp: new Date().toLocaleString(),
+  });
+  localStorage.setItem('SEQOP_historyList', JSON.stringify(historyList.value));
+};
+const addResultOpToHistory = (resultOp: string, input: string, result: string, params?: Record<string, string | number>) => {
+  historyList.value.push({
+    type: 'result-op',
+    resultOp,
+    params,
+    input,
+    result,
     timestamp: new Date().toLocaleString(),
   });
   localStorage.setItem('SEQOP_historyList', JSON.stringify(historyList.value));
@@ -463,13 +506,15 @@ loadHistoryFromStorage();
 
 const recallHistory = (index: number) => {
   const entry = historyList.value[index];
-  textX.value = entry.x;
-  textY.value = entry.y;
-  textResult.value = entry.result;
-    // Convert string values to enums
-  combiner.value = Combiner[entry.combiner as keyof typeof Combiner];
-  operation.value = Operation[entry.operation as keyof typeof Operation];
-
+  if (entry.type === 'result-op') {
+    textResult.value = entry.result;
+  } else {
+    textX.value = (entry as CombineEntry).x;
+    textY.value = (entry as CombineEntry).y;
+    textResult.value = entry.result;
+    combiner.value = Combiner[(entry as CombineEntry).combiner as keyof typeof Combiner];
+    operation.value = Operation[(entry as CombineEntry).operation as keyof typeof Operation];
+  }
   showHistoryDialog.value = false;
 };
 
@@ -506,19 +551,21 @@ const timesNSeq = () => {
     alert("Invalid scale. Please enter a positive integer.");
     return;
   }
-  const s = Sequence.parse(textResult.value);
+  const input = textResult.value;
+  const s = Sequence.parse(input);
   const o = new Sequence(...Array(s.size()).fill(0));
   for (let i = 0; i < o.size(); i++) {
     const idx = (i * scale) % o.size();
     o.set(i, s.get(idx)!);
   }
   textResult.value = o.toString();
+  addResultOpToHistory('Times N (×n)', input, textResult.value, { n: scale });
 };
 
 // --- Permute Blocks Operation ---
 function permuteBlocksSeq() {
-  const result = textResult.value.trim();
-  if (!result) {
+  const input = textResult.value.trim();
+  if (!input) {
     alert("Result sequence is empty.");
     return;
   }
@@ -535,7 +582,7 @@ function permuteBlocksSeq() {
     return;
   }
   const numBlocks = maxIdx + 1;
-  const seqArr = result.split(/\s+/).filter(s => s !== '');
+  const seqArr = input.split(/\s+/).filter(s => s !== '');
   if (numBlocks > seqArr.length) {
     alert("More blocks than elements in sequence.");
     return;
@@ -563,6 +610,7 @@ function permuteBlocksSeq() {
     permuted.push(...blocks[pi]);
   }
   textResult.value = permuted.join(' ');
+  addResultOpToHistory('Permute Blocks (π)', input, textResult.value, { permutation: permStr.trim() });
 }
 
 watch(selectedNumberSystem, (newSys, oldSys) => {
@@ -618,24 +666,30 @@ const rotateSeq = () => {
   const steps = window.prompt(`Enter the number of steps to rotate:`)?.trim();
   const stepsNumber = parseInt(steps || '0', 10); // Get rotation steps from user
   if (!isNaN(stepsNumber)) {
-    const currentSequence = Sequence.parse(textResult.value);
+    const input = textResult.value;
+    const currentSequence = Sequence.parse(input);
     const rotatedSequence = currentSequence.rotate(stepsNumber);
     textResult.value = rotatedSequence.toString();
+    addResultOpToHistory('Rotate', input, textResult.value, { steps: stepsNumber });
   } else {
     alert("Invalid input for rotation steps. Please enter a valid number.");
   }
 };
 
 const reverseSeq = () => {
-  const currentSequence = Sequence.parse(textResult.value);
+  const input = textResult.value;
+  const currentSequence = Sequence.parse(input);
   const reversedSequence = new Sequence(...currentSequence.toArray().reverse());
   textResult.value = reversedSequence.toString();
+  addResultOpToHistory('Reverse', input, textResult.value);
 };
 
 const cyclicalDifferenceSeq = () => {
-  const currentSequence = Sequence.parse(textResult.value);
+  const input = textResult.value;
+  const currentSequence = Sequence.parse(input);
   const resultSequence = currentSequence.cyclicalDifference();
   textResult.value = resultSequence.toString();
+  addResultOpToHistory('Cyclical Difference (Δ)', input, textResult.value);
 };
 
 const cyclicalAntidifferenceSeq = () => {
@@ -648,9 +702,11 @@ const cyclicalAntidifferenceSeq = () => {
     return;
   }
   
-  const currentSequence = Sequence.parse(textResult.value);
+  const input = textResult.value;
+  const currentSequence = Sequence.parse(input);
   const resultSequence = currentSequence.cyclicalAntidifference(k);
   textResult.value = resultSequence.toString();
+  addResultOpToHistory('Cyclical Antidifference (∑)', input, textResult.value, { k });
 };
 
 // Handler for Apply button
