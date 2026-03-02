@@ -304,7 +304,230 @@
                   <li><strong>Bits</strong> - Converts X elements to binary with Y digits (big endian)</li>
                   <li><strong>Trits</strong> - Converts X elements to balanced ternary with Y digits (big endian)</li>
 				          <li><strong>IterateBetween</strong> - Iterates between the value of X to Y (exclusively)</li>
+                  <li><strong>TritSumSign</strong> - Trit-wise sign of sum: converts X and Y to balanced ternary and applies sign(a+b) to each pair of digits; equivalent to TritAny</li>
+                  <li><strong>TritProductSign</strong> - Trit-wise sign of product: converts X and Y to balanced ternary and applies sign(a×b) to each pair of digits; equivalent to TritMul</li>
+                  <li><strong>TritAnd</strong> - Ternary AND: per-trit minimum on balanced ternary digits — −1 dominates over 0, which dominates over 1</li>
+                  <li><strong>TritNand</strong> - Ternary NAND: negation of TritAnd</li>
+                  <li><strong>TritOr</strong> - Ternary OR: per-trit maximum on balanced ternary digits — 1 dominates</li>
+                  <li><strong>TritNor</strong> - Ternary NOR: negation of TritOr</li>
+                  <li><strong>TritCons</strong> - Ternary Consensus: −1 only when both trits are −1, 1 only when both trits are 1, else 0</li>
+                  <li><strong>TritNcons</strong> - Ternary Anti-Consensus: negation of TritCons</li>
+                  <li><strong>TritAny</strong> - Ternary Any: sign of the sum of the two balanced ternary digits per position</li>
+                  <li><strong>TritNany</strong> - Ternary Nany: negation of TritAny</li>
+                  <li><strong>TritMul</strong> - Ternary Multiplication: per-trit product of balanced ternary digits (sign of a×b)</li>
+                  <li><strong>TritNmul</strong> - Ternary Negated Multiplication: negation of TritMul</li>
+                  <li><strong>TritSum</strong> - Ternary Digit Sum: ones-place trit of the balanced ternary addition of two trits (carry omitted)</li>
+                  <li><strong>TritNsum</strong> - Ternary Negated Digit Sum: negation of TritSum</li>
                 </ul>
+
+                <h4>Tritwise Operations Reference</h4>
+                <p>
+                  All tritwise operations convert integers to/from <strong>balanced ternary</strong>.
+                  Each digit (<em>trit</em>) takes one of the three values <strong>−1, 0, 1</strong>.
+                  The chosen function is applied digit-by-digit and the result is converted back to an integer.
+                </p>
+
+                <h5 style="color:#77cc77;margin:1em 0 0.4em 0;">Unary Tritwise (▽ button)</h5>
+                <p>Each function maps a single input trit to an output trit:</p>
+                <div style="overflow-x:auto;margin-bottom:0.8em;">
+                  <table class="trit-table">
+                    <thead>
+                      <tr>
+                        <th>t&nbsp;→</th>
+                        <th>Buf</th><th>Not</th><th>Pnot</th><th>Nnot</th><th>Abs</th>
+                        <th>Clu</th><th>Cld</th><th>Inc</th><th>Dec</th>
+                        <th>Rtu</th><th>Rtd</th><th>Isp</th><th>Isz</th><th>Isn</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th>−1</th>
+                        <td>−1</td><td>1</td><td>1</td><td>1</td><td>1</td>
+                        <td>0</td><td>−1</td><td>0</td><td>−1</td>
+                        <td>0</td><td>1</td><td>−1</td><td>−1</td><td>1</td>
+                      </tr>
+                      <tr>
+                        <th>0</th>
+                        <td>0</td><td>0</td><td>1</td><td>−1</td><td>0</td>
+                        <td>0</td><td>0</td><td>1</td><td>−1</td>
+                        <td>1</td><td>−1</td><td>−1</td><td>1</td><td>−1</td>
+                      </tr>
+                      <tr>
+                        <th>1</th>
+                        <td>1</td><td>−1</td><td>−1</td><td>−1</td><td>1</td>
+                        <td>1</td><td>0</td><td>1</td><td>0</td>
+                        <td>−1</td><td>0</td><td>1</td><td>−1</td><td>−1</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p style="font-size:0.82em;color:#aaa;margin-bottom:0.8em;">
+                  <em>Buf</em> = identity &nbsp;|&nbsp;
+                  <em>Not</em> = negate &nbsp;|&nbsp;
+                  <em>Pnot</em> = force −1/0 → 1 &nbsp;|&nbsp;
+                  <em>Nnot</em> = force 0/1 → −1 &nbsp;|&nbsp;
+                  <em>Abs</em> = |trit| &nbsp;|&nbsp;
+                  <em>Clu</em> = clamp-low (−1→0) &nbsp;|&nbsp;
+                  <em>Cld</em> = clamp-high (1→0) &nbsp;|&nbsp;
+                  <em>Inc</em> = increment clamp (−1→0, 0→1) &nbsp;|&nbsp;
+                  <em>Dec</em> = decrement clamp (0→−1, 1→0) &nbsp;|&nbsp;
+                  <em>Rtu</em> = rotate up (−1→0→1→−1) &nbsp;|&nbsp;
+                  <em>Rtd</em> = rotate down (1→0→−1→1) &nbsp;|&nbsp;
+                  <em>Isp</em> = 1 iff trit=1 &nbsp;|&nbsp;
+                  <em>Isz</em> = 1 iff trit=0 &nbsp;|&nbsp;
+                  <em>Isn</em> = 1 iff trit=−1
+                </p>
+
+                <h5 style="color:#77cc77;margin:1em 0 0.4em 0;">Binary Tritwise Operations</h5>
+                <p>Tables show the per-trit result for each (X-trit, Y-trit) pair. Rows = X trit, Columns = Y trit.</p>
+                <p style="font-size:0.85em;color:#aaa;margin-bottom:0.6em;"><em>TritSumSign</em> is identical to TritAny; <em>TritProductSign</em> is identical to TritMul.</p>
+                <div class="trit-ops-grid">
+
+                  <div class="trit-op-card">
+                    <h5>TritAnd — min</h5>
+                    <table class="trit-table">
+                      <thead><tr><th>X＼Y</th><th>−1</th><th>0</th><th>1</th></tr></thead>
+                      <tbody>
+                        <tr><th>−1</th><td>−1</td><td>−1</td><td>−1</td></tr>
+                        <tr><th>0</th><td>−1</td><td>0</td><td>0</td></tr>
+                        <tr><th>1</th><td>−1</td><td>0</td><td>1</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="trit-op-card">
+                    <h5>TritNand — −min</h5>
+                    <table class="trit-table">
+                      <thead><tr><th>X＼Y</th><th>−1</th><th>0</th><th>1</th></tr></thead>
+                      <tbody>
+                        <tr><th>−1</th><td>1</td><td>1</td><td>1</td></tr>
+                        <tr><th>0</th><td>1</td><td>0</td><td>0</td></tr>
+                        <tr><th>1</th><td>1</td><td>0</td><td>−1</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="trit-op-card">
+                    <h5>TritOr — max</h5>
+                    <table class="trit-table">
+                      <thead><tr><th>X＼Y</th><th>−1</th><th>0</th><th>1</th></tr></thead>
+                      <tbody>
+                        <tr><th>−1</th><td>−1</td><td>0</td><td>1</td></tr>
+                        <tr><th>0</th><td>0</td><td>0</td><td>1</td></tr>
+                        <tr><th>1</th><td>1</td><td>1</td><td>1</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="trit-op-card">
+                    <h5>TritNor — −max</h5>
+                    <table class="trit-table">
+                      <thead><tr><th>X＼Y</th><th>−1</th><th>0</th><th>1</th></tr></thead>
+                      <tbody>
+                        <tr><th>−1</th><td>1</td><td>0</td><td>−1</td></tr>
+                        <tr><th>0</th><td>0</td><td>0</td><td>−1</td></tr>
+                        <tr><th>1</th><td>−1</td><td>−1</td><td>−1</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="trit-op-card">
+                    <h5>TritCons — consensus</h5>
+                    <table class="trit-table">
+                      <thead><tr><th>X＼Y</th><th>−1</th><th>0</th><th>1</th></tr></thead>
+                      <tbody>
+                        <tr><th>−1</th><td>−1</td><td>0</td><td>0</td></tr>
+                        <tr><th>0</th><td>0</td><td>0</td><td>0</td></tr>
+                        <tr><th>1</th><td>0</td><td>0</td><td>1</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="trit-op-card">
+                    <h5>TritNcons — −consensus</h5>
+                    <table class="trit-table">
+                      <thead><tr><th>X＼Y</th><th>−1</th><th>0</th><th>1</th></tr></thead>
+                      <tbody>
+                        <tr><th>−1</th><td>1</td><td>0</td><td>0</td></tr>
+                        <tr><th>0</th><td>0</td><td>0</td><td>0</td></tr>
+                        <tr><th>1</th><td>0</td><td>0</td><td>−1</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="trit-op-card">
+                    <h5>TritAny — sgn(a+b)</h5>
+                    <table class="trit-table">
+                      <thead><tr><th>X＼Y</th><th>−1</th><th>0</th><th>1</th></tr></thead>
+                      <tbody>
+                        <tr><th>−1</th><td>−1</td><td>−1</td><td>0</td></tr>
+                        <tr><th>0</th><td>−1</td><td>0</td><td>1</td></tr>
+                        <tr><th>1</th><td>0</td><td>1</td><td>1</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="trit-op-card">
+                    <h5>TritNany — −sgn(a+b)</h5>
+                    <table class="trit-table">
+                      <thead><tr><th>X＼Y</th><th>−1</th><th>0</th><th>1</th></tr></thead>
+                      <tbody>
+                        <tr><th>−1</th><td>1</td><td>1</td><td>0</td></tr>
+                        <tr><th>0</th><td>1</td><td>0</td><td>−1</td></tr>
+                        <tr><th>1</th><td>0</td><td>−1</td><td>−1</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="trit-op-card">
+                    <h5>TritMul — a×b</h5>
+                    <table class="trit-table">
+                      <thead><tr><th>X＼Y</th><th>−1</th><th>0</th><th>1</th></tr></thead>
+                      <tbody>
+                        <tr><th>−1</th><td>1</td><td>0</td><td>−1</td></tr>
+                        <tr><th>0</th><td>0</td><td>0</td><td>0</td></tr>
+                        <tr><th>1</th><td>−1</td><td>0</td><td>1</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="trit-op-card">
+                    <h5>TritNmul — −(a×b)</h5>
+                    <table class="trit-table">
+                      <thead><tr><th>X＼Y</th><th>−1</th><th>0</th><th>1</th></tr></thead>
+                      <tbody>
+                        <tr><th>−1</th><td>−1</td><td>0</td><td>1</td></tr>
+                        <tr><th>0</th><td>0</td><td>0</td><td>0</td></tr>
+                        <tr><th>1</th><td>1</td><td>0</td><td>−1</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="trit-op-card">
+                    <h5>TritSum — digit of a+b</h5>
+                    <table class="trit-table">
+                      <thead><tr><th>X＼Y</th><th>−1</th><th>0</th><th>1</th></tr></thead>
+                      <tbody>
+                        <tr><th>−1</th><td>1</td><td>−1</td><td>0</td></tr>
+                        <tr><th>0</th><td>−1</td><td>0</td><td>1</td></tr>
+                        <tr><th>1</th><td>0</td><td>1</td><td>−1</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="trit-op-card">
+                    <h5>TritNsum — −digit of a+b</h5>
+                    <table class="trit-table">
+                      <thead><tr><th>X＼Y</th><th>−1</th><th>0</th><th>1</th></tr></thead>
+                      <tbody>
+                        <tr><th>−1</th><td>−1</td><td>1</td><td>0</td></tr>
+                        <tr><th>0</th><td>1</td><td>0</td><td>−1</td></tr>
+                        <tr><th>1</th><td>0</td><td>−1</td><td>1</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
 
                 <h4>Control Buttons</h4>
                 <ul>
@@ -984,5 +1207,44 @@ p {
     margin: 2px !important; /* Tighten margins */
     padding: 0 6px !important; /* Reduce padding */
   }
+}
+.help-content table.trit-table {
+  border-collapse: collapse;
+  font-size: 0.8em;
+  margin: 0.2em 0 0.4em 0;
+}
+.help-content table.trit-table th,
+.help-content table.trit-table td {
+  border: 1px solid #555;
+  padding: 2px 7px;
+  text-align: center;
+  min-width: 26px;
+}
+.help-content table.trit-table thead th {
+  background-color: #1a3a1a;
+  color: #aaffaa;
+}
+.help-content table.trit-table tbody th {
+  background-color: #1a2a1a;
+  color: #aaffaa;
+  font-weight: bold;
+}
+.help-content .trit-ops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.8em;
+  margin: 0.6em 0 1em 0;
+}
+.help-content .trit-op-card {
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 0.5em 0.6em;
+  background-color: #111;
+}
+.help-content .trit-op-card h5 {
+  margin: 0 0 0.35em 0;
+  color: #77cc77;
+  font-size: 0.82em;
+  font-weight: bold;
 }
 </style>
