@@ -153,6 +153,22 @@
             <!-- Permute Blocks Button (Symbol: π) -->
             <v-btn color="darkgray" @click="permuteBlocksSeq()" block title="Permute Blocks"><span style="font-size: 1.4em;">π</span></v-btn>
           </v-col>
+          <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
+            <v-menu>
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" color="darkgray" block title="Unary Tritwise">▽</v-btn>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="op in unaryTritwiseOps"
+                  :key="op.name"
+                  @click="applyUnaryTritwise(op.name, op.fn)"
+                >
+                  <v-list-item-title>{{ op.name }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-col>
         </v-row>
 
         <!-- Memory Dialog -->
@@ -309,6 +325,7 @@
                   <li><strong>∑ Cyclical Antidifference</strong> - Computes cumulative sum starting from user-specified k value (inverse of cyclical difference)</li>
                   <li><strong>×n Times n</strong> - Rearranges the sequence so each element is replaced by the element at index <code>(i*n)%size</code></li>
                   <li><strong>π Permute Blocks</strong> - Splits the sequence into blocks and reorders them according to a user-supplied permutation (see below).</li>
+                  <li><strong>▽ Unary Tritwise</strong> - Applies a chosen unary tritwise (balanced ternary) operation element-wise to the result sequence. Options: Buf, Not, Pnot, Nnot, Abs, Clu, Cld, Inc, Dec, Rtu, Rtd, Isp, Isz, Isn.</li>
                 </ul>
                 <p><strong>π Permute Blocks:</strong></p>
                 <p>
@@ -439,7 +456,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
-import { Combiner, Operation, Sequence } from 'ultra-mega-enumerator';
+import { Combiner, Numbers, Operation, Sequence } from 'ultra-mega-enumerator';
 import { useDisplay } from 'vuetify';
 import pkg from '../package.json';
 const appVersion = pkg.version;
@@ -612,6 +629,36 @@ function permuteBlocksSeq() {
   textResult.value = permuted.join(' ');
   addResultOpToHistory('Permute Blocks (π)', input, textResult.value, { permutation: permStr.trim() });
 }
+
+// --- Unary Tritwise Operations ---
+const unaryTritwiseOps = [
+  { name: 'Buf', fn: Numbers.tritBuf },
+  { name: 'Not', fn: Numbers.tritNot },
+  { name: 'Pnot', fn: Numbers.tritPnot },
+  { name: 'Nnot', fn: Numbers.tritNnot },
+  { name: 'Abs', fn: Numbers.tritAbs },
+  { name: 'Clu', fn: Numbers.tritClu },
+  { name: 'Cld', fn: Numbers.tritCld },
+  { name: 'Inc', fn: Numbers.tritInc },
+  { name: 'Dec', fn: Numbers.tritDec },
+  { name: 'Rtu', fn: Numbers.tritRtu },
+  { name: 'Rtd', fn: Numbers.tritRtd },
+  { name: 'Isp', fn: Numbers.tritIsp },
+  { name: 'Isz', fn: Numbers.tritIsz },
+  { name: 'Isn', fn: Numbers.tritIsn },
+];
+
+const applyUnaryTritwise = (opName: string, fn: (n: number) => number) => {
+  const input = textResult.value.trim();
+  if (!input) {
+    alert("Result sequence is empty.");
+    return;
+  }
+  const numbers = Sequence.parse(input).toArray().map(fn);
+  const resultSeq = new Sequence(...numbers);
+  textResult.value = resultSeq.toString();
+  addResultOpToHistory(`Unary Tritwise (▽ ${opName})`, input, textResult.value, { operation: opName });
+};
 
 watch(selectedNumberSystem, (newSys, oldSys) => {
   if (firstLoad.value) {
