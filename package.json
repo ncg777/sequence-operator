@@ -6,12 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
+    "build-tools": "tsc -p tsconfig.tools.json",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force"
   },
+  "bin": {
+    "sequence-operator": "./dist-tools/cli.js",
+    "sequence-operator-mcp": "./dist-tools/mcp-server.js"
+  },
   "dependencies": {
     "@mdi/font": "7.4.47",
+    "@modelcontextprotocol/sdk": "1.27.1",
+    "commander": "14.0.3",
     "eslint": "^9.18.0",
     "eslint-plugin-vue": "^9.32.0",
     "roboto-fontface": "*",
