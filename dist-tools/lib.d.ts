@@ -33,5 +33,14 @@ export declare function timesN(sequence: string, n: number): string;
  * and the blocks are reordered according to the permutation.
  */
 export declare function permuteBlocks(sequence: string, permutation: number[]): string;
+/**
+ * Generate a Composition-Driven Binary Hierarchical Permutation and apply it
+ * to a sequence.  The sequence length must equal 2^sum(composition).
+ *
+ * @param sequence     Space-separated integers to permute.
+ * @param composition  Array of positive integers defining binary subdivision levels.
+ * @param permutation  A permutation of {0 … k-1} where k = composition.length.
+ */
+export declare function hierarchicalPermute(sequence: string, composition: number[], permutation: number[]): string;
 /** Apply a unary tritwise operation to every element in the sequence. */
 export declare function unaryTritwise(sequence: string, op: UnaryTritwiseOpName): string;

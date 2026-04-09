@@ -154,6 +154,9 @@
             <v-btn color="darkgray" @click="permuteBlocksSeq()" block title="Permute Blocks"><span style="font-size: 1.4em;">π</span></v-btn>
           </v-col>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
+            <v-btn color="darkgray" @click="hierarchicalPermuteSeq()" block title="Hierarchical Permute">H</v-btn>
+          </v-col>
+          <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
             <v-menu>
               <template v-slot:activator="{ props }">
                 <v-btn v-bind="props" color="darkgray" block title="Unary Tritwise">▽</v-btn>
@@ -549,12 +552,21 @@
                   <li><strong>×n Times n</strong> - Rearranges the sequence so each element is replaced by the element at index <code>(i*n)%size</code></li>
                   <li><strong>π Permute Blocks</strong> - Splits the sequence into blocks and reorders them according to a user-supplied permutation (see below).</li>
                   <li><strong>▽ Unary Tritwise</strong> - Applies a chosen unary tritwise (balanced ternary) operation element-wise to the result sequence. Options: Buf, Not, Pnot, Nnot, Abs, Clu, Cld, Inc, Dec, Rtu, Rtd, Isp, Isz, Isn.</li>
+                  <li><strong>H Hierarchical Permute</strong> - Applies a Composition-Driven Binary Hierarchical Permutation (CDBHP) to the result sequence. Prompts for a composition and a permutation (see below).</li>
                 </ul>
                 <p><strong>π Permute Blocks:</strong></p>
                 <p>
                   Prompts for a permutation (e.g. <code>1 0 2</code>). The highest number in your input plus one determines the number of blocks. The result sequence is split as evenly as possible into that many blocks, then the blocks are reordered according to the permutation. 
                   <br>
                   Example: Sequence <code>10 20 30 40 50 60 70</code>, permutation <code>1 0 2</code> creates 3 blocks: <code>10 20 30</code>, <code>40 50</code>, <code>60 70</code> → reordered as <code>40 50 10 20 30 60 70</code>.
+                </p>
+                <p><strong>H Hierarchical Permute (CDBHP):</strong></p>
+                <p>
+                  Prompts for a <em>composition</em> (e.g. <code>1 2 1</code>) and a <em>permutation</em> (e.g. <code>2 0 1</code>).
+                  The composition defines binary subdivision levels; the permutation reorders those levels hierarchically.
+                  The result sequence length must equal <code>2^sum(composition)</code>.
+                  <br>
+                  Example: Sequence of 16 elements (<code>0 1 2 … 15</code>), composition <code>1 2 1</code>, permutation <code>2 0 1</code> produces a hierarchical reordering of all 16 elements.
                 </p>
                 <h4>Examples</h4>
                 <p><strong>Cyclical Difference (Δ):</strong></p>
@@ -851,6 +863,70 @@ function permuteBlocksSeq() {
   }
   textResult.value = permuted.join(' ');
   addResultOpToHistory('Permute Blocks (π)', input, textResult.value, { permutation: permStr.trim() });
+}
+
+// --- Hierarchical Permute (CDBHP) ---
+function hierarchicalPermuteSeq() {
+  const input = textResult.value.trim();
+  if (!input) {
+    alert('Result sequence is empty.');
+    return;
+  }
+  const compStr = prompt('Enter composition (space-separated positive integers, e.g. "1 2 1"):');
+  if (!compStr) return;
+  const composition = compStr.trim().split(/\s+/).map(x => parseInt(x, 10)).filter(x => !isNaN(x));
+  if (composition.length === 0 || composition.some(v => v < 1)) {
+    alert('Composition must contain only positive integers.');
+    return;
+  }
+  const permStr = prompt(`Enter permutation of 0..${composition.length - 1} (e.g. "${Array.from({length: composition.length}, (_, i) => i).join(' ')}"):`);
+  if (!permStr) return;
+  const perm = permStr.trim().split(/\s+/).map(x => parseInt(x, 10)).filter(x => !isNaN(x));
+  if (perm.length !== composition.length) {
+    alert(`Permutation length (${perm.length}) must equal composition length (${composition.length}).`);
+    return;
+  }
+  const sorted = [...perm].sort((a, b) => a - b);
+  for (let i = 0; i < sorted.length; i++) {
+    if (sorted[i] !== i) {
+      alert(`Permutation must be a rearrangement of 0..${composition.length - 1}.`);
+      return;
+    }
+  }
+  const sumComp = composition.reduce((a, b) => a + b, 0);
+  const expectedLen = Math.pow(2, sumComp);
+  const seqArr = input.split(/\s+/).filter(s => s !== '');
+  if (seqArr.length !== expectedLen) {
+    alert(`Sequence length (${seqArr.length}) must equal 2^sum(composition) = ${expectedLen}.`);
+    return;
+  }
+
+  // Build the p (place-value) array
+  const k = composition.length;
+  const p: number[] = [1];
+  for (let i = 1; i < k; i++) {
+    p[i] = p[i - 1] * Math.pow(2, composition[perm[i - 1]]);
+  }
+  // Generate CDBHP index mapping
+  const z = expectedLen;
+  const o: number[] = new Array(z);
+  for (let m = 0; m < z; m++) {
+    let t = m;
+    const j: number[] = new Array(k);
+    for (let i = 0; i < k; i++) {
+      const n = Math.pow(2, composition[i]);
+      j[i] = t % n;
+      t = (t - j[i]) / n;
+    }
+    let f = 0;
+    for (let i = 0; i < k; i++) {
+      f += j[perm[i]] * p[i];
+    }
+    o[m] = f;
+  }
+  // Apply the permutation
+  textResult.value = o.map(idx => seqArr[idx]).join(' ');
+  addResultOpToHistory('Hierarchical Permute (H)', input, textResult.value, { composition: compStr.trim(), permutation: permStr.trim() });
 }
 
 // --- Unary Tritwise Operations ---

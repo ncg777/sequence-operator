@@ -9,6 +9,7 @@ import {
   cyclicalAntidifference,
   cyclicalDifference,
   difference,
+  hierarchicalPermute,
   permuteBlocks,
   reverse,
   rotate,
@@ -112,6 +113,18 @@ program
   .action(({ sequence, permutation }) => {
     const parsedPermutation = permutation.trim().split(/\s+/).map(Number);
     console.log(permuteBlocks(sequence, parsedPermutation));
+  });
+
+program
+  .command('hierarchical-permute')
+  .description('Apply a composition-driven binary hierarchical permutation (CDBHP) to a sequence')
+  .requiredOption('-s, --sequence <sequence>', 'Sequence (space-separated integers, length must be 2^sum(composition))')
+  .requiredOption('-c, --composition <composition>', 'Composition (space-separated positive integers, e.g. "1 2 1")')
+  .requiredOption('-p, --permutation <permutation>', 'Permutation of 0..k-1 where k = composition length (e.g. "2 0 1")')
+  .action(({ sequence, composition, permutation }) => {
+    const comp = composition.trim().split(/\s+/).map(Number);
+    const perm = permutation.trim().split(/\s+/).map(Number);
+    console.log(hierarchicalPermute(sequence, comp, perm));
   });
 
 program

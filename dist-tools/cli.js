@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, permuteBlocks, reverse, rotate, signs, timesN, unaryTritwise, } from './lib.js';
+import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, reverse, rotate, signs, timesN, unaryTritwise, } from './lib.js';
 const program = new Command();
 program
     .name('sequence-operator')
@@ -84,6 +84,17 @@ program
     .action(({ sequence, permutation }) => {
     const parsedPermutation = permutation.trim().split(/\s+/).map(Number);
     console.log(permuteBlocks(sequence, parsedPermutation));
+});
+program
+    .command('hierarchical-permute')
+    .description('Apply a composition-driven binary hierarchical permutation (CDBHP) to a sequence')
+    .requiredOption('-s, --sequence <sequence>', 'Sequence (space-separated integers, length must be 2^sum(composition))')
+    .requiredOption('-c, --composition <composition>', 'Composition (space-separated positive integers, e.g. "1 2 1")')
+    .requiredOption('-p, --permutation <permutation>', 'Permutation of 0..k-1 where k = composition length (e.g. "2 0 1")')
+    .action(({ sequence, composition, permutation }) => {
+    const comp = composition.trim().split(/\s+/).map(Number);
+    const perm = permutation.trim().split(/\s+/).map(Number);
+    console.log(hierarchicalPermute(sequence, comp, perm));
 });
 program
     .command('unary-tritwise')

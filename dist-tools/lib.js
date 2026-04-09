@@ -99,6 +99,60 @@ export function permuteBlocks(sequence, permutation) {
     }
     return permuted.join(' ');
 }
+/**
+ * Generate a Composition-Driven Binary Hierarchical Permutation and apply it
+ * to a sequence.  The sequence length must equal 2^sum(composition).
+ *
+ * @param sequence     Space-separated integers to permute.
+ * @param composition  Array of positive integers defining binary subdivision levels.
+ * @param permutation  A permutation of {0 … k-1} where k = composition.length.
+ */
+export function hierarchicalPermute(sequence, composition, permutation) {
+    const k = composition.length;
+    if (permutation.length !== k) {
+        throw new Error(`Composition length (${k}) must equal permutation length (${permutation.length}).`);
+    }
+    for (let i = 0; i < k; i++) {
+        if (!Number.isInteger(composition[i]) || composition[i] < 1) {
+            throw new Error(`Composition values must be positive integers (got ${composition[i]} at index ${i}).`);
+        }
+    }
+    const sortedPerm = [...permutation].sort((a, b) => a - b);
+    for (let i = 0; i < k; i++) {
+        if (sortedPerm[i] !== i) {
+            throw new Error(`Permutation must be a rearrangement of 0..${k - 1} (got ${permutation.join(', ')}).`);
+        }
+    }
+    const sumComp = composition.reduce((a, b) => a + b, 0);
+    const z = Math.pow(2, sumComp);
+    const seqArr = sequence.trim().split(/\s+/).filter(s => s !== '');
+    if (seqArr.length !== z) {
+        throw new Error(`Sequence length (${seqArr.length}) must equal 2^sum(composition) = ${z}.`);
+    }
+    // Build the p (place-value) array
+    const p = [1];
+    for (let i = 1; i < k; i++) {
+        p[i] = p[i - 1] * Math.pow(2, composition[permutation[i - 1]]);
+    }
+    // Generate the CDBHP index mapping
+    const o = new Array(z);
+    for (let m = 0; m < z; m++) {
+        let t = m;
+        const j = new Array(k);
+        for (let i = 0; i < k; i++) {
+            const n = Math.pow(2, composition[i]);
+            j[i] = t % n;
+            t = (t - j[i]) / n;
+        }
+        let f = 0;
+        for (let i = 0; i < k; i++) {
+            f += j[permutation[i]] * p[i];
+        }
+        o[m] = f;
+    }
+    // Apply the permutation: newResult[i] = sequence[o[i]]
+    return o.map(idx => seqArr[idx]).join(' ');
+}
 /** Apply a unary tritwise operation to every element in the sequence. */
 export function unaryTritwise(sequence, op) {
     const fn = UNARY_TRITWISE_OPS[op];

@@ -11,6 +11,7 @@ import {
   cyclicalAntidifference,
   cyclicalDifference,
   difference,
+  hierarchicalPermute,
   permuteBlocks,
   reverse,
   rotate,
@@ -145,6 +146,19 @@ server.tool(
   },
   ({ sequence, permutation }) => ({
     content: [{ type: 'text', text: permuteBlocks(sequence, permutation) }],
+  })
+);
+
+server.tool(
+  'hierarchical_permute',
+  'Apply a composition-driven binary hierarchical permutation (CDBHP) to a sequence. The sequence length must equal 2^sum(composition). The composition defines binary subdivision levels and the permutation reorders them hierarchically.',
+  {
+    sequence:    z.string().describe('Sequence (space-separated integers, length must be 2^sum(composition))'),
+    composition: z.array(z.number().int().min(1)).describe('Composition array of positive integers defining binary subdivision levels (e.g. [1, 2, 1])'),
+    permutation: z.array(z.number().int().min(0)).describe('Permutation of 0..k-1 where k = composition length (e.g. [2, 0, 1])'),
+  },
+  ({ sequence, composition, permutation }) => ({
+    content: [{ type: 'text', text: hierarchicalPermute(sequence, composition, permutation) }],
   })
 );
 
