@@ -2,7 +2,7 @@
   "name": "sequence-operator",
   "homepage": "https://github.com/ncg777/sequence-operator",
   "type": "module",
-  "version": "2026.6.12",
+  "version": "2026.6.13",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
@@ -22,7 +22,7 @@
     "eslint": "^9.18.0",
     "eslint-plugin-vue": "^9.32.0",
     "roboto-fontface": "*",
-    "ultra-mega-enumerator": "^2026.6.12",
+    "ultra-mega-enumerator": "^2026.6.13",
     "vue": "^3.4.31",
     "vuetify": "^3.6.14"
   },
