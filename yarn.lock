@@ -6096,7 +6096,7 @@ __metadata:
     sass: "npm:1.77.8"
     sass-embedded: "npm:^1.77.8"
     typescript: "npm:^5.8.3"
-    ultra-mega-enumerator: "npm:^2026.6.20"
+    ultra-mega-enumerator: "npm:^2026.6.30"
     unplugin-fonts: "npm:^1.1.1"
     unplugin-vue-components: "npm:^0.27.2"
     vite: "npm:^5.4.10"
@@ -6706,13 +6706,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ultra-mega-enumerator@npm:^2026.6.20":
-  version: 2026.6.20
-  resolution: "ultra-mega-enumerator@npm:2026.6.20"
+"ultra-mega-enumerator@npm:^2026.6.30":
+  version: 2026.6.30
+  resolution: "ultra-mega-enumerator@npm:2026.6.30"
   dependencies:
     "@types/node": "npm:^22.5.1"
     yarn: "npm:^1.22.22"
-  checksum: 10c0/c7979ee69960b8b6fc0c14f35a013a0d0577bc3d0dda23dfa3743e7cd016bbc0bddc0616c0e1c3d9ea13e63c8f2ad194e5e0e066e31be7d4608c884dcf2b44a9
+  checksum: 10c0/27ef7b198cd8fc71a69bb0eddfa59c300aa08662917a98542872d900ebc7d1b0720ca0fde5b8f751d2b53ae064659e14b7a56619e1f8d35028ed7179373eeb42
   languageName: node
   linkType: hard
 
