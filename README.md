@@ -118,3 +118,4 @@ Add the following to your Claude Desktop configuration (`claude_desktop_config.j
 | `list_combiners` | List all available combiners |
 | `list_operations` | List all available operations |
 
+ 
