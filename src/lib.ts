@@ -202,3 +202,17 @@ export function unaryTritwise(sequence: string, op: UnaryTritwiseOpName): string
   const numbers = parseSeq(sequence).toArray().map(fn);
   return new Sequence(...numbers).toString();
 }
+
+/**
+ * Compute the orbit of a permutation. The sequence must be a valid permutation
+ * of 0..n-1 (n = sequence length). The permutation is repeatedly composed with
+ * itself until it returns to the identity; the permutation number of each step
+ * along the way (including the final identity) is returned as the result.
+ *
+ * Throws an error if the sequence is not a valid permutation.
+ */
+export function permutationOrbit(sequence: string): string {
+  const permutation = parseSeq(sequence).toArray();
+  const orbit = Numbers.getPermutationOrbitNumbers(permutation);
+  return orbit.join(' ');
+}

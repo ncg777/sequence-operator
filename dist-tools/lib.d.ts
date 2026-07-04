@@ -44,3 +44,12 @@ export declare function permuteBlocks(sequence: string, permutation: number[]): 
 export declare function hierarchicalPermute(sequence: string, composition: number[], permutation: number[]): string;
 /** Apply a unary tritwise operation to every element in the sequence. */
 export declare function unaryTritwise(sequence: string, op: UnaryTritwiseOpName): string;
+/**
+ * Compute the orbit of a permutation. The sequence must be a valid permutation
+ * of 0..n-1 (n = sequence length). The permutation is repeatedly composed with
+ * itself until it returns to the identity; the permutation number of each step
+ * along the way (including the final identity) is returned as the result.
+ *
+ * Throws an error if the sequence is not a valid permutation.
+ */
+export declare function permutationOrbit(sequence: string): string;

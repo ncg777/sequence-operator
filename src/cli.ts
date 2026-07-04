@@ -11,6 +11,7 @@ import {
   difference,
   hierarchicalPermute,
   permuteBlocks,
+  permutationOrbit,
   reverse,
   rotate,
   signs,
@@ -134,6 +135,14 @@ program
   .requiredOption('-o, --op <op>', `Operation: ${Object.keys(UNARY_TRITWISE_OPS).join(', ')}`)
   .action(({ sequence, op }) => {
     console.log(unaryTritwise(sequence, op as UnaryTritwiseOpName));
+  });
+
+program
+  .command('permutation-orbit')
+  .description('Compute the orbit of a permutation: repeatedly compose it with itself until it returns to the identity, returning the permutation number of each step')
+  .requiredOption('-s, --sequence <sequence>', 'Sequence representing a permutation of 0..n-1 (space-separated integers)')
+  .action(({ sequence }) => {
+    console.log(permutationOrbit(sequence));
   });
 
 program.parse();

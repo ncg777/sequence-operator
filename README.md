@@ -58,6 +58,10 @@ node dist-tools/cli.js unary-tritwise -s "1 -1 0 2 -2" -o Not
 # Hierarchical permute (CDBHP)
 node dist-tools/cli.js hierarchical-permute -s "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15" -c "1 2 1" -p "2 0 1"
 # → 0 2 4 6 8 10 12 14 1 3 5 7 9 11 13 15
+
+# Permutation orbit
+node dist-tools/cli.js permutation-orbit -s "1 2 0"
+# → 3 4 -5
 ```
 
 Run `node dist-tools/cli.js --help` or `node dist-tools/cli.js <command> --help` for the full list of options.
@@ -115,6 +119,7 @@ Add the following to your Claude Desktop configuration (`claude_desktop_config.j
 | `permute_blocks` | Reorder equally-sized blocks of a sequence |
 | `hierarchical_permute` | Apply a composition-driven binary hierarchical permutation (CDBHP) |
 | `unary_tritwise` | Apply a unary balanced-ternary operation element-wise |
+| `permutation_orbit` | Compute the orbit of a permutation, returning the permutation number of each step until it returns to the identity |
 | `list_combiners` | List all available combiners |
 | `list_operations` | List all available operations |
 

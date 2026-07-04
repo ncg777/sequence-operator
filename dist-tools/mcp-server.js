@@ -2,7 +2,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, reverse, rotate, signs, timesN, unaryTritwise, } from './lib.js';
+import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, permutationOrbit, reverse, rotate, signs, timesN, unaryTritwise, } from './lib.js';
 const COMBINER_VALUES = COMBINERS;
 const OPERATION_VALUES = OPERATIONS;
 const TRIT_OP_VALUES = Object.keys(UNARY_TRITWISE_OPS);
@@ -80,6 +80,11 @@ server.tool('unary_tritwise', 'Apply a unary tritwise (balanced-ternary) operati
     op: z.enum(TRIT_OP_VALUES).describe(`Unary tritwise operation: ${TRIT_OP_VALUES.join(', ')}`),
 }, ({ sequence, op }) => ({
     content: [{ type: 'text', text: unaryTritwise(sequence, op) }],
+}));
+server.tool('permutation_orbit', 'Compute the orbit of a permutation. The sequence must be a valid permutation of 0..n-1 (n = sequence length). The permutation is repeatedly composed with itself until it returns to the identity; the permutation number of each step along the way (including the final identity) is returned. Throws an error if the sequence is not a valid permutation.', {
+    sequence: z.string().describe('Sequence representing a permutation of 0..n-1 (space-separated integers)'),
+}, ({ sequence }) => ({
+    content: [{ type: 'text', text: permutationOrbit(sequence) }],
 }));
 server.tool('list_combiners', 'List all available combiners for the combine operation.', {}, () => ({
     content: [{ type: 'text', text: COMBINERS.join('\n') }],

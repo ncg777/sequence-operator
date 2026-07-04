@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, reverse, rotate, signs, timesN, unaryTritwise, } from './lib.js';
+import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, permutationOrbit, reverse, rotate, signs, timesN, unaryTritwise, } from './lib.js';
 const program = new Command();
 program
     .name('sequence-operator')
@@ -103,5 +103,12 @@ program
     .requiredOption('-o, --op <op>', `Operation: ${Object.keys(UNARY_TRITWISE_OPS).join(', ')}`)
     .action(({ sequence, op }) => {
     console.log(unaryTritwise(sequence, op));
+});
+program
+    .command('permutation-orbit')
+    .description('Compute the orbit of a permutation: repeatedly compose it with itself until it returns to the identity, returning the permutation number of each step')
+    .requiredOption('-s, --sequence <sequence>', 'Sequence representing a permutation of 0..n-1 (space-separated integers)')
+    .action(({ sequence }) => {
+    console.log(permutationOrbit(sequence));
 });
 program.parse();

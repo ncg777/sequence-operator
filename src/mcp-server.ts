@@ -13,6 +13,7 @@ import {
   difference,
   hierarchicalPermute,
   permuteBlocks,
+  permutationOrbit,
   reverse,
   rotate,
   signs,
@@ -171,6 +172,17 @@ server.tool(
   },
   ({ sequence, op }) => ({
     content: [{ type: 'text', text: unaryTritwise(sequence, op as UnaryTritwiseOpName) }],
+  })
+);
+
+server.tool(
+  'permutation_orbit',
+  'Compute the orbit of a permutation. The sequence must be a valid permutation of 0..n-1 (n = sequence length). The permutation is repeatedly composed with itself until it returns to the identity; the permutation number of each step along the way (including the final identity) is returned. Throws an error if the sequence is not a valid permutation.',
+  {
+    sequence: z.string().describe('Sequence representing a permutation of 0..n-1 (space-separated integers)'),
+  },
+  ({ sequence }) => ({
+    content: [{ type: 'text', text: permutationOrbit(sequence) }],
   })
 );
 
