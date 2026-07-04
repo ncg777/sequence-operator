@@ -157,6 +157,11 @@
             <v-btn color="darkgray" @click="hierarchicalPermuteSeq()" block title="Hierarchical Permute">H</v-btn>
           </v-col>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
+            <v-btn color="darkgray" @click="permutationOrbitSeq()" block title="Permutation Orbit">
+              <v-icon>mdi-atom</v-icon>
+            </v-btn>
+          </v-col>
+          <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
             <v-menu>
               <template v-slot:activator="{ props }">
                 <v-btn v-bind="props" color="darkgray" block title="Unary Tritwise">▽</v-btn>
@@ -764,8 +769,8 @@ const recallHistory = (index: number) => {
     textX.value = (entry as CombineEntry).x;
     textY.value = (entry as CombineEntry).y;
     textResult.value = entry.result;
-    combiner.value = Combiner[(entry as CombineEntry).combiner as keyof typeof Combiner];
-    operation.value = Operation[(entry as CombineEntry).operation as keyof typeof Operation];
+    combiner.value = (entry as CombineEntry).combiner as Combiner;
+    operation.value = (entry as CombineEntry).operation as Operation;
   }
   showHistoryDialog.value = false;
 };
@@ -927,6 +932,25 @@ function hierarchicalPermuteSeq() {
   // Apply the permutation
   textResult.value = o.map(idx => seqArr[idx]).join(' ');
   addResultOpToHistory('Hierarchical Permute (H)', input, textResult.value, { composition: compStr.trim(), permutation: permStr.trim() });
+}
+
+// --- Permutation Orbit Operation ---
+function permutationOrbitSeq() {
+  const input = textResult.value.trim();
+  if (!input) {
+    alert("Result sequence is empty.");
+    return;
+  }
+  const permutation = Sequence.parse(input).toArray();
+  let orbit: number[];
+  try {
+    orbit = Numbers.getPermutationOrbitNumbers(permutation);
+  } catch (e) {
+    alert(`Result is not a valid permutation: ${(e as Error).message}`);
+    return;
+  }
+  textResult.value = orbit.join(' ');
+  addResultOpToHistory('Permutation Orbit (⚛)', input, textResult.value);
 }
 
 // --- Unary Tritwise Operations ---
