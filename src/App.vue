@@ -558,6 +558,7 @@
                   <li><strong>π Permute Blocks</strong> - Splits the sequence into blocks and reorders them according to a user-supplied permutation (see below).</li>
                   <li><strong>▽ Unary Tritwise</strong> - Applies a chosen unary tritwise (balanced ternary) operation element-wise to the result sequence. Options: Buf, Not, Pnot, Nnot, Abs, Clu, Cld, Inc, Dec, Rtu, Rtd, Isp, Isz, Isn.</li>
                   <li><strong>H Hierarchical Permute</strong> - Applies a Composition-Driven Binary Hierarchical Permutation (CDBHP) to the result sequence. Prompts for a composition and a permutation (see below).</li>
+                  <li><strong><v-icon size="small">mdi-atom</v-icon> Permutation Orbit</strong> - Treats the result sequence as a permutation and computes the sequence of permutation numbers visited by repeatedly composing the permutation with itself, until it returns to the identity (see below).</li>
                 </ul>
                 <p><strong>π Permute Blocks:</strong></p>
                 <p>
@@ -572,6 +573,14 @@
                   The result sequence length must equal <code>2^sum(composition)</code>.
                   <br>
                   Example: Sequence of 16 elements (<code>0 1 2 … 15</code>), composition <code>1 2 1</code>, permutation <code>2 0 1</code> produces a hierarchical reordering of all 16 elements.
+                </p>
+                <p><strong><v-icon size="small">mdi-atom</v-icon> Permutation Orbit:</strong></p>
+                <p>
+                  The result sequence must be a valid permutation of <code>0..n-1</code> (each value from 0 to n-1, no duplicates), where n is the length of the sequence. The permutation is repeatedly composed with itself (i.e. re-applied to its own previous result) until it returns to the identity permutation. Each step along the way, including the final identity, is converted to its permutation number (its rank among all permutations of the same length), and these numbers become the new result sequence.
+                  <br>
+                  If the current result is not a valid permutation (wrong values, duplicates, or non-integers), an error message is shown and the result is left unchanged.
+                  <br>
+                  Example: Sequence <code>1 2 0</code> (a 3-cycle) → Output: <code>3 4 -5</code> (the permutation numbers of <code>1 2 0</code>, then <code>2 0 1</code>, then the identity <code>0 1 2</code>).
                 </p>
                 <h4>Examples</h4>
                 <p><strong>Cyclical Difference (Δ):</strong></p>
