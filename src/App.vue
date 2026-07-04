@@ -135,19 +135,19 @@
 
         <v-row>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
-            <v-btn color="darkgray" @click="reverseSeq()" block><v-icon left>mdi-rewind</v-icon></v-btn>
+            <v-btn color="darkgray" @click="reverseSeq()" block title="Reverse"><v-icon left>mdi-rewind</v-icon></v-btn>
           </v-col>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
-            <v-btn color="darkgray" @click="rotateSeq()" block><v-icon left>mdi-refresh</v-icon></v-btn>
+            <v-btn color="darkgray" @click="rotateSeq()" block title="Rotate"><v-icon left>mdi-refresh</v-icon></v-btn>
           </v-col>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
-            <v-btn color="darkgray" @click="cyclicalDifferenceSeq()" block>Δ</v-btn>
+            <v-btn color="darkgray" @click="cyclicalDifferenceSeq()" block title="Cyclical Difference">Δ</v-btn>
           </v-col>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
-            <v-btn color="darkgray" @click="cyclicalAntidifferenceSeq()" block>∑</v-btn>
+            <v-btn color="darkgray" @click="cyclicalAntidifferenceSeq()" block title="Cyclical Antidifference">∑</v-btn>
           </v-col>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
-            <v-btn color="darkgray" @click="timesNSeq()" block>×n</v-btn>
+            <v-btn color="darkgray" @click="timesNSeq()" block title="Times n">×n</v-btn>
           </v-col>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
             <!-- Permute Blocks Button (Symbol: π) -->
