@@ -5,7 +5,8 @@
         <v-row>
           <v-col cols="12" class="pa-1">
             <h1 class="banner">
-              Sequence Operator
+              <span class="banner-title">SEQ·OP</span>
+              <span class="banner-version">v{{ appVersion }}</span>
               <v-btn 
                 icon 
                 @click="showHelpDialog = true" 
@@ -180,24 +181,66 @@
         </v-row>
 
         <!-- Memory Dialog -->
-        <v-dialog v-model="showMemoryDialog" max-width="800" class="pa-1" scrollable>
-          <v-card>
+        <v-dialog v-model="showMemoryDialog" max-width="640" class="pa-1 memory-dialog" scrollable>
+          <v-card class="memory-card">
             <v-card-title><span><v-icon left>mdi-memory</v-icon>Memory</span>
               <v-btn @click="showMemoryDialog = false" icon :style="'float:right;text-align:right;'"><v-icon>mdi-window-close</v-icon></v-btn>
             </v-card-title>
             <v-card-text>              
-              <v-list class="pa-0">
+              <v-list class="pa-0 memory-list">
                 <v-list-item
                   v-for="(seq, index) in memoryList"
                   :key="index"
-                  :class="{'pa-0': true}"
+                  :class="{'pa-0': true, 'memory-list-item': true}"
                 >
 
                   <v-row>
                     <v-col cols="12" md="12" class="px-0" :style="'position:absolute;text-align:right; padding-right:0; margin-right:0;'">
                       <v-btn
+                         icon
+                         :size="isMobile ? 'small' : 'x-small'"
+                         :style="'z-index:999'"
+                         class="pa-1"
+                         @click="copyMemorySequence(index)"
+                         title="Copy sequence"
+                       >
+                         <v-icon size="small">mdi-clipboard-outline</v-icon>
+                       </v-btn>
+                       <v-btn
+                         icon
+                         :size="isMobile ? 'small' : 'x-small'"
+                         :style="'z-index:999'"
+                         class="pa-1"
+                         @click="setComposeSource(index)"
+                         :title="composeSourceIndex === index ? 'Selected as source' : 'Use as source for compose'"
+                       >
+                         <v-icon size="small">{{ composeSourceIndex === index ? 'mdi-check-circle' : 'mdi-target' }}</v-icon>
+                       </v-btn>
+                       <v-btn
+                         icon
+                         :size="isMobile ? 'small' : 'x-small'"
+                         :style="'z-index:999'"
+                         class="pa-1"
+                         :disabled="composeSourceIndex === null"
+                         @click="prependToMemory(index)"
+                         title="Prepend selected source to this sequence"
+                       >
+                         <v-icon size="small">mdi-arrow-collapse-left</v-icon>
+                       </v-btn>
+                       <v-btn
+                         icon
+                         :size="isMobile ? 'small' : 'x-small'"
+                         :style="'z-index:999'"
+                         class="pa-1"
+                         :disabled="composeSourceIndex === null"
+                         @click="appendToMemory(index)"
+                         title="Append selected source to this sequence"
+                       >
+                         <v-icon size="small">mdi-arrow-collapse-right</v-icon>
+                       </v-btn>
+                      <v-btn
                           icon
-                          :size="isMobile ? 'small' : 'medium'"
+                          :size="isMobile ? 'small' : 'x-small'"
                           :style="'z-index:999'"
                           @click="recall(index)"
                           class="pa-1"
@@ -207,7 +250,7 @@
                         
                         <v-btn
                           icon
-                          :size="isMobile ? 'small' : 'medium'"
+                          :size="isMobile ? 'small' : 'x-small'"
                           :style="'z-index:999'"
                           class="pa-1"
                           @click="deleteSequence(index)"
@@ -221,7 +264,9 @@
                       <v-text-field
                           v-model="memoryList[index]"
                           outlined
-                          dense
+                          density="compact"
+                          hide-details
+                          class="memory-entry-field"
                           :label="`M[${index}] (${memSize(index)})`"
                           :placeholder="'0 1 2...'"
                         ></v-text-field>
@@ -231,6 +276,7 @@
               </v-list>
           </v-card-text>
           <v-card-actions>
+            <span class="memory-compose-label" v-if="composeSourceIndex !== null">source: M[{{ composeSourceIndex }}]</span>
             <v-btn @click="promptSequence" icon><v-icon>mdi-plus</v-icon></v-btn>
           </v-card-actions>
           </v-card>
@@ -597,6 +643,8 @@
                   <li><strong>Saving to Memory</strong> - Click the <v-icon size="small">mdi-content-save</v-icon> Save button to store the current result sequence in memory.</li>
                   <li><strong>Viewing Memory</strong> - Click the <v-icon size="small">mdi-memory</v-icon> Memory button to open the memory dialog, which lists all stored sequences with their indices and sizes.</li>
                   <li><strong>Recalling a Sequence</strong> - In the memory dialog, click the <v-icon size="small">mdi-arrow-down</v-icon> Recall button next to a sequence to load it into the result field.</li>
+                  <li><strong>Copying Any Sequence</strong> - In the memory dialog, click <v-icon size="small">mdi-clipboard-outline</v-icon> on any row to copy that full sequence.</li>
+                  <li><strong>Prepend/Append Composition</strong> - Click <v-icon size="small">mdi-target</v-icon> on a source row, then use <v-icon size="small">mdi-arrow-collapse-left</v-icon> or <v-icon size="small">mdi-arrow-collapse-right</v-icon> on any target row to prepend or append and build larger phrases quickly.</li>
                   <li><strong>Editing a Sequence</strong> - In the memory dialog, edit the text field labeled <code>M[index]</code> to modify a stored sequence.</li>
                   <li><strong>Deleting a Sequence</strong> - In the memory dialog, click the <v-icon size="small">mdi-delete</v-icon> Delete button next to a sequence to remove it from memory.</li>
                   <li><strong>Adding a New Sequence</strong> - In the memory dialog, click the <v-icon size="small">mdi-plus</v-icon> Add button to prompt for a new sequence to store.</li>
@@ -722,6 +770,7 @@ const wordSize = ref<number>(16);
 const showMemoryDialog = ref(false);
 const showHelpDialog = ref(false);
 const memoryList = ref<string[]>([]);
+const composeSourceIndex = ref<number | null>(null);
 
 type CombineEntry = { type?: 'combine'; x: string; y: string; combiner: string; operation: string; result: string; timestamp: string };
 type ResultOpEntry = { type: 'result-op'; resultOp: string; params?: Record<string, string | number>; input: string; result: string; timestamp: string };
@@ -1123,6 +1172,9 @@ const copySequence = (seq: string) => {
   if (!seq) return;
   navigator.clipboard.writeText(seq);
 };
+const copyMemorySequence = (index: number) => {
+  copySequence(memoryList.value[index] ?? '');
+};
 const memorizeResult = () => {
   addSequence(getAsNumbers(textResult.value).map(String).join(' '));
   alert("sequence saved");
@@ -1239,6 +1291,11 @@ const recall = (index: number) => {
 
 
 const deleteSequence = (index: number) => {
+  if (composeSourceIndex.value === index) {
+    composeSourceIndex.value = null;
+  } else if (composeSourceIndex.value !== null && composeSourceIndex.value > index) {
+    composeSourceIndex.value -= 1;
+  }
   memoryList.value.splice(index, 1);
 };
 
@@ -1253,6 +1310,21 @@ const addSequence = (seq:string) => {
     memoryList.value.push(getAsNumbers(seq).join(' '));
   }
 };
+const setComposeSource = (index: number) => {
+  composeSourceIndex.value = index;
+};
+const prependToMemory = (targetIndex: number) => {
+  if (composeSourceIndex.value === null) return;
+  const source = getAsNumbers(memoryList.value[composeSourceIndex.value] ?? '');
+  const target = getAsNumbers(memoryList.value[targetIndex] ?? '');
+  memoryList.value[targetIndex] = formatSequence(source.concat(target));
+};
+const appendToMemory = (targetIndex: number) => {
+  if (composeSourceIndex.value === null) return;
+  const source = getAsNumbers(memoryList.value[composeSourceIndex.value] ?? '');
+  const target = getAsNumbers(memoryList.value[targetIndex] ?? '');
+  memoryList.value[targetIndex] = formatSequence(target.concat(source));
+};
 onMounted(() => {
   firstLoad.value=false;
 });
@@ -1264,9 +1336,21 @@ body, * {
 }
 .banner {
   text-align: center;
-  padding-bottom: 0.5em;
+  padding-bottom: 0.3em;
   padding-top:0;
   position: relative;
+  line-height: 1.1;
+}
+.banner-title {
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+}
+.banner-version {
+  margin-left: 0.4em;
+  font-size: 0.5em;
+  color: #77cc77;
+  vertical-align: middle;
 }
 .help-button {
   position: absolute;
@@ -1355,5 +1439,39 @@ p {
   color: #77cc77;
   font-size: 0.82em;
   font-weight: bold;
+}
+.memory-dialog {
+  font-size: 0.76rem;
+}
+.memory-card .v-card-title {
+  min-height: 34px;
+  padding: 6px 10px !important;
+}
+.memory-card .v-card-text {
+  padding: 8px !important;
+}
+.memory-card .v-card-actions {
+  min-height: 28px;
+  padding: 4px 8px 8px !important;
+}
+.memory-list-item {
+  min-height: 0 !important;
+}
+.memory-entry-field :deep(input) {
+  font-size: 0.74rem !important;
+  line-height: 1.1 !important;
+}
+.memory-entry-field :deep(.v-field__input) {
+  min-height: 28px !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+}
+.memory-entry-field :deep(.v-label.v-field-label) {
+  font-size: 0.7rem !important;
+}
+.memory-compose-label {
+  font-size: 0.66rem;
+  opacity: 0.85;
+  margin-right: auto;
 }
 </style>
