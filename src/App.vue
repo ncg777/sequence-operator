@@ -195,71 +195,73 @@
                 >
 
                   <v-row no-gutters>
-                    <v-col cols="12" md="12" class="px-0 memory-actions-col">
+                    <v-col cols="12" md="12" class="px-4 memory-actions-col" :style="'position:absolute;text-align:right;padding-right:0;margin-top:2em;'">
                       <v-btn
                          icon
-                         :size="isMobile ? 'small' : 'x-small'"
-                         :style="'z-index:999'"
-                         class="pa-1"
+                         size="x-small"
+                         density="compact"
+                         variant="text"
                          @click="copyMemorySequence(index)"
                          title="Copy sequence"
                        >
-                         <v-icon size="small">mdi-clipboard-outline</v-icon>
+                         <v-icon size="x-small">mdi-clipboard-outline</v-icon>
                        </v-btn>
                        <v-btn
                          icon
-                         :size="isMobile ? 'small' : 'x-small'"
-                         :style="'z-index:999'"
-                         class="pa-1"
+                         size="x-small"
+                         density="compact"
+                         variant="text"
                          @click="setComposeSource(index)"
                          :title="composeSourceIndex === index ? 'Selected as source' : 'Use as source for compose'"
                        >
-                         <v-icon size="small">{{ composeSourceIndex === index ? 'mdi-check-circle' : 'mdi-target' }}</v-icon>
+                         <v-icon size="x-small">{{ composeSourceIndex === index ? 'mdi-check-circle' : 'mdi-target' }}</v-icon>
                        </v-btn>
                        <v-btn
                          icon
-                         :size="isMobile ? 'small' : 'x-small'"
-                         :style="'z-index:999'"
-                         class="pa-1"
+                         size="x-small"
+                         density="compact"
+                         variant="text"
                          :disabled="composeSourceIndex === null"
                          @click="prependToMemory(index)"
                          title="Prepend selected source to this sequence"
                        >
-                         <v-icon size="small">mdi-arrow-collapse-left</v-icon>
+                         <v-icon size="x-small">mdi-arrow-collapse-left</v-icon>
                        </v-btn>
                        <v-btn
                          icon
-                         :size="isMobile ? 'small' : 'x-small'"
-                         :style="'z-index:999'"
-                         class="pa-1"
+                         size="x-small"
+                         density="compact"
+                         variant="text"
                          :disabled="composeSourceIndex === null"
                          @click="appendToMemory(index)"
                          title="Append selected source to this sequence"
                        >
-                         <v-icon size="small">mdi-arrow-collapse-right</v-icon>
+                         <v-icon size="x-small">mdi-arrow-collapse-right</v-icon>
                        </v-btn>
                       <v-btn
                           icon
-                          :size="isMobile ? 'small' : 'x-small'"
-                          :style="'z-index:999'"
+                          size="x-small"
+                          density="compact"
+                          variant="text"
                           @click="recall(index)"
-                          class="pa-1"
+                          title="Recall sequence"
                         >
-                          <v-icon>mdi-arrow-down</v-icon>
+                          <v-icon size="x-small">mdi-arrow-down</v-icon>
                         </v-btn>
                         
                         <v-btn
                           icon
-                          :size="isMobile ? 'small' : 'x-small'"
-                          :style="'z-index:999'"
-                          class="pa-1"
+                          size="x-small"
+                          density="compact"
+                          variant="text"
                           @click="deleteSequence(index)"
+                          title="Delete sequence"
                         >
-                          <v-icon>mdi-delete</v-icon>
+                          <v-icon size="x-small">mdi-delete</v-icon>
                         </v-btn>
                     </v-col>
                   </v-row>
-                  <v-row>
+                  <v-row no-gutters>
                     <v-col cols="12" md="12" class="pa-1">
                       <v-text-field
                           v-model="memoryList[index]"
@@ -279,6 +281,32 @@
             <span class="memory-compose-label" v-if="composeSourceIndex !== null">source: M[{{ composeSourceIndex }}]</span>
             <v-btn @click="promptSequence" icon><v-icon>mdi-plus</v-icon></v-btn>
           </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <!-- Add Sequence Dialog -->
+        <v-dialog v-model="showAddSequenceDialog" max-width="480" class="pa-1">
+          <v-card>
+            <v-card-title>
+              <span><v-icon left>mdi-plus</v-icon>Add Sequence</span>
+              <v-btn @click="showAddSequenceDialog = false" icon :style="'float:right;text-align:right;'"><v-icon>mdi-window-close</v-icon></v-btn>
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="newSequenceInput"
+                outlined
+                dense
+                autofocus
+                label="New sequence"
+                placeholder="0 1 2..."
+                @keydown.enter="confirmAddSequence"
+              ></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn @click="showAddSequenceDialog = false">Cancel</v-btn>
+              <v-btn color="primary" @click="confirmAddSequence">Add</v-btn>
+            </v-card-actions>
           </v-card>
         </v-dialog>
 
@@ -1299,11 +1327,18 @@ const deleteSequence = (index: number) => {
   memoryList.value.splice(index, 1);
 };
 
+const showAddSequenceDialog = ref(false);
+const newSequenceInput = ref('');
 const promptSequence = () => {
-  const newSeq = prompt('Enter new sequence:');
+  newSequenceInput.value = '';
+  showAddSequenceDialog.value = true;
+};
+const confirmAddSequence = () => {
+  const newSeq = newSequenceInput.value;
   if (newSeq) {
     memoryList.value.push(getAsNumbers(newSeq).join(' '));
   }
+  showAddSequenceDialog.value = false;
 };
 const addSequence = (seq:string) => {
   if (seq) {
@@ -1459,10 +1494,29 @@ p {
   border-bottom: 1px solid #222;
   padding-top: 4px !important;
   padding-bottom: 4px !important;
+  position: relative;
 }
 .memory-actions-col {
   text-align: right;
   padding-bottom: 0 !important;
+  position: absolute;
+  top: 3px;
+  right: 6px;
+  width: auto;
+  max-width: none;
+  z-index: 999;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0;
+  background: transparent;
+  pointer-events: none;
+}
+.memory-actions-col .v-btn {
+  pointer-events: auto;
+  opacity: 0.85;
+}
+.memory-actions-col .v-btn:hover {
+  opacity: 1;
 }
 .memory-entry-field :deep(input) {
   font-size: 0.74rem !important;
