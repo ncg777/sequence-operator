@@ -5,7 +5,7 @@
         <v-row>
           <v-col cols="12" class="pa-1">
             <h1 class="banner">
-              <span class="banner-title">SEQ·OP</span>
+              <span class="banner-title">Sequence Operator</span>
               <span class="banner-version">v{{ appVersion }}</span>
               <v-btn 
                 icon 
@@ -194,8 +194,8 @@
                   :class="{'pa-0': true, 'memory-list-item': true}"
                 >
 
-                  <v-row>
-                    <v-col cols="12" md="12" class="px-0" :style="'position:absolute;text-align:right; padding-right:0; margin-right:0;'">
+                  <v-row no-gutters>
+                    <v-col cols="12" md="12" class="px-0 memory-actions-col">
                       <v-btn
                          icon
                          :size="isMobile ? 'small' : 'x-small'"
@@ -1342,9 +1342,9 @@ body, * {
   line-height: 1.1;
 }
 .banner-title {
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   font-weight: 700;
-  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  font-size: clamp(1.1rem, 3.6vw, 1.7rem);
 }
 .banner-version {
   margin-left: 0.4em;
@@ -1456,18 +1456,29 @@ p {
 }
 .memory-list-item {
   min-height: 0 !important;
+  border-bottom: 1px solid #222;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+.memory-actions-col {
+  text-align: right;
+  padding-bottom: 0 !important;
 }
 .memory-entry-field :deep(input) {
   font-size: 0.74rem !important;
   line-height: 1.1 !important;
 }
 .memory-entry-field :deep(.v-field__input) {
-  min-height: 28px !important;
-  padding-top: 2px !important;
-  padding-bottom: 2px !important;
+  min-height: 40px !important;
+  padding-top: 16px !important;
+  padding-bottom: 4px !important;
 }
-.memory-entry-field :deep(.v-label.v-field-label) {
-  font-size: 0.7rem !important;
+.memory-entry-field :deep(.v-field-label) {
+  top: 8px !important;
+}
+.memory-entry-field :deep(.v-field-label--floating) {
+  top: 2px !important;
+  font-size: 0.62rem !important;
 }
 .memory-compose-label {
   font-size: 0.66rem;
