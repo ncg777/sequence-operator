@@ -1,7 +1,5 @@
 <template>
-  <v-app>
-    <v-main>
-      <v-responsive class="align-center mx-auto pa-5" max-width="900">
+  <v-responsive class="align-center mx-auto pa-5" max-width="900">
         <v-row>
           <v-col cols="12" class="pa-1">
             <h1 class="banner">
@@ -775,15 +773,15 @@
           </v-card>
         </v-dialog>
       </v-responsive>
-    </v-main>
-  </v-app>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import { Combiner, Numbers, Operation, Sequence } from 'ultra-mega-enumerator';
 import { useDisplay } from 'vuetify';
-import pkg from '../package.json';
+import pkg from '../../package.json';
+import { useSharedState } from '@/composables/useSharedState';
+import type { CombineEntry } from '@/composables/useSharedState';
 const appVersion = pkg.version;
 // Initialize reactive variables
 const textX = ref<string>('');
@@ -791,19 +789,15 @@ const textY = ref<string>('');
 const textResult = ref<string>('');
 const combiner = ref<Combiner>(Combiner.Product);
 const operation = ref<Operation>(Operation.Add);
-const selectedNumberSystem = ref<number>(10);
-const wordSize = ref<number>(16);
+
+// Base, word size, memory and history are shared with the Patch editor.
+const { selectedNumberSystem, wordSize, memoryList, historyList } = useSharedState();
 
 // Initialize reactive variables
 const showMemoryDialog = ref(false);
 const showHelpDialog = ref(false);
-const memoryList = ref<string[]>([]);
 const composeSourceIndex = ref<number | null>(null);
 
-type CombineEntry = { type?: 'combine'; x: string; y: string; combiner: string; operation: string; result: string; timestamp: string };
-type ResultOpEntry = { type: 'result-op'; resultOp: string; params?: Record<string, string | number>; input: string; result: string; timestamp: string };
-type HistoryEntry = CombineEntry | ResultOpEntry;
-const historyList = ref<HistoryEntry[]>([]);
 const showHistoryDialog = ref(false);
 const addToHistory = () => {
   historyList.value.push({
@@ -815,7 +809,6 @@ const addToHistory = () => {
     result: textResult.value,
     timestamp: new Date().toLocaleString(),
   });
-  localStorage.setItem('SEQOP_historyList', JSON.stringify(historyList.value));
 };
 const addResultOpToHistory = (resultOp: string, input: string, result: string, params?: Record<string, string | number>) => {
   historyList.value.push({
@@ -826,26 +819,13 @@ const addResultOpToHistory = (resultOp: string, input: string, result: string, p
     result,
     timestamp: new Date().toLocaleString(),
   });
-  localStorage.setItem('SEQOP_historyList', JSON.stringify(historyList.value));
 };
 const deleteHistoryEntry = (index: number) => {
   historyList.value.splice(index, 1);
-  localStorage.setItem('SEQOP_historyList', JSON.stringify(historyList.value));
 };
 const truncate = (text: string) => {
   return text.length > 50 ? text.slice(0, 50) + '...' : text;
 };
-const loadHistoryFromStorage = () => {
-  try {
-    const storedHistory = localStorage.getItem('SEQOP_historyList');
-    if (storedHistory) {
-      historyList.value = JSON.parse(storedHistory);
-    }
-  } catch (error) {
-    historyList.value = [];
-  }
-};
-loadHistoryFromStorage();
 
 const recallHistory = (index: number) => {
   const entry = historyList.value[index];
@@ -863,7 +843,6 @@ const recallHistory = (index: number) => {
 
 const clearHistory = () => {
   historyList.value = [];
-  localStorage.removeItem('SEQOP_historyList');
 };
 // Define options for selects
 const combinerOptions = Object.values(Combiner);
@@ -1075,13 +1054,11 @@ watch(selectedNumberSystem, (newSys, oldSys) => {
     return;
   }
   updateSequences(newSys,oldSys,wordSize.value);
-  localStorage.setItem('SEQOP_sys', JSON.stringify(newSys));
-  
+
   wordSize.value = (newSys == 8 ? 12 : (newSys == 16 ? 16 : -1));
 });
 
 watch(wordSize, (newWordSize) => {
-  localStorage.setItem('SEQOP_wordsize', JSON.stringify(newWordSize));
   updateSequences(selectedNumberSystem.value, selectedNumberSystem.value, newWordSize);
 });
 
@@ -1255,61 +1232,7 @@ const resultSize = computed(() => {
 });
 
 // Load memory from local storage
-const loadFromStorage = () => {
-  try {
-    const storedMEM = localStorage.getItem('SEQOP_memoryList');
-    if (storedMEM) {
-      memoryList.value = JSON.parse(storedMEM);
-    }
-  } catch (error) {
-    memoryList.value = [];
-  }
-
-  // Load wordSize first
-  let storedWS = null;
-  try {
-    const storedWSRaw = localStorage.getItem('SEQOP_wordsize');
-    if (storedWSRaw) {
-      storedWS = JSON.parse(storedWSRaw);
-      wordSize.value = storedWS;
-    }
-  } catch (error) {
-    storedWS = null;
-  }
-
-  // Now load selectedNumberSystem
-  try {
-    const storedSysRaw = localStorage.getItem('SEQOP_sys');
-    if (storedSysRaw) {
-      selectedNumberSystem.value = JSON.parse(storedSysRaw);
-    } else {
-      selectedNumberSystem.value = 10;
-    }
-  } catch (error) {
-    selectedNumberSystem.value = 10;
-  }
-
-  // If wordSize wasn't loaded, set default based on selectedNumberSystem
-  if (storedWS === null) {
-    switch(selectedNumberSystem.value) {
-      case 16:
-        wordSize.value = 16;
-        break;
-      case 8:
-        wordSize.value = 12;
-        break;
-      case 10:
-        wordSize.value = -1;
-        break;
-    }
-  }
-};
-loadFromStorage();
-
-// Watch memoryList and save to local storage
-watch(memoryList, (newList) => {
-  localStorage.setItem('SEQOP_memoryList', JSON.stringify(newList));
-}, { deep: true });
+// Base, word size and memory are loaded and persisted by useSharedState.
 
 // Memory operations
 const recall = (index: number) => {
