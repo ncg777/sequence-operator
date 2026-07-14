@@ -7,5 +7,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    NodePalette: typeof import('./src/components/NodePalette.vue')['default']
+    PatchCanvas: typeof import('./src/components/PatchCanvas.vue')['default']
+    PatchNode: typeof import('./src/components/PatchNode.vue')['default']
+    PatchWire: typeof import('./src/components/PatchWire.vue')['default']
   }
 }
