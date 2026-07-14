@@ -89,13 +89,19 @@ export function outgoingEdges(graph: Graph, nodeId: string, port: string): Edge[
   return graph.edges.filter((e) => e.from.node === nodeId && e.from.port === port);
 }
 
-/** Build adjacency (node -> downstream node ids) from edges. */
-function buildAdjacency(graph: Graph): Map<string, Set<string>> {
-  const adj = new Map<string, Set<string>>();
-  for (const n of graph.nodes) adj.set(n.id, new Set());
+/**
+ * Build adjacency (node -> downstream node ids) from edges. One entry per
+ * edge is kept (not deduplicated) so that Kahn's algorithm below correctly
+ * matches indegree decrements to the same edges that incremented it — two
+ * nodes may be linked by more than one edge (e.g. the same source feeding
+ * two different input ports, such as `x` and `y`, on the same target node).
+ */
+function buildAdjacency(graph: Graph): Map<string, string[]> {
+  const adj = new Map<string, string[]>();
+  for (const n of graph.nodes) adj.set(n.id, []);
   for (const e of graph.edges) {
-    const set = adj.get(e.from.node);
-    if (set) set.add(e.to.node);
+    const list = adj.get(e.from.node);
+    if (list) list.push(e.to.node);
   }
   return adj;
 }
