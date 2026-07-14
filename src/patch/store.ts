@@ -35,7 +35,11 @@ function readMap(): Record<string, StoredProgram> {
 }
 
 function writeMap(map: Record<string, StoredProgram>): void {
-  localStorage.setItem(PROGRAMS_KEY, JSON.stringify(map));
+  try {
+    localStorage.setItem(PROGRAMS_KEY, JSON.stringify(map));
+  } catch {
+    // Ignore storage errors (QuotaExceededError, private mode, etc.)
+  }
 }
 
 export function listPrograms(): ProgramMeta[] {
@@ -83,7 +87,11 @@ let autosaveTimer: ReturnType<typeof setTimeout> | null = null;
 export function saveCurrent(graph: Graph): void {
   if (autosaveTimer) clearTimeout(autosaveTimer);
   autosaveTimer = setTimeout(() => {
-    localStorage.setItem(CURRENT_KEY, JSON.stringify(graph));
+    try {
+      localStorage.setItem(CURRENT_KEY, JSON.stringify(graph));
+    } catch {
+      // Ignore storage errors (QuotaExceededError, private mode, etc.)
+    }
   }, 300);
 }
 

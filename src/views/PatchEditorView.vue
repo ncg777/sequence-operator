@@ -208,15 +208,18 @@ let evalTimer: ReturnType<typeof setTimeout> | null = null;
 
 function evaluateNow() {
   evaluating.value = true;
-  results.value = evaluateGraph(graph, {
-    memory,
-    base: selectedNumberSystem.value,
-    wordSize: wordSize.value,
-    resolveProgram,
-    cache,
-    nonces,
-  });
-  evaluating.value = false;
+  try {
+    results.value = evaluateGraph(graph, {
+      memory,
+      base: selectedNumberSystem.value,
+      wordSize: wordSize.value,
+      resolveProgram,
+      cache,
+      nonces,
+    });
+  } finally {
+    evaluating.value = false;
+  }
 }
 function scheduleEval() {
   if (evalTimer) clearTimeout(evalTimer);
@@ -560,6 +563,7 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyDown);
+  if (evalTimer) clearTimeout(evalTimer);
 });
 </script>
 

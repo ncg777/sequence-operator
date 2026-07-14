@@ -14,16 +14,16 @@ export const PORT_GAP = 26;
 
 export type PortSide = 'in' | 'out';
 
-/** Vertical offset (within the node) of a port at the given index. */
+/** Vertical offset (within the node body, below the header) of a port at the given index. */
 export function portOffsetY(index: number): number {
-  return HEADER_H + PORT_TOP + index * PORT_GAP + PORT_GAP / 2;
+  return PORT_TOP + index * PORT_GAP + PORT_GAP / 2;
 }
 
 /** Absolute anchor position (graph coordinates) of a port. */
 export function portAnchor(node: NodeInstance, side: PortSide, index: number, nodeWidth = NODE_WIDTH): { x: number; y: number } {
   return {
     x: node.x + (side === 'in' ? 0 : nodeWidth),
-    y: node.y + portOffsetY(index),
+    y: node.y + HEADER_H + portOffsetY(index),
   };
 }
 

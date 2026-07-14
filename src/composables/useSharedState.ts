@@ -111,7 +111,7 @@ export function formatNumber(num: number, sys: number, wsize: number): string {
   if (sys == 10) return num.toString();
   const digits = wsize / (sys == 16 ? 4 : 3);
   const maxUnsigned = 1 << wsize;
-  const unsignedNum = num % maxUnsigned;
+  const unsignedNum = ((num % maxUnsigned) + maxUnsigned) % maxUnsigned;
   const str = unsignedNum.toString(sys).toUpperCase();
   return str.padStart(digits, '0');
 }

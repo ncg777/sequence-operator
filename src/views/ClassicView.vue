@@ -31,8 +31,8 @@
               v-model="wordSize"
               :items="getWordSizes(selectedNumberSystem)"
               label="Word Size (bits)"
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               :disabled="!selectedNumberSystem"
             ></v-select>
           </v-col>
@@ -1204,7 +1204,13 @@ const validateKeypress = (event: { key: string; preventDefault: () => void; }) =
   if (!selectedNumberSystem.value && !/[0-9\s-]/.test(event.key)) {
     event.preventDefault();
   }
-  if (selectedNumberSystem.value && !/[A-Fa-f0-9\s-]/.test(event.key)) {
+  if (selectedNumberSystem.value === 16 && !/[A-Fa-f0-9\s-]/.test(event.key)) {
+    event.preventDefault();
+  }
+  if (selectedNumberSystem.value === 8 && !/[0-7\s-]/.test(event.key)) {
+    event.preventDefault();
+  }
+  if (selectedNumberSystem.value === 10 && !/[0-9\s-]/.test(event.key)) {
     event.preventDefault();
   }
 };
