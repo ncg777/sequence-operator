@@ -59,7 +59,10 @@
             :data-ptype="p.type"
             @pointerdown.stop="emit('port-pointerdown', { side: 'in', port: p.name, ev: $event })"
           >
-            <span class="pn-dot" :class="[p.type === 'Num' ? 'num' : 'seq', { connected: wiredInputs.includes(p.name) }]"></span>
+            <span
+              class="pn-dot"
+              :class="[p.type === 'Num' ? 'num' : 'seq', { connected: wiredInputs.includes(p.name), 'wire-target': wireTargetClass(p.type) === 'target', 'wire-dim': wireTargetClass(p.type) === 'dim' }]"
+            ></span>
           </div>
           <span class="pn-port-label in" :style="{ top: labelTop(i) }">{{ p.label }}</span>
         </template>
@@ -173,8 +176,10 @@ const props = withDefaults(
     wiredInputs?: string[];
     subprogramName?: string;
     memoryLength?: number;
+    /** Type of the wire currently being dragged, or null when not wiring. */
+    wireDragType?: 'Seq' | 'Num' | null;
   }>(),
-  { selected: false, wiredInputs: () => [], subprogramName: '', memoryLength: 10 },
+  { selected: false, wiredInputs: () => [], subprogramName: '', memoryLength: 10, wireDragType: null },
 );
 
 const emit = defineEmits<{
@@ -245,6 +250,15 @@ const slotItems = computed(() => {
 
 function isBound(param: ParamDef): boolean {
   return !!param.boundPort && props.wiredInputs.includes(param.boundPort);
+}
+
+/** Returns 'target' (highlight) when this input port can accept the dragged wire,
+ *  'dim' when it cannot, or '' when no wire drag is active. */
+function wireTargetClass(portType: 'Seq' | 'Num'): '' | 'target' | 'dim' {
+  if (!props.wireDragType) return '';
+  // A Num output can connect to a Seq input (coercion), but not the reverse.
+  const compatible = props.wireDragType === portType || (props.wireDragType === 'Num' && portType === 'Seq');
+  return compatible ? 'target' : 'dim';
 }
 
 function portHitStyle(side: 'in' | 'out', i: number) {
@@ -347,6 +361,16 @@ function onHeaderDblClick() {
 }
 .pn-dot.connected {
   box-shadow: 0 0 0 2px rgba(124, 196, 255, 0.6);
+}
+.pn-dot.wire-target {
+  box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.8);
+  transform: scale(1.3);
+}
+.pn-dot.num.wire-target {
+  transform: rotate(45deg) scale(1.3);
+}
+.pn-dot.wire-dim {
+  opacity: 0.25;
 }
 .pn-dot.out {
   background: #7fae8f;

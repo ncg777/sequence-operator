@@ -41,9 +41,20 @@
 
     <!-- Main area -->
     <div class="patch-main">
-      <div v-if="!mobile" class="patch-palette">
+      <div v-if="!mobile && paletteOpen" class="patch-palette">
         <NodePalette :entries="paletteEntries" @add="addFromPalette" />
       </div>
+      <v-btn
+        v-if="!mobile"
+        class="palette-toggle"
+        icon
+        size="x-small"
+        variant="tonal"
+        :title="paletteOpen ? 'Collapse palette' : 'Expand palette'"
+        @click="paletteOpen = !paletteOpen"
+      >
+        <v-icon>{{ paletteOpen ? 'mdi-chevron-left' : 'mdi-chevron-right' }}</v-icon>
+      </v-btn>
       <PatchCanvas
         ref="canvasRef"
         class="patch-canvas-el"
@@ -161,6 +172,7 @@ const evaluating = ref(false);
 
 const snap = ref(false);
 const showGrid = ref(true);
+const paletteOpen = ref(true);
 const canvasRef = ref<InstanceType<typeof PatchCanvas> | null>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 const mobilePalette = ref(false);
@@ -619,6 +631,12 @@ onBeforeUnmount(() => {
   width: 230px;
   flex: 0 0 auto;
   min-height: 0;
+}
+.palette-toggle {
+  flex: 0 0 auto;
+  align-self: center;
+  margin: 0 2px;
+  z-index: 10;
 }
 .patch-canvas-el {
   flex: 1 1 auto;

@@ -55,6 +55,7 @@
         :wired-inputs="wiredInputsFor(node.id)"
         :subprogram-name="subprogramNames[String(node.params.programId)] || ''"
         :memory-length="memoryLength"
+        :wire-drag-type="wireDrag ? wireDrag.fromType : null"
         @node-pointerdown="onNodePointerDown(node.id, $event)"
         @port-pointerdown="onPortPointerDown(node.id, $event)"
         @contextmenu="openNodeMenu(node.id, $event)"
@@ -221,6 +222,13 @@ let resizeStart = { x: 0, y: 0, w: 0, h: 0 };
 const activePointers = new Map<number, { x: number; y: number }>();
 let pinchDist = 0;
 
+// Long-press state for touch context menu
+let longPressTimer: ReturnType<typeof setTimeout> | null = null;
+let longPressTarget: { kind: 'node' | 'background'; id?: string } | null = null;
+let longPressPos = { clientX: 0, clientY: 0 };
+const LONG_PRESS_MS = 500;
+const LONG_PRESS_MOVE_THRESHOLD = 8;
+
 function toGraph(ev: { clientX: number; clientY: number }) {
   const r = rootEl.value!.getBoundingClientRect();
   return {
@@ -246,10 +254,38 @@ function centerPoint() {
   };
 }
 
+// --- Long-press helpers ---
+function startLongPress(target: typeof longPressTarget, ev: PointerEvent) {
+  cancelLongPress();
+  longPressTarget = target;
+  longPressPos = { clientX: ev.clientX, clientY: ev.clientY };
+  longPressTimer = setTimeout(() => {
+    longPressTimer = null;
+    if (!longPressTarget) return;
+    if (longPressTarget.kind === 'node' && longPressTarget.id) {
+      openNodeMenu(longPressTarget.id, { clientX: longPressPos.clientX, clientY: longPressPos.clientY } as MouseEvent);
+    }
+  }, LONG_PRESS_MS);
+}
+function cancelLongPress() {
+  if (longPressTimer) {
+    clearTimeout(longPressTimer);
+    longPressTimer = null;
+  }
+  longPressTarget = null;
+}
+function checkLongPressMove(ev: PointerEvent) {
+  if (!longPressTarget) return;
+  const dx = ev.clientX - longPressPos.clientX;
+  const dy = ev.clientY - longPressPos.clientY;
+  if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_THRESHOLD) cancelLongPress();
+}
+
 // --- Background (pan / rubber-band) ---
 function onBackgroundPointerDown(ev: PointerEvent) {
   activePointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
   if (activePointers.size === 2) {
+    cancelLongPress();
     const pts = [...activePointers.values()];
     pinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
     mode = 'idle';
@@ -270,6 +306,7 @@ function onBackgroundPointerDown(ev: PointerEvent) {
 // --- Node interactions ---
 function onNodePointerDown(id: string, ev: PointerEvent) {
   activePointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+  startLongPress({ kind: 'node', id }, ev);
   if (ev.shiftKey) {
     toggleNode(id);
   } else if (!selectedNodes.has(id)) {
@@ -317,6 +354,7 @@ function onCommentResizeStart(id: string, ev: PointerEvent) {
 // --- Global pointer handling ---
 function onWindowMove(ev: PointerEvent) {
   if (activePointers.has(ev.pointerId)) activePointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+  checkLongPressMove(ev);
 
   if (activePointers.size === 2 && (mode === 'pan' || mode === 'idle')) {
     const pts = [...activePointers.values()];
@@ -363,6 +401,7 @@ function onWindowMove(ev: PointerEvent) {
 
 function onWindowUp(ev: PointerEvent) {
   activePointers.delete(ev.pointerId);
+  cancelLongPress();
 
   if (mode === 'move') {
     if (moved) emit('commit', 'move');
@@ -456,6 +495,7 @@ function zoomAt(clientX: number, clientY: number, factor: number) {
   vp.value.zoom = newZoom;
 }
 function onWheel(ev: WheelEvent) {
+  if (!ev.ctrlKey && !ev.metaKey) return;
   ev.preventDefault();
   zoomAt(ev.clientX, ev.clientY, ev.deltaY < 0 ? 1.1 : 0.9);
 }
@@ -632,6 +672,7 @@ function detachWindow() {
 onMounted(() => window.addEventListener('keydown', onKeyDown));
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyDown);
+  cancelLongPress();
   detachWindow();
 });
 
