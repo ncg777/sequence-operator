@@ -44,6 +44,13 @@ export function combine(
   return Sequence.combine(combiner, operation, seqX, seqY).toString();
 }
 
+/** Append two sequences end-to-end. */
+export function append(x: string, y: string): string {
+  const arrX = parseSeq(x).toArray();
+  const arrY = parseSeq(y).toArray();
+  return new Sequence(...arrX, ...arrY).toString();
+}
+
 /** Rotate a sequence by n steps. */
 export function rotate(sequence: string, n: number): string {
   return parseSeq(sequence).rotate(n).toString();
