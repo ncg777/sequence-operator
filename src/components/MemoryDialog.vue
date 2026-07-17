@@ -12,7 +12,7 @@
             :class="{ 'pa-0': true, 'memory-list-item': true }">
             <v-row no-gutters>
               <v-col cols="12" md="12" class="px-4 memory-actions-col"
-                :style="'position:absolute;text-align:right;padding-right:0;margin-top:2em;'">
+                :style="'position:absolute;text-align:right;padding-right:0;margin-top:1em;'">
                 <v-btn icon size="x-small" density="compact" variant="text" @click="copyMemorySequence(index)"
                   title="Copy sequence">
                   <v-icon size="x-small">mdi-clipboard-outline</v-icon>
