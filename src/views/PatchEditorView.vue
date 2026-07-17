@@ -27,6 +27,7 @@
       <v-btn size="small" variant="text" icon title="Re-run (reroll random)" @click="rerunAll"><v-icon>mdi-refresh</v-icon></v-btn>
       <v-btn size="small" variant="text" icon :color="showGrid ? 'primary' : undefined" title="Toggle grid" @click="showGrid = !showGrid"><v-icon>mdi-grid</v-icon></v-btn>
       <v-btn size="small" variant="text" icon :color="snap ? 'primary' : undefined" title="Snap to grid" @click="snap = !snap"><v-icon>mdi-magnet</v-icon></v-btn>
+      <v-btn size="small" variant="text" icon title="Memory" @click="showMemoryDialog = true"><v-icon>mdi-memory</v-icon></v-btn>
       <input ref="fileInput" type="file" accept="application/json,.json" class="d-none" @change="onImportFile" />
     </div>
 
@@ -143,6 +144,8 @@
     </v-dialog>
 
     <v-snackbar v-model="toast.open" :timeout="2600" location="bottom">{{ toast.message }}</v-snackbar>
+
+    <MemoryDialog v-model="showMemoryDialog" @recall="onMemoryRecall" />
   </div>
 </template>
 
@@ -159,6 +162,7 @@ import { evaluateGraph } from '@/patch/evaluator';
 import type { EvalResults, CacheEntry } from '@/patch/evaluator';
 import * as store from '@/patch/store';
 import { useSharedState } from '@/composables/useSharedState';
+import MemoryDialog from '@/components/MemoryDialog.vue';
 
 const props = withDefaults(defineProps<{ active?: boolean }>(), { active: true });
 
@@ -172,10 +176,22 @@ const evaluating = ref(false);
 
 const snap = ref(false);
 const showGrid = ref(true);
+const showMemoryDialog = ref(false);
 const paletteOpen = ref(true);
 const canvasRef = ref<InstanceType<typeof PatchCanvas> | null>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 const mobilePalette = ref(false);
+
+const onMemoryRecall = (seq: string) => {
+  const node = graph.nodes.find((n) => n.type === 'sequence');
+  if (node) {
+    node.params.value = seq;
+    onCommit('recall-memory');
+    showToast('Recalled memory into the first Sequence node.');
+  } else {
+    showToast('No Sequence node available to recall into.');
+  }
+};
 
 const selection = reactive<{ nodes: string[]; edges: string[] }>({ nodes: [], edges: [] });
 
