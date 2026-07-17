@@ -139,7 +139,7 @@
           <span class="pn-preview-val">{{ previewTruncated }}</span>
           <span class="pn-badge">{{ previewLen }}</span>
           <v-btn
-            v-if="node.type === 'display'"
+            v-if="hasCopyableValue"
             icon
             size="x-small"
             variant="text"
@@ -226,6 +226,7 @@ const errorMsg = computed(() => props.result?.error);
 
 const hasSeqOutput = computed(() => props.outputs.some((p) => p.name === 'out'));
 const showPreview = computed(() => props.node.type === 'display' || hasSeqOutput.value);
+const hasCopyableValue = computed(() => previewValue.value.trim().length > 0);
 
 const previewValue = computed(() => {
   const r = props.result;

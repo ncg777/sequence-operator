@@ -513,8 +513,14 @@ function onParam(nodeId: string, payload: { key: string; value: unknown }) {
   emit('commit', `param:${nodeId}:${payload.key}`);
 }
 
-function copyToClipboard(value: string) {
-  if (value) navigator.clipboard?.writeText(formatSeqForDisplay(value));
+async function copyToClipboard(value: string) {
+  if (!value) return;
+  try {
+    await navigator.clipboard.writeText(formatSeqForDisplay(value));
+    emit('toast', 'Copied to clipboard.');
+  } catch {
+    emit('toast', 'Copy failed.');
+  }
 }
 
 // --- Context menu ---
