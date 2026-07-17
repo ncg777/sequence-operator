@@ -8,6 +8,8 @@ export declare const UNARY_TRITWISE_OPS: Record<UnaryTritwiseOpName, (n: number)
 export declare function parseSeq(s: string): Sequence;
 /** Combine two sequences using the specified combiner and operation. */
 export declare function combine(combiner: Combiner, operation: Operation, x: string, y: string): string;
+/** Append two sequences end-to-end. */
+export declare function append(x: string, y: string): string;
 /** Rotate a sequence by n steps. */
 export declare function rotate(sequence: string, n: number): string;
 /** Reverse a sequence. */
@@ -23,10 +25,10 @@ export declare function antidifference(sequence: string, k: number): string;
 /** Return the sign of each element in the sequence (+1, -1, or 0). */
 export declare function signs(sequence: string): string;
 /**
- * Sample every n-th element cyclically (TimesN).
- * The result at position i is the element at position (i * n) % size.
+ * xN+k: sample every n-th element with an index offset.
+ * The result at position i is the element at position (i * n + k) % size.
  */
-export declare function timesN(sequence: string, n: number): string;
+export declare function xnPlusK(sequence: string, n: number, k?: number): string;
 /**
  * Permute the blocks of a sequence according to a permutation array.
  * The sequence is divided into `permutation.length` blocks as evenly as possible,

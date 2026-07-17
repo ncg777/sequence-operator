@@ -21,7 +21,7 @@ import {
   cyclicalDifference,
   cyclicalAntidifference,
   signs,
-  timesN,
+  xnPlusK,
   permuteBlocks,
   hierarchicalPermute,
   unaryTritwise,
@@ -346,13 +346,16 @@ register({
 
 register({
   type: 'timesN',
-  label: 'Times N (×n)',
+  label: 'xN+k',
   category: 'unary',
   icon: 'mdi-close',
-  inputs: [SEQ('in', 'in'), NUM('n', 'n', true)],
+  inputs: [SEQ('in', 'in'), NUM('n', 'n', true), NUM('k', 'k', true)],
   outputs: [SEQ('out', 'out')],
-  params: [{ key: 'n', label: 'n', kind: 'number', default: 2, boundPort: 'n' }],
-  evaluate: ({ inputs, params }) => ({ out: timesN(inputs.in ?? '', firstInt(inputs.n, params.n)) }),
+  params: [
+    { key: 'n', label: 'n', kind: 'number', default: 2, boundPort: 'n' },
+    { key: 'k', label: 'k', kind: 'number', default: 0, boundPort: 'k' },
+  ],
+  evaluate: ({ inputs, params }) => ({ out: xnPlusK(inputs.in ?? '', firstInt(inputs.n, params.n), firstInt(inputs.k, params.k)) }),
 });
 
 register({

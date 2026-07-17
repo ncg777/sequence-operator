@@ -15,7 +15,7 @@ import {
   reverse,
   rotate,
   signs,
-  timesN,
+  xnPlusK,
   unaryTritwise,
 } from './lib.js';
 import type { UnaryTritwiseOpName } from './lib.js';
@@ -99,11 +99,12 @@ program
 
 program
   .command('times-n')
-  .description('Sample every n-th element cyclically (result[i] = sequence[(i*n) % size])')
+  .description('xN+k: sample every n-th element with an index offset (result[i] = sequence[(i*n + k) % size])')
   .requiredOption('-s, --sequence <sequence>', 'Sequence (space-separated integers)')
   .requiredOption('-n, --n <n>', 'Scale factor (positive integer)', parseInt)
-  .action(({ sequence, n }) => {
-    console.log(timesN(sequence, n));
+  .option('-k, --k <k>', 'Index offset', parseInt, 0)
+  .action(({ sequence, n, k }) => {
+    console.log(xnPlusK(sequence, n, k));
   });
 
 program

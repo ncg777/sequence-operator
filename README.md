@@ -43,8 +43,8 @@ node dist-tools/cli.js antidifference -s "1 2 3 4" -k 0
 node dist-tools/cli.js signs -s "-3 0 5 -1 2"
 # → -1 0 1 -1 1
 
-# Times N
-node dist-tools/cli.js times-n -s "0 1 2 3 4 5 6 7" -n 3
+# xN+k
+node dist-tools/cli.js times-n -s "0 1 2 3 4 5 6 7" -n 3 -k 0
 # → 0 3 6 1 4 7 2 5
 
 # Permute blocks

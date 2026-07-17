@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, permutationOrbit, reverse, rotate, signs, timesN, unaryTritwise, } from './lib.js';
+import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, permutationOrbit, reverse, rotate, signs, xnPlusK, unaryTritwise, } from './lib.js';
 const program = new Command();
 program
     .name('sequence-operator')
@@ -70,11 +70,12 @@ program
 });
 program
     .command('times-n')
-    .description('Sample every n-th element cyclically (result[i] = sequence[(i*n) % size])')
+    .description('xN+k: sample every n-th element with an index offset (result[i] = sequence[(i*n + k) % size])')
     .requiredOption('-s, --sequence <sequence>', 'Sequence (space-separated integers)')
     .requiredOption('-n, --n <n>', 'Scale factor (positive integer)', parseInt)
-    .action(({ sequence, n }) => {
-    console.log(timesN(sequence, n));
+    .option('-k, --k <k>', 'Index offset', parseInt, 0)
+    .action(({ sequence, n, k }) => {
+    console.log(xnPlusK(sequence, n, k));
 });
 program
     .command('permute-blocks')

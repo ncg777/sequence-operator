@@ -17,7 +17,7 @@ import {
   reverse,
   rotate,
   signs,
-  timesN,
+  xnPlusK,
   unaryTritwise,
 } from './lib.js';
 import type { UnaryTritwiseOpName } from './lib.js';
@@ -128,13 +128,14 @@ server.tool(
 
 server.tool(
   'times_n',
-  'Sample every n-th element cyclically: result[i] = sequence[(i * n) % size]. Returns the resampled sequence.',
+  'xN+k: sample every n-th element with an index offset: result[i] = sequence[(i * n + k) % size]. Returns the resampled sequence.',
   {
     sequence: z.string().describe('Sequence (space-separated integers)'),
     n:        z.number().int().min(1).describe('Scale factor (positive integer)'),
+    k:        z.number().int().default(0).describe('Index offset (default: 0)'),
   },
-  ({ sequence, n }) => ({
-    content: [{ type: 'text', text: timesN(sequence, n) }],
+  ({ sequence, n, k }) => ({
+    content: [{ type: 'text', text: xnPlusK(sequence, n, k) }],
   })
 );
 

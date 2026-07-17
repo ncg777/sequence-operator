@@ -88,15 +88,15 @@ export function signs(sequence: string): string {
 }
 
 /**
- * Sample every n-th element cyclically (TimesN).
- * The result at position i is the element at position (i * n) % size.
+ * xN+k: sample every n-th element with an index offset.
+ * The result at position i is the element at position (i * n + k) % size.
  */
-export function timesN(sequence: string, n: number): string {
+export function xnPlusK(sequence: string, n: number, k: number = 0): string {
   const s = parseSeq(sequence);
   const size = s.size();
   const out = new Sequence(...Array(size).fill(0));
   for (let i = 0; i < size; i++) {
-    out.set(i, s.get((i * n) % size)!);
+    out.set(i, s.get((i * n + k) % size)!);
   }
   return out.toString();
 }
