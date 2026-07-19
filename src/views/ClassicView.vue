@@ -691,7 +691,7 @@ const showHelpDialog = ref(false);
 const showHistoryDialog = ref(false);
 const showPolynomialDialog = ref(false);
 const polynomialA = ref<string>('0');
-const polynomialB = ref<string>('2');
+const polynomialB = ref<string>('1');
 const polynomialC = ref<string>('0');
 const addToHistory = () => {
   historyList.value.push({
@@ -761,7 +761,7 @@ const updateSequences = (newSys:number, oldSys:number, wordSize:number) => {
 
 const polynomialSeq = () => {
   polynomialA.value = '0';
-  polynomialB.value = '2';
+  polynomialB.value = '1';
   polynomialC.value = '0';
   showPolynomialDialog.value = true;
 };
