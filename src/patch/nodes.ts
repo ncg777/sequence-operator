@@ -353,7 +353,7 @@ register({
   outputs: [SEQ('out', 'out')],
   params: [
     { key: 'a', label: 'a', kind: 'number', default: 0, boundPort: 'a' },
-    { key: 'b', label: 'b', kind: 'number', default: 2, boundPort: 'b' },
+    { key: 'b', label: 'b', kind: 'number', default: 1, boundPort: 'b' },
     { key: 'c', label: 'c', kind: 'number', default: 0, boundPort: 'c' },
   ],
   evaluate: ({ inputs, params }) => ({
