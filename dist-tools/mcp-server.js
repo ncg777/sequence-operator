@@ -2,7 +2,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, permutationOrbit, reverse, rotate, signs, xnPlusK, unaryTritwise, } from './lib.js';
+import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, permutationOrbit, reverse, rotate, signs, polynomial, unaryTritwise, } from './lib.js';
 const COMBINER_VALUES = COMBINERS;
 const OPERATION_VALUES = OPERATIONS;
 const TRIT_OP_VALUES = Object.keys(UNARY_TRITWISE_OPS);
@@ -56,12 +56,13 @@ server.tool('signs', 'Return the sign (+1, -1, or 0) of each element in a sequen
 }, ({ sequence }) => ({
     content: [{ type: 'text', text: signs(sequence) }],
 }));
-server.tool('times_n', 'xN+k: sample every n-th element with an index offset: result[i] = sequence[(i * n + k) % size]. Returns the resampled sequence.', {
+server.tool('polynomial', 'ax²+bx+c: sample elements using a quadratic polynomial index: result[x] = sequence[(a*x² + b*x + c) mod size]. Returns the resampled sequence.', {
     sequence: z.string().describe('Sequence (space-separated integers)'),
-    n: z.number().int().min(1).describe('Scale factor (positive integer)'),
-    k: z.number().int().default(0).describe('Index offset (default: 0)'),
-}, ({ sequence, n, k }) => ({
-    content: [{ type: 'text', text: xnPlusK(sequence, n, k) }],
+    a: z.number().int().describe('Quadratic coefficient'),
+    b: z.number().int().describe('Linear coefficient'),
+    c: z.number().int().default(0).describe('Constant offset (default: 0)'),
+}, ({ sequence, a, b, c }) => ({
+    content: [{ type: 'text', text: polynomial(sequence, a, b, c) }],
 }));
 server.tool('permute_blocks', 'Divide a sequence into equally-sized blocks and reorder them according to a permutation. Returns the reordered sequence.', {
     sequence: z.string().describe('Sequence (space-separated integers)'),

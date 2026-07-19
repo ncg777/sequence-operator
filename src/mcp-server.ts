@@ -17,7 +17,7 @@ import {
   reverse,
   rotate,
   signs,
-  xnPlusK,
+  polynomial,
   unaryTritwise,
 } from './lib.js';
 import type { UnaryTritwiseOpName } from './lib.js';
@@ -127,15 +127,16 @@ server.tool(
 );
 
 server.tool(
-  'times_n',
-  'xN+k: sample every n-th element with an index offset: result[i] = sequence[(i * n + k) % size]. Returns the resampled sequence.',
+  'polynomial',
+  'ax²+bx+c: sample elements using a quadratic polynomial index: result[x] = sequence[(a*x² + b*x + c) mod size]. Returns the resampled sequence.',
   {
     sequence: z.string().describe('Sequence (space-separated integers)'),
-    n:        z.number().int().min(1).describe('Scale factor (positive integer)'),
-    k:        z.number().int().default(0).describe('Index offset (default: 0)'),
+    a:        z.number().int().describe('Quadratic coefficient'),
+    b:        z.number().int().describe('Linear coefficient'),
+    c:        z.number().int().default(0).describe('Constant offset (default: 0)'),
   },
-  ({ sequence, n, k }) => ({
-    content: [{ type: 'text', text: xnPlusK(sequence, n, k) }],
+  ({ sequence, a, b, c }) => ({
+    content: [{ type: 'text', text: polynomial(sequence, a, b, c) }],
   })
 );
 
