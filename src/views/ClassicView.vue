@@ -147,7 +147,7 @@
             <v-btn color="darkgray" @click="cyclicalAntidifferenceSeq()" block title="Cyclical Antidifference">∑</v-btn>
           </v-col>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
-            <v-btn color="darkgray" @click="polynomialSeq()" block title="ax²+bx+c">ax²+bx+c</v-btn>
+            <v-btn color="darkgray" @click="polynomialSeq()" block title="ax²+bx+c" class="polynomial-button">ax²+bx+c</v-btn>
           </v-col>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
             <!-- Permute Blocks Button (Symbol: π) -->
@@ -1185,6 +1185,9 @@ body, * {
   right: 0;
   top: 50%;
   transform: translateY(-50%);
+}
+.polynomial-button {
+  text-transform: none;
 }
 .help-content {
   line-height: 1.6;
