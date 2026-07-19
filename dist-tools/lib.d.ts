@@ -25,10 +25,10 @@ export declare function antidifference(sequence: string, k: number): string;
 /** Return the sign of each element in the sequence (+1, -1, or 0). */
 export declare function signs(sequence: string): string;
 /**
- * xN+k: sample every n-th element with an index offset.
- * The result at position i is the element at position (i * n + k) % size.
+ * ax²+bx+c: sample elements using a quadratic polynomial index.
+ * The result at position x is the element at position (a*x² + b*x + c) mod size.
  */
-export declare function xnPlusK(sequence: string, n: number, k?: number): string;
+export declare function polynomial(sequence: string, a: number, b: number, c?: number): string;
 /**
  * Permute the blocks of a sequence according to a permutation array.
  * The sequence is divided into `permutation.length` blocks as evenly as possible,

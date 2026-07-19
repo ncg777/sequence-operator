@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, permutationOrbit, reverse, rotate, signs, xnPlusK, unaryTritwise, } from './lib.js';
+import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, permutationOrbit, reverse, rotate, signs, polynomial, unaryTritwise, } from './lib.js';
 const program = new Command();
 program
     .name('sequence-operator')
@@ -69,13 +69,14 @@ program
     console.log(signs(sequence));
 });
 program
-    .command('times-n')
-    .description('xN+k: sample every n-th element with an index offset (result[i] = sequence[(i*n + k) % size])')
+    .command('polynomial')
+    .description('ax²+bx+c: sample elements using a quadratic polynomial index (result[x] = sequence[(a*x² + b*x + c) mod size])')
     .requiredOption('-s, --sequence <sequence>', 'Sequence (space-separated integers)')
-    .requiredOption('-n, --n <n>', 'Scale factor (positive integer)', parseInt)
-    .option('-k, --k <k>', 'Index offset', parseInt, 0)
-    .action(({ sequence, n, k }) => {
-    console.log(xnPlusK(sequence, n, k));
+    .requiredOption('-a, --a <a>', 'Quadratic coefficient', parseInt)
+    .requiredOption('-b, --b <b>', 'Linear coefficient', parseInt)
+    .option('-c, --c <c>', 'Constant offset', parseInt, 0)
+    .action(({ sequence, a, b, c }) => {
+    console.log(polynomial(sequence, a, b, c));
 });
 program
     .command('permute-blocks')

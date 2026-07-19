@@ -21,7 +21,7 @@ import {
   cyclicalDifference,
   cyclicalAntidifference,
   signs,
-  xnPlusK,
+  polynomial,
   permuteBlocks,
   hierarchicalPermute,
   unaryTritwise,
@@ -345,17 +345,25 @@ register({
 });
 
 register({
-  type: 'timesN',
-  label: 'xN+k',
+  type: 'polynomial',
+  label: 'ax²+bx+c',
   category: 'unary',
   icon: 'mdi-close',
-  inputs: [SEQ('in', 'in'), NUM('n', 'n', true), NUM('k', 'k', true)],
+  inputs: [SEQ('in', 'in'), NUM('a', 'a', true), NUM('b', 'b', true), NUM('c', 'c', true)],
   outputs: [SEQ('out', 'out')],
   params: [
-    { key: 'n', label: 'n', kind: 'number', default: 2, boundPort: 'n' },
-    { key: 'k', label: 'k', kind: 'number', default: 0, boundPort: 'k' },
+    { key: 'a', label: 'a', kind: 'number', default: 0, boundPort: 'a' },
+    { key: 'b', label: 'b', kind: 'number', default: 2, boundPort: 'b' },
+    { key: 'c', label: 'c', kind: 'number', default: 0, boundPort: 'c' },
   ],
-  evaluate: ({ inputs, params }) => ({ out: xnPlusK(inputs.in ?? '', firstInt(inputs.n, params.n), firstInt(inputs.k, params.k)) }),
+  evaluate: ({ inputs, params }) => ({
+    out: polynomial(
+      inputs.in ?? '',
+      firstInt(inputs.a, params.a),
+      firstInt(inputs.b, params.b),
+      firstInt(inputs.c, params.c),
+    ),
+  }),
 });
 
 register({
@@ -532,7 +540,7 @@ export function basePaletteEntries(): PaletteEntry[] {
   // Unary
   for (const t of [
     'reverse', 'rotate', 'difference', 'antidifference', 'cyclicalDifference',
-    'cyclicalAntidifference', 'signs', 'timesN', 'permuteBlocks', 'hierarchicalPermute', 'permutationOrbit',
+    'cyclicalAntidifference', 'signs', 'polynomial', 'permuteBlocks', 'hierarchicalPermute', 'permutationOrbit',
   ]) {
     const nt = registry[t];
     entries.push({ type: t, label: nt.label, category: nt.category, icon: nt.icon });

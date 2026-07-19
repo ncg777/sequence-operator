@@ -147,7 +147,7 @@
             <v-btn color="darkgray" @click="cyclicalAntidifferenceSeq()" block title="Cyclical Antidifference">∑</v-btn>
           </v-col>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
-            <v-btn color="darkgray" @click="timesNSeq()" block title="xN+k">xN+k</v-btn>
+            <v-btn color="darkgray" @click="polynomialSeq()" block title="ax²+bx+c">ax²+bx+c</v-btn>
           </v-col>
           <v-col cols="2" md="2" class="pa-1 d-flex justify-center">
             <!-- Permute Blocks Button (Symbol: π) -->
@@ -497,7 +497,7 @@
                   <li><strong><v-icon size="small">mdi-refresh</v-icon> Rotate</strong> - Rotates sequence by specified steps</li>
                   <li><strong>Δ Cyclical Difference</strong> - Computes differences between consecutive elements (wrapping around)</li>
                   <li><strong>∑ Cyclical Antidifference</strong> - Computes cumulative sum starting from user-specified k value (inverse of cyclical difference)</li>
-                  <li><strong>xN+k</strong> - Rearranges the sequence so each element is replaced by the element at index <code>(i*n + k)%size</code>; prompts for scale <code>n</code> and index offset <code>k</code></li>
+                  <li><strong>ax²+bx+c</strong> - Rearranges the sequence so each element at position <code>x</code> is replaced by the element at index <code>(a*x² + b*x + c) mod size</code>; prompts for coefficients <code>a</code>, <code>b</code>, and <code>c</code></li>
                   <li><strong>π Permute Blocks</strong> - Splits the sequence into blocks and reorders them according to a user-supplied permutation (see below).</li>
                   <li><strong>▽ Unary Tritwise</strong> - Applies a chosen unary tritwise (balanced ternary) operation element-wise to the result sequence. Options: Buf, Not, Pnot, Nnot, Abs, Clu, Cld, Inc, Dec, Rtu, Rtd, Isp, Isz, Isn.</li>
                   <li><strong>H Hierarchical Permute</strong> - Applies a Composition-Driven Binary Hierarchical Permutation (CDBHP) to the result sequence. Prompts for a composition and a permutation (see below).</li>
@@ -550,21 +550,22 @@
             </v-card-text>
           </v-card>
         </v-dialog>
-        <!-- xN+k dialog -->
-        <v-dialog v-model="showTimesNDialog" max-width="400" class="pa-1">
+        <!-- ax²+bx+c dialog -->
+        <v-dialog v-model="showPolynomialDialog" max-width="400" class="pa-1">
           <v-card>
             <v-card-title>
-              <span>xN+k</span>
-              <v-btn @click="showTimesNDialog = false" icon :style="'float:right;text-align:right;'">
+              <span>ax²+bx+c</span>
+              <v-btn @click="showPolynomialDialog = false" icon :style="'float:right;text-align:right;'">
                 <v-icon>mdi-window-close</v-icon>
               </v-btn>
             </v-card-title>
             <v-card-text>
-              <v-text-field v-model="timesNN" label="Scale (n)" type="number" outlined dense></v-text-field>
-              <v-text-field v-model="timesNK" label="Index offset (k)" type="number" outlined dense></v-text-field>
+              <v-text-field v-model="polynomialA" label="Quadratic coefficient (a)" type="number" outlined dense></v-text-field>
+              <v-text-field v-model="polynomialB" label="Linear coefficient (b)" type="number" outlined dense></v-text-field>
+              <v-text-field v-model="polynomialC" label="Constant offset (c)" type="number" outlined dense></v-text-field>
             </v-card-text>
             <v-card-actions>
-              <v-btn @click="applyTimesN" color="primary" block>Apply</v-btn>
+              <v-btn @click="applyPolynomial" color="primary" block>Apply</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -688,9 +689,10 @@ const showMemoryDialog = ref(false);
 const showHelpDialog = ref(false);
 
 const showHistoryDialog = ref(false);
-const showTimesNDialog = ref(false);
-const timesNN = ref<string>('2');
-const timesNK = ref<string>('0');
+const showPolynomialDialog = ref(false);
+const polynomialA = ref<string>('0');
+const polynomialB = ref<string>('2');
+const polynomialC = ref<string>('0');
 const addToHistory = () => {
   historyList.value.push({
     type: 'combine',
@@ -757,33 +759,39 @@ const updateSequences = (newSys:number, oldSys:number, wordSize:number) => {
   //for(let i=0;i<memoryList.value.length;i++) memoryList.value[i]=convert(memoryList.value[i], newSys,oldSys,wordSize)
 }
 
-const timesNSeq = () => {
-  timesNN.value = '2';
-  timesNK.value = '0';
-  showTimesNDialog.value = true;
+const polynomialSeq = () => {
+  polynomialA.value = '0';
+  polynomialB.value = '2';
+  polynomialC.value = '0';
+  showPolynomialDialog.value = true;
 };
 
-const applyTimesN = () => {
-  showTimesNDialog.value = false;
-  const scale = parseInt(timesNN.value.trim());
-  if (isNaN(scale) || scale < 1) {
-    alert("Invalid scale. Please enter a positive integer.");
+const applyPolynomial = () => {
+  showPolynomialDialog.value = false;
+  const a = parseInt(polynomialA.value.trim());
+  if (isNaN(a)) {
+    alert("Invalid quadratic coefficient. Please enter an integer.");
     return;
   }
-  const k = parseInt(timesNK.value.trim());
-  if (isNaN(k)) {
-    alert("Invalid offset. Please enter an integer.");
+  const b = parseInt(polynomialB.value.trim());
+  if (isNaN(b)) {
+    alert("Invalid linear coefficient. Please enter an integer.");
+    return;
+  }
+  const c = parseInt(polynomialC.value.trim());
+  if (isNaN(c)) {
+    alert("Invalid constant offset. Please enter an integer.");
     return;
   }
   const input = textResult.value;
   const s = Sequence.parse(input);
   const o = new Sequence(...Array(s.size()).fill(0));
-  for (let i = 0; i < o.size(); i++) {
-    const idx = (i * scale + k) % o.size();
-    o.set(i, s.get(idx)!);
+  for (let x = 0; x < o.size(); x++) {
+    const idx = ((a * x * x + b * x + c) % o.size() + o.size()) % o.size();
+    o.set(x, s.get(idx)!);
   }
   textResult.value = o.toString();
-  addResultOpToHistory('xN+k', input, textResult.value, { n: scale, k });
+  addResultOpToHistory('ax²+bx+c', input, textResult.value, { a, b, c });
 };
 
 // --- Permute Blocks Operation ---

@@ -64,15 +64,16 @@ export function signs(sequence) {
     return parseSeq(sequence).signs().toString();
 }
 /**
- * xN+k: sample every n-th element with an index offset.
- * The result at position i is the element at position (i * n + k) % size.
+ * ax²+bx+c: sample elements using a quadratic polynomial index.
+ * The result at position x is the element at position (a*x² + b*x + c) mod size.
  */
-export function xnPlusK(sequence, n, k = 0) {
+export function polynomial(sequence, a, b, c = 0) {
     const s = parseSeq(sequence);
     const size = s.size();
     const out = new Sequence(...Array(size).fill(0));
-    for (let i = 0; i < size; i++) {
-        out.set(i, s.get((i * n + k) % size));
+    for (let x = 0; x < size; x++) {
+        const idx = ((a * x * x + b * x + c) % size + size) % size;
+        out.set(x, s.get(idx));
     }
     return out.toString();
 }

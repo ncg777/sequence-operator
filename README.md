@@ -43,9 +43,9 @@ node dist-tools/cli.js antidifference -s "1 2 3 4" -k 0
 node dist-tools/cli.js signs -s "-3 0 5 -1 2"
 # → -1 0 1 -1 1
 
-# xN+k
-node dist-tools/cli.js times-n -s "0 1 2 3 4 5 6 7" -n 3 -k 0
-# → 0 3 6 1 4 7 2 5
+# ax²+bx+c
+node dist-tools/cli.js polynomial -s "0 1 2 3 4 5 6 7" -a 1 -b 1 -c 0
+# → 0 2 6 4 4 6 2 0
 
 # Permute blocks
 node dist-tools/cli.js permute-blocks -s "1 2 3 4 5 6" -p "2 0 1"
@@ -115,7 +115,7 @@ Add the following to your Claude Desktop configuration (`claude_desktop_config.j
 | `difference` | Compute the difference |
 | `antidifference` | Compute the antidifference (cumulative sum) |
 | `signs` | Return the sign of each element |
-| `times_n` | Sample every n-th element cyclically |
+| `polynomial` | Sample elements using the ax²+bx+c polynomial index |
 | `permute_blocks` | Reorder equally-sized blocks of a sequence |
 | `hierarchical_permute` | Apply a composition-driven binary hierarchical permutation (CDBHP) |
 | `unary_tritwise` | Apply a unary balanced-ternary operation element-wise |
