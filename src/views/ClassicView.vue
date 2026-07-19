@@ -1187,7 +1187,7 @@ body, * {
   transform: translateY(-50%);
 }
 .polynomial-button {
-  text-transform: none;
+  text-transform: none !important;
 }
 .help-content {
   line-height: 1.6;
