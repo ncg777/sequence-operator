@@ -240,16 +240,23 @@ register({
   label: 'Combine',
   category: 'binary',
   icon: 'mdi-set-merge',
-  inputs: [SEQ('x', 'x'), SEQ('y', 'y')],
+  inputs: [SEQ('x', 'x', true), SEQ('y', 'y', true)],
   outputs: [SEQ('out', 'out')],
   params: [
     { key: 'combiner', label: 'Combiner', kind: 'select', default: combinerOptions[0]?.value ?? 'Product', options: combinerOptions },
     { key: 'operation', label: 'Operation', kind: 'select', default: operationOptions[0]?.value ?? 'Add', options: operationOptions },
+    { key: 'x', label: 'x', kind: 'seqtext', default: '', boundPort: 'x' },
+    { key: 'y', label: 'y', kind: 'seqtext', default: '', boundPort: 'y' },
   ],
   description: 'Combines two sequences via lib.combine(combiner, operation, x, y).',
   isNondeterministic: (params) => params.operation === 'RandInt',
   evaluate: ({ inputs, params }) => {
-    const out = combine(params.combiner as Combiner, params.operation as Operation, inputs.x ?? '', inputs.y ?? '');
+    const out = combine(
+      params.combiner as Combiner,
+      params.operation as Operation,
+      seqOrParam(inputs.x, params.x),
+      seqOrParam(inputs.y, params.y),
+    );
     return { out };
   },
 });
