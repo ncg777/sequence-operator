@@ -12,5 +12,7 @@ declare module 'vue' {
     PatchCanvas: typeof import('./src/components/PatchCanvas.vue')['default']
     PatchNode: typeof import('./src/components/PatchNode.vue')['default']
     PatchWire: typeof import('./src/components/PatchWire.vue')['default']
+    ProgramBrowser: typeof import('./src/components/ProgramBrowser.vue')['default']
+    ProgramBrowserNode: typeof import('./src/components/ProgramBrowserNode.vue')['default']
   }
 }

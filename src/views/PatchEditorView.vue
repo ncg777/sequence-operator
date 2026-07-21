@@ -12,7 +12,7 @@
           <v-list-item prepend-icon="mdi-file-plus" title="New" @click="newProgram" />
           <v-list-item prepend-icon="mdi-content-save" title="Save" @click="saveCurrentProgram" />
           <v-list-item prepend-icon="mdi-content-save-edit" title="Save As…" @click="openSaveAs" />
-          <v-list-item prepend-icon="mdi-folder-open" title="Load…" @click="openLoad" />
+          <v-list-item prepend-icon="mdi-folder-open" title="Programs…" @click="toggleProgramBrowser" />
           <v-list-item prepend-icon="mdi-rename-box" title="Rename…" @click="openRename" />
           <v-list-item prepend-icon="mdi-delete" title="Delete" @click="deleteCurrentProgram" />
         </v-list>
@@ -20,6 +20,7 @@
 
       <div class="pt-spacer"></div>
 
+      <v-btn size="small" variant="text" icon :color="browserOpen ? 'primary' : undefined" title="Toggle program browser" @click="toggleProgramBrowser"><v-icon>mdi-file-tree-outline</v-icon></v-btn>
       <v-btn size="small" variant="text" icon title="Undo (Ctrl+Z)" :disabled="!canUndo" @click="doUndo"><v-icon>mdi-undo</v-icon></v-btn>
       <v-btn size="small" variant="text" icon title="Redo (Ctrl+Y)" :disabled="!canRedo" @click="doRedo"><v-icon>mdi-redo</v-icon></v-btn>
       <v-btn size="small" variant="text" icon title="Import JSON" @click="triggerImport"><v-icon>mdi-import</v-icon></v-btn>
@@ -42,6 +43,26 @@
 
     <!-- Main area -->
     <div class="patch-main">
+      <div v-if="!mobile && browserOpen" class="patch-browser">
+        <ProgramBrowser
+          ref="programBrowserRef"
+          :active-id="graph.id"
+          @load="loadProgramById"
+          @toast="showToast"
+          @changed="refreshPrograms"
+        />
+      </div>
+      <v-btn
+        v-if="!mobile"
+        class="browser-toggle"
+        icon
+        size="x-small"
+        variant="tonal"
+        :title="browserOpen ? 'Collapse programs' : 'Expand programs'"
+        @click="browserOpen = !browserOpen"
+      >
+        <v-icon>{{ browserOpen ? 'mdi-chevron-left' : 'mdi-chevron-right' }}</v-icon>
+      </v-btn>
       <div v-if="!mobile && paletteOpen" class="patch-palette">
         <NodePalette :entries="paletteEntries" @add="addFromPalette" />
       </div>
@@ -93,6 +114,11 @@
         <NodePalette :entries="paletteEntries" @add="addFromPaletteMobile" />
       </div>
     </v-bottom-sheet>
+    <v-bottom-sheet v-model="mobileBrowser">
+      <div class="mobile-browser">
+        <ProgramBrowser :active-id="graph.id" @load="onMobileLoad" @toast="showToast" @changed="refreshPrograms" />
+      </div>
+    </v-bottom-sheet>
 
     <!-- Quick-add popup -->
     <v-dialog v-model="quickAdd.open" max-width="420" scrollable>
@@ -104,36 +130,29 @@
       </v-card>
     </v-dialog>
 
-    <!-- Load dialog -->
-    <v-dialog v-model="loadDialog" max-width="520" scrollable>
-      <v-card>
-        <v-card-title>Load program</v-card-title>
-        <v-card-text>
-          <v-list v-if="programMetas.length" density="compact">
-            <v-list-item
-              v-for="p in programMetas"
-              :key="p.id"
-              :title="p.name"
-              :subtitle="`${p.nodeCount} nodes · ${formatDate(p.updatedAt)}`"
-              @click="loadProgramById(p.id)"
-            >
-              <template #append>
-                <v-btn icon size="x-small" variant="text" @click.stop="removeProgram(p.id)"><v-icon size="16">mdi-delete</v-icon></v-btn>
-              </template>
-            </v-list-item>
-          </v-list>
-          <div v-else class="text-medium-emphasis">No saved programs.</div>
-        </v-card-text>
-        <v-card-actions><v-spacer /><v-btn @click="loadDialog = false">Close</v-btn></v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Name dialog (Save As / Rename) -->
+    <!-- Name dialog (Save / Save As / Rename) -->
     <v-dialog v-model="nameDialog.open" max-width="420">
       <v-card>
         <v-card-title>{{ nameDialog.title }}</v-card-title>
         <v-card-text>
-          <v-text-field v-model="nameDialog.value" label="Program name" autofocus hide-details @keydown.enter="confirmName" />
+          <v-text-field
+            v-model="nameDialog.value"
+            label="Program name"
+            autofocus
+            hide-details
+            class="mb-3"
+            @keydown.enter="confirmName"
+          />
+          <v-select
+            v-model="nameDialog.folderId"
+            :items="folderOptions"
+            item-title="title"
+            item-value="value"
+            label="Folder"
+            density="compact"
+            variant="outlined"
+            hide-details
+          />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -163,6 +182,7 @@ import type { EvalResults, CacheEntry } from '@/patch/evaluator';
 import * as store from '@/patch/store';
 import { useSharedState } from '@/composables/useSharedState';
 import MemoryDialog from '@/components/MemoryDialog.vue';
+import ProgramBrowser from '@/components/ProgramBrowser.vue';
 
 const props = withDefaults(defineProps<{ active?: boolean }>(), { active: true });
 
@@ -178,9 +198,24 @@ const snap = ref(false);
 const showGrid = ref(true);
 const showMemoryDialog = ref(false);
 const paletteOpen = ref(true);
+const browserOpen = ref(true);
+const mobileBrowser = ref(false);
+const programBrowserRef = ref<InstanceType<typeof ProgramBrowser> | null>(null);
 const canvasRef = ref<InstanceType<typeof PatchCanvas> | null>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 const mobilePalette = ref(false);
+
+function toggleProgramBrowser() {
+  if (mobile.value) {
+    mobileBrowser.value = true;
+  } else {
+    browserOpen.value = !browserOpen.value;
+  }
+}
+function onMobileLoad(id: string) {
+  loadProgramById(id);
+  mobileBrowser.value = false;
+}
 
 const onMemoryRecall = (seq: string) => {
   const node = graph.nodes.find((n) => n.type === 'sequence');
@@ -197,16 +232,15 @@ const selection = reactive<{ nodes: string[]; edges: string[] }>({ nodes: [], ed
 
 // --- Saved programs cache (full graphs, for ports + evaluation + palette) ---
 const programsMap = ref<Record<string, Graph>>({});
-const programMetas = ref<store.ProgramMeta[]>([]);
 function refreshPrograms() {
   const metas = store.listPrograms();
-  programMetas.value = metas;
   const map: Record<string, Graph> = {};
   for (const meta of metas) {
     const g = store.getProgram(meta.id);
     if (g) map[meta.id] = g;
   }
   programsMap.value = map;
+  programBrowserRef.value?.refresh();
 }
 const resolveProgram = (id: string): Graph | undefined => programsMap.value[id];
 const subprogramNames = computed<Record<string, string>>(() => {
@@ -406,26 +440,70 @@ function newProgram() {
   evaluateNow();
 }
 function saveCurrentProgram() {
-  store.saveProgram(graph);
-  refreshPrograms();
-  showToast('Saved.');
+  if (store.getProgram(graph.id)) {
+    // Already saved: update it in place, keeping its current folder.
+    store.saveProgram(graph);
+    refreshPrograms();
+    showToast('Saved.');
+    return;
+  }
+  // First save of this program: let the user name it and pick a folder.
+  nameDialog.mode = 'save';
+  nameDialog.title = 'Save program';
+  nameDialog.value = graph.name;
+  nameDialog.folderId = null;
+  folderOptions.value = buildFolderOptions();
+  nameDialog.open = true;
 }
-const nameDialog = reactive<{ open: boolean; title: string; value: string; mode: 'saveas' | 'rename' }>({
+const nameDialog = reactive<{
+  open: boolean;
+  title: string;
+  value: string;
+  mode: 'save' | 'saveas' | 'rename';
+  folderId: string | null;
+}>({
   open: false,
   title: '',
   value: '',
   mode: 'saveas',
+  folderId: null,
 });
+const folderOptions = ref<{ title: string; value: string | null }[]>([{ title: 'Root', value: null }]);
+function buildFolderOptions(): { title: string; value: string | null }[] {
+  const folders = store.listFolders();
+  const byParent = new Map<string | null, store.Folder[]>();
+  for (const f of folders) {
+    const list = byParent.get(f.parentId) ?? [];
+    list.push(f);
+    byParent.set(f.parentId, list);
+  }
+  const options: { title: string; value: string | null }[] = [{ title: 'Root', value: null }];
+  const walk = (parentId: string | null, depth: number) => {
+    for (const f of byParent.get(parentId) ?? []) {
+      options.push({ title: `${'—'.repeat(depth)} ${f.name}`, value: f.id });
+      walk(f.id, depth + 1);
+    }
+  };
+  walk(null, 1);
+  return options;
+}
+function currentFolderId(): string | null {
+  return store.listPrograms().find((p) => p.id === graph.id)?.folderId ?? null;
+}
 function openSaveAs() {
   nameDialog.mode = 'saveas';
   nameDialog.title = 'Save As';
   nameDialog.value = graph.name;
+  nameDialog.folderId = currentFolderId();
+  folderOptions.value = buildFolderOptions();
   nameDialog.open = true;
 }
 function openRename() {
   nameDialog.mode = 'rename';
   nameDialog.title = 'Rename program';
   nameDialog.value = graph.name;
+  nameDialog.folderId = currentFolderId();
+  folderOptions.value = buildFolderOptions();
   nameDialog.open = true;
 }
 function confirmName() {
@@ -434,20 +512,21 @@ function confirmName() {
   if (nameDialog.mode === 'saveas') {
     graph.name = name;
     graph.id = uuid();
-    store.saveProgram(graph);
+    store.saveProgram(graph, nameDialog.folderId);
+  } else if (nameDialog.mode === 'save') {
+    graph.name = name;
+    store.saveProgram(graph, nameDialog.folderId);
   } else {
     graph.name = name;
-    if (programsMap.value[graph.id]) store.renameProgram(graph.id, name);
+    if (programsMap.value[graph.id]) {
+      store.renameProgram(graph.id, name);
+      store.moveProgram(graph.id, nameDialog.folderId);
+    }
   }
   refreshPrograms();
   nameDialog.open = false;
   onCommit('rename');
   showToast('Saved.');
-}
-const loadDialog = ref(false);
-function openLoad() {
-  refreshPrograms();
-  loadDialog.value = true;
 }
 function loadProgramById(id: string) {
   const g = store.getProgram(id);
@@ -455,12 +534,7 @@ function loadProgramById(id: string) {
   applyGraph(g);
   undo.reset(cloneGraph(graph));
   refreshUndoState();
-  loadDialog.value = false;
   evaluateNow();
-}
-function removeProgram(id: string) {
-  store.deleteProgram(id);
-  refreshPrograms();
 }
 function deleteCurrentProgram() {
   if (programsMap.value[graph.id]) {
@@ -578,10 +652,6 @@ function onKeyDown(ev: KeyboardEvent) {
   }
 }
 
-function formatDate(ts: number): string {
-  return new Date(ts).toLocaleString();
-}
-
 onMounted(() => {
   window.addEventListener('keydown', onKeyDown);
   refreshPrograms();
@@ -648,6 +718,17 @@ onBeforeUnmount(() => {
   flex: 0 0 auto;
   min-height: 0;
 }
+.patch-browser {
+  width: 260px;
+  flex: 0 0 auto;
+  min-height: 0;
+}
+.browser-toggle {
+  flex: 0 0 auto;
+  align-self: center;
+  margin: 0 2px;
+  z-index: 10;
+}
 .palette-toggle {
   flex: 0 0 auto;
   align-self: center;
@@ -678,6 +759,10 @@ onBeforeUnmount(() => {
   z-index: 20;
 }
 .mobile-palette {
+  height: 60vh;
+  background: #101216;
+}
+.mobile-browser {
   height: 60vh;
   background: #101216;
 }
