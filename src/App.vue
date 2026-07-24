@@ -31,9 +31,9 @@ const activeTab = ref<'classic' | 'patch'>('classic');
 <style scoped>
 .App-footer {
   position: fixed;
-  left: 50%;
+  right: 16px;
   bottom: 16px;
-  transform: translateX(-50%);
+  text-align: right;
   z-index: 10;
 }
 
