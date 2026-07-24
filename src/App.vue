@@ -34,6 +34,7 @@ const activeTab = ref<'classic' | 'patch'>('classic');
   right: 16px;
   bottom: 16px;
   text-align: right;
+  font-size: 0.75rem;
   z-index: 10;
 }
 
