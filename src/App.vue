@@ -8,6 +8,7 @@
       <ClassicView v-if="activeTab === 'classic'" />
       <PatchEditorView v-else :active="activeTab === 'patch'" />
     </v-main>
+    <!--
     <footer class="App-footer">
       <a
         href="https://paypal.me/ncg7777"
@@ -17,6 +18,8 @@
         ❤️ Support Sequence Operator
       </a>
     </footer>
+  -->    
+
   </v-app>
 </template>
 
