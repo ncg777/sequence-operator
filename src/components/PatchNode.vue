@@ -6,7 +6,7 @@
     :class="{ selected }"
     :style="commentStyle"
     @pointerdown.stop="emit('node-pointerdown', $event)"
-    @contextmenu.prevent="emit('contextmenu', $event)"
+    @contextmenu="onContextMenu"
   >
     <textarea
       class="comment-text"
@@ -25,7 +25,7 @@
     :class="{ selected, waiting, 'has-error': !!errorMsg }"
     :style="cardStyle"
     @pointerdown.stop
-    @contextmenu.prevent="emit('contextmenu', $event)"
+    @contextmenu="onContextMenu"
   >
     <div class="pn-header" :style="{ background: headerColor }" @pointerdown.stop="emit('node-pointerdown', $event)" @dblclick="onHeaderDblClick">
       <v-icon size="16" class="pn-header-icon">{{ icon }}</v-icon>
@@ -278,6 +278,19 @@ function labelTop(i: number): string {
 
 function onParam(key: string, value: unknown) {
   emit('param', { key, value });
+}
+
+function onContextMenu(ev: MouseEvent) {
+  const target = ev.target;
+  if (
+    target instanceof Element
+    && target.closest('input:not([readonly]):not([disabled]), textarea:not([readonly]):not([disabled]), [contenteditable="true"]')
+  ) {
+    ev.stopPropagation();
+    return;
+  }
+  ev.preventDefault();
+  emit('contextmenu', ev);
 }
 
 function onHeaderDblClick() {

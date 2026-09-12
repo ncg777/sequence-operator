@@ -2,7 +2,7 @@
   "name": "sequence-operator",
   "homepage": "https://github.com/ncg777/sequence-operator",
   "type": "module",
-  "version": "2026.8.25",
+  "version": "2026.9.12",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
