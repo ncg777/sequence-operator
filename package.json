@@ -11,9 +11,7 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force"
   },
-  "bin": {
-    "sequence-operator": "./dist-tools/cli.js"
-  },
+  "bin": "./dist-tools/cli.js",
   "dependencies": {
     "@mdi/font": "7.4.47",
     "commander": "14.0.3",
