@@ -3,6 +3,7 @@
     ref="rootEl"
     class="patch-canvas"
     :class="{ wiring: !!wireDrag, grid: showGrid }"
+    :style="gridStyle"
     @pointerdown="onBackgroundPointerDown"
     @wheel="onWheel"
     @dblclick="onBackgroundDblClick"
@@ -129,6 +130,10 @@ const transformStyle = computed(() => ({
   transform: `translate(${vp.value.x}px, ${vp.value.y}px) scale(${vp.value.zoom})`,
   transformOrigin: '0 0',
 }));
+const gridStyle = computed(() => ({
+  backgroundPosition: `${vp.value.x}px ${vp.value.y}px`,
+  backgroundSize: `${20 * vp.value.zoom}px ${20 * vp.value.zoom}px`,
+}));
 
 // --- Selection ---
 const selectedNodes = reactive(new Set<string>());
@@ -214,6 +219,7 @@ const rubber = ref<{ x1: number; y1: number; x2: number; y2: number } | null>(nu
 
 let mode: 'idle' | 'pan' | 'move' | 'wire' | 'rubber' | 'comment-resize' = 'idle';
 let panStart = { x: 0, y: 0, vx: 0, vy: 0 };
+let panPointerId: number | null = null;
 let moveStart = { x: 0, y: 0 };
 let movePositions: Record<string, { x: number; y: number }> = {};
 let moved = false;
@@ -221,6 +227,7 @@ let resizeNodeId = '';
 let resizeStart = { x: 0, y: 0, w: 0, h: 0 };
 const activePointers = new Map<number, { x: number; y: number }>();
 let pinchDist = 0;
+let pinching = false;
 
 // Long-press state for touch context menu
 let longPressTimer: ReturnType<typeof setTimeout> | null = null;
@@ -283,12 +290,16 @@ function checkLongPressMove(ev: PointerEvent) {
 
 // --- Background (pan / rubber-band) ---
 function onBackgroundPointerDown(ev: PointerEvent) {
+  // Keep receiving the release even when the pointer leaves the canvas.
+  rootEl.value?.setPointerCapture(ev.pointerId);
   activePointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
   if (activePointers.size === 2) {
     cancelLongPress();
     const pts = [...activePointers.values()];
     pinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    pinching = true;
     mode = 'idle';
+    panPointerId = null;
     return;
   }
   if (ev.shiftKey) {
@@ -297,6 +308,7 @@ function onBackgroundPointerDown(ev: PointerEvent) {
     rubber.value = { x1: g.x, y1: g.y, x2: g.x, y2: g.y };
   } else {
     mode = 'pan';
+    panPointerId = ev.pointerId;
     panStart = { x: ev.clientX, y: ev.clientY, vx: vp.value.x, vy: vp.value.y };
     if (!ev.shiftKey) clearSelection();
   }
@@ -368,7 +380,7 @@ function onWindowMove(ev: PointerEvent) {
     return;
   }
 
-  if (mode === 'pan') {
+  if (mode === 'pan' && ev.pointerId === panPointerId) {
     vp.value.x = panStart.vx + (ev.clientX - panStart.x);
     vp.value.y = panStart.vy + (ev.clientY - panStart.y);
   } else if (mode === 'move') {
@@ -403,6 +415,17 @@ function onWindowUp(ev: PointerEvent) {
   activePointers.delete(ev.pointerId);
   cancelLongPress();
 
+  // Continue panning with the remaining finger after a pinch ends.
+  if (pinching && activePointers.size === 1) {
+    const [id, point] = [...activePointers.entries()][0];
+    mode = 'pan';
+    panPointerId = id;
+    panStart = { x: point.x, y: point.y, vx: vp.value.x, vy: vp.value.y };
+    pinchDist = 0;
+    pinching = false;
+    return;
+  }
+
   if (mode === 'move') {
     if (moved) emit('commit', 'move');
   } else if (mode === 'wire') {
@@ -415,9 +438,27 @@ function onWindowUp(ev: PointerEvent) {
 
   if (activePointers.size === 0) {
     mode = 'idle';
+    panPointerId = null;
     pinchDist = 0;
+    pinching = false;
     detachWindow();
   }
+}
+
+function onWindowBlur() {
+  // A release outside the browser may never deliver pointerup.
+  if (mode === 'move' && moved) emit('commit', 'move');
+  else if (mode === 'comment-resize') emit('commit', 'resize');
+  activePointers.clear();
+  mode = 'idle';
+  panPointerId = null;
+  pinchDist = 0;
+  pinching = false;
+  rubber.value = null;
+  wireDrag.value = null;
+  liveWire.value = null;
+  cancelLongPress();
+  detachWindow();
 }
 
 function finishWire(ev: PointerEvent) {
@@ -675,9 +716,13 @@ function detachWindow() {
   window.removeEventListener('pointercancel', onWindowUp);
 }
 
-onMounted(() => window.addEventListener('keydown', onKeyDown));
+onMounted(() => {
+  window.addEventListener('keydown', onKeyDown);
+  window.addEventListener('blur', onWindowBlur);
+});
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyDown);
+  window.removeEventListener('blur', onWindowBlur);
   cancelLongPress();
   detachWindow();
 });
