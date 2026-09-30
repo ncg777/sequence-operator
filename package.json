@@ -2,14 +2,15 @@
   "name": "sequence-operator",
   "homepage": "https://github.com/ncg777/sequence-operator",
   "type": "module",
-  "version": "2026.9.25",
+  "version": "2026.9.30",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
     "build-tools": "tsc -p tsconfig.tools.json",
     "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build --force"
+    "type-check": "vue-tsc --build --force",
+    "test": "node --test tests/*.test.mjs"
   },
   "bin": "./dist-tools/cli.js",
   "dependencies": {

@@ -14,6 +14,7 @@ import {
   UNARY_TRITWISE_OPS,
   combine,
   append,
+  merge,
   rotate,
   reverse,
   difference,
@@ -271,6 +272,18 @@ register({
   params: [],
   description: 'Appends sequence y to the end of sequence x.',
   evaluate: ({ inputs }) => ({ out: append(inputs.x ?? '', inputs.y ?? '') }),
+});
+
+register({
+  type: 'merge',
+  label: 'Merge',
+  category: 'binary',
+  icon: 'mdi-call-merge',
+  inputs: [SEQ('x', 'x'), SEQ('y', 'y')],
+  outputs: [SEQ('out', 'out')],
+  params: [],
+  description: 'Alternates x and y, starting with x, repeating both to their least common cycle.',
+  evaluate: ({ inputs }) => ({ out: merge(inputs.x ?? '', inputs.y ?? '') }),
 });
 
 // Unary sequence nodes
@@ -533,6 +546,7 @@ export function basePaletteEntries(): PaletteEntry[] {
   // Combine: generic + one preconfigured entry per combiner
   entries.push({ type: 'combine', label: 'Combine', category: 'binary', icon: registry.combine.icon, keywords: 'combiner operation binary' });
   entries.push({ type: 'append', label: 'Append', category: 'binary', icon: registry.append.icon, keywords: 'concat concatenate join binary' });
+  entries.push({ type: 'merge', label: 'Merge', category: 'binary', icon: registry.merge.icon, keywords: 'interleave alternate weave zip cycle recycle' });
   for (const c of COMBINERS) {
     entries.push({
       type: 'combine',

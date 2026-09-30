@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, permutationOrbit, reverse, rotate, signs, polynomial, unaryTritwise, } from './lib.js';
+import { COMBINERS, OPERATIONS, UNARY_TRITWISE_OPS, antidifference, combine, merge, cyclicalAntidifference, cyclicalDifference, difference, hierarchicalPermute, permuteBlocks, permutationOrbit, reverse, rotate, signs, polynomial, unaryTritwise, } from './lib.js';
 const program = new Command();
 program
     .name('sequence-operator')
@@ -15,6 +15,14 @@ program
     .requiredOption('-o, --operation <operation>', `Operation: ${OPERATIONS.join(', ')}`)
     .action(({ x, y, combiner: c, operation: op }) => {
     console.log(combine(c, op, x, y));
+});
+program
+    .command('merge')
+    .description('Alternate elements from two sequences, cycling both to their least common cycle')
+    .requiredOption('-x, --x <sequence>', 'First sequence (space-separated integers)')
+    .requiredOption('-y, --y <sequence>', 'Second sequence (space-separated integers)')
+    .action(({ x, y }) => {
+    console.log(merge(x, y));
 });
 program
     .command('rotate')

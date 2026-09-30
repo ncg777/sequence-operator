@@ -10,6 +10,12 @@ export declare function parseSeq(s: string): Sequence;
 export declare function combine(combiner: Combiner, operation: Operation, x: string, y: string): string;
 /** Append two sequences end-to-end. */
 export declare function append(x: string, y: string): string;
+/**
+ * Alternate elements from x and y, starting with x, cycling both sequences
+ * until their lengths reach a common cycle. The output has 2 * LCM(|x|, |y|)
+ * elements. An empty input produces an empty result.
+ */
+export declare function merge(x: string, y: string): string;
 /** Rotate a sequence by n steps. */
 export declare function rotate(sequence: string, n: number): string;
 /** Reverse a sequence. */

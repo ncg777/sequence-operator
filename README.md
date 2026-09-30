@@ -1,5 +1,22 @@
 [https://ncg777.github.io/sequence-operator/](https://ncg777.github.io/sequence-operator/)
 
+## Merge in the Patch view (2026.9.30)
+
+Add **Merge** from the **Combine** palette group (or search for “merge” or
+“interleave”). Wire sequences into `x` and `y`, then connect `out` to a Display
+or another node. Merge has no Combiner or Operation selector.
+
+The result alternates elements, starting with `x`. Both inputs repeat until they
+complete a common cycle, producing `2 × LCM(length(x), length(y))` elements:
+
+- `1 2 3` merged with `4 5 6` → `1 4 2 5 3 6`
+- `1 2` merged with `7 8 9` → `1 7 2 8 1 9 2 7 1 8 2 9`
+- `1 2 3` merged with `9` → `1 9 2 9 3 9`
+
+Merge waits for both inputs. An empty sequence produces an empty result. Use
+**Append** to join whole sequences end to end. Merge works in saved programs and
+subprograms with the existing graph format.
+
 ## CLI
 
 Build the tools first:
@@ -14,6 +31,10 @@ Then use the `sequence-operator` command:
 # Combine two sequences
 node dist-tools/cli.js combine -x "1 2 3" -y "4 5 6" -c Product -o Add
 # → 5 6 7 6 7 8 7 8 9
+
+# Merge two sequences (no combiner or operation required)
+node dist-tools/cli.js merge -x "1 2" -y "7 8 9"
+# → 1 7 2 8 1 9 2 7 1 8 2 9
 
 # Reverse a sequence
 node dist-tools/cli.js reverse -s "1 2 3 4 5"

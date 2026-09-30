@@ -34,6 +34,24 @@ export function append(x, y) {
     const arrY = parseSeq(y).toArray();
     return new Sequence(...arrX, ...arrY).toString();
 }
+/**
+ * Alternate elements from x and y, starting with x, cycling both sequences
+ * until their lengths reach a common cycle. The output has 2 * LCM(|x|, |y|)
+ * elements. An empty input produces an empty result.
+ */
+export function merge(x, y) {
+    const seqX = parseSeq(x);
+    const seqY = parseSeq(y);
+    if (seqX.size() === 0 || seqY.size() === 0)
+        return '';
+    const rounds = Numbers.lcm(seqX.size(), seqY.size());
+    const out = new Sequence();
+    for (let i = 0; i < rounds; i++) {
+        out.add(seqX.get(i % seqX.size()));
+        out.add(seqY.get(i % seqY.size()));
+    }
+    return out.toString();
+}
 /** Rotate a sequence by n steps. */
 export function rotate(sequence, n) {
     return parseSeq(sequence).rotate(n).toString();
