@@ -196,26 +196,30 @@ export function moveFolder(id: string, newParentId: string | null): void {
   writeFolders(folders);
 }
 
-/**
- * Deletes a folder, reparenting its child folders and programs up to the
- * deleted folder's parent (root if it had none).
- */
+/** Deletes a folder and all of its descendant folders and programs. */
 export function deleteFolder(id: string): void {
   const folders = readFolders();
-  const target = folders.find((x) => x.id === id);
-  if (!target) return;
-  const parentId = target.parentId;
-  const remaining = folders.filter((x) => x.id !== id);
-  for (const f of remaining) {
-    if (f.parentId === id) f.parentId = parentId;
+  if (!folders.some((f) => f.id === id)) return;
+
+  const childrenByParent = new Map<string | null, string[]>();
+  for (const f of folders) {
+    const children = childrenByParent.get(f.parentId) ?? [];
+    children.push(f.id);
+    childrenByParent.set(f.parentId, children);
   }
-  writeFolders(remaining);
+  const deletedFolderIds = new Set([id]);
+  for (const folderId of deletedFolderIds) {
+    for (const childId of childrenByParent.get(folderId) ?? []) {
+      deletedFolderIds.add(childId);
+    }
+  }
+  writeFolders(folders.filter((f) => !deletedFolderIds.has(f.id)));
 
   const map = readMap();
   let changed = false;
-  for (const s of Object.values(map)) {
-    if ((s.folderId ?? null) === id) {
-      s.folderId = parentId;
+  for (const [programId, s] of Object.entries(map)) {
+    if (s.folderId != null && deletedFolderIds.has(s.folderId)) {
+      delete map[programId];
       changed = true;
     }
   }

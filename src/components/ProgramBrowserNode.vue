@@ -205,7 +205,7 @@ function openDeleteFolder() {
   confirmDialog.value = {
     open: true,
     title: 'Delete folder',
-    message: `Delete "${folder.name}"? Its programs and subfolders will move up to the parent folder.`,
+    message: `Delete "${folder.name}" and all its programs and subfolders? This cannot be undone.`,
     onConfirm: () => {
       store.deleteFolder(folder.id);
       emit('changed');
